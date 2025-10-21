@@ -1,0 +1,29 @@
+{
+  "samples": 4,
+  "mean_abs_error": 0.0,
+  "max_abs_error": 0.0,
+  "performance_ms": {
+    "mean_ckks_ms": 0.09894371032714844,
+    "mean_plain_ms": 0.0029802322387695312
+  },
+  "policy": {
+    "top_k": 5,
+    "encrypt_columns": [
+      "age",
+      "billing_amount_norm",
+      "test_results_score",
+      "cxr_mean_intensity",
+      "cxr_edge_density"
+    ],
+    "weights": {
+      "age": 0.02,
+      "billing_amount_norm": 5e-05,
+      "test_results_score": 1.0,
+      "cxr_mean_intensity": 0.5,
+      "cxr_edge_density": 0.1
+    },
+    "bias": -5.0,
+    "notes": "Demo ama\u00e7l\u0131 a\u011f\u0131rl\u0131klar; klinik iddia de\u011fildir. HE alt\u0131nda toplama+plaintext katsay\u0131 ile \u00e7arpma g\u00f6sterimine uygundur."
+  },
+  "notes": "CKKS is approximate; small abs_error is expected and acceptable for weighted-sum use-cases"
+}

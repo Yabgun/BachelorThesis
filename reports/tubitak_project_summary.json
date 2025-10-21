@@ -1,0 +1,308 @@
+{
+  "project_info": {
+    "title": "TÜBİTAK Araştırma Projesi - Seçici Homomorfik Şifreleme",
+    "generated_at": "2025-10-21T02:26:06.670752",
+    "project_directory": "C:\\Users\\MONSTER\\Desktop\\Tez\\HEandData"
+  },
+  "dataset_analysis": {
+    "total_samples": 4,
+    "columns": [
+      "patient_id",
+      "age",
+      "billing_amount",
+      "billing_amount_norm",
+      "test_results_score",
+      "image_path",
+      "cxr_mean_intensity",
+      "cxr_edge_density",
+      "cxr_entropy"
+    ],
+    "data_types": {
+      "patient_id": "int64",
+      "age": "int64",
+      "billing_amount": "float64",
+      "billing_amount_norm": "float64",
+      "test_results_score": "float64",
+      "image_path": "object",
+      "cxr_mean_intensity": "float64",
+      "cxr_edge_density": "float64",
+      "cxr_entropy": "float64"
+    },
+    "missing_values": {
+      "patient_id": 0,
+      "age": 0,
+      "billing_amount": 0,
+      "billing_amount_norm": 0,
+      "test_results_score": 0,
+      "image_path": 0,
+      "cxr_mean_intensity": 0,
+      "cxr_edge_density": 0,
+      "cxr_entropy": 0
+    },
+    "statistical_summary": {
+      "patient_id": {
+        "count": 4.0,
+        "mean": 24860.5,
+        "std": 23816.89599842935,
+        "min": 1640.0,
+        "25%": 5882.75,
+        "50%": 24601.5,
+        "75%": 43579.25,
+        "max": 48599.0
+      },
+      "age": {
+        "count": 4.0,
+        "mean": 53.25,
+        "std": 24.66272491027705,
+        "min": 31.0,
+        "25%": 33.25,
+        "50%": 50.5,
+        "75%": 70.5,
+        "max": 81.0
+      },
+      "billing_amount": {
+        "count": 4.0,
+        "mean": 32433.470250731814,
+        "std": 10068.90977791781,
+        "min": 23034.177451514934,
+        "25%": 24770.854338348225,
+        "50%": 31083.046869139325,
+        "75%": 38745.66278152292,
+        "max": 44533.60981313368
+      },
+      "billing_amount_norm": {
+        "count": 4.0,
+        "mean": 0.6146861523890599,
+        "std": 0.19082815875989195,
+        "min": 0.4365487196301197,
+        "25%": 0.46946259610581004,
+        "50%": 0.5890926359965738,
+        "75%": 0.7343161922798236,
+        "max": 0.8440106179329718
+      },
+      "test_results_score": {
+        "count": 4.0,
+        "mean": 0.75,
+        "std": 0.5,
+        "min": 0.0,
+        "25%": 0.75,
+        "50%": 1.0,
+        "75%": 1.0,
+        "max": 1.0
+      },
+      "cxr_mean_intensity": {
+        "count": 4.0,
+        "mean": 145.39047050476074,
+        "std": 25.907391275634563,
+        "min": 111.43741607666016,
+        "25%": 133.63019371032715,
+        "50%": 149.119140625,
+        "75%": 160.8794174194336,
+        "max": 171.8861846923828
+      },
+      "cxr_edge_density": {
+        "count": 4.0,
+        "mean": 0.045814044074479976,
+        "std": 0.029144713492500945,
+        "min": 0.0177981701044881,
+        "25%": 0.02214108197540145,
+        "50%": 0.046306453044028896,
+        "75%": 0.06997941514310742,
+        "max": 0.072845100105374
+      },
+      "cxr_entropy": {
+        "count": 4.0,
+        "mean": 7.040087094507058,
+        "std": 0.7454730115106011,
+        "min": 6.008287784184062,
+        "25%": 6.785626999232727,
+        "50%": 7.202347333201791,
+        "75%": 7.456807428476122,
+        "max": 7.747365927440586
+      }
+    }
+  },
+  "nist_results": {},
+  "ckks_results": {},
+  "performance_analysis": {
+    "experiment_info": {
+      "dataset_size": 4,
+      "iterations": 5,
+      "encrypted_columns": [
+        "age",
+        "billing_amount_norm",
+        "test_results_score",
+        "cxr_mean_intensity",
+        "cxr_edge_density"
+      ],
+      "policy": {
+        "top_k": 5,
+        "encrypt_columns": [
+          "age",
+          "billing_amount_norm",
+          "test_results_score",
+          "cxr_mean_intensity",
+          "cxr_edge_density"
+        ],
+        "weights": {
+          "age": 0.02,
+          "billing_amount_norm": 5e-05,
+          "test_results_score": 1.0,
+          "cxr_mean_intensity": 0.5,
+          "cxr_edge_density": 0.1
+        },
+        "bias": -5.0,
+        "notes": "Demo amaçlı ağırlıklar; klinik iddia değildir. HE altında toplama+plaintext katsayı ile çarpma gösterimine uygundur."
+      }
+    },
+    "analysis": {
+      "performance": {
+        "plaintext_mean_ms": 0.002002716064453125,
+        "plaintext_std_ms": 0.0006097179342529498,
+        "encrypted_mean_ms": 0.06173849105834961,
+        "encrypted_std_ms": 0.012675143186122104,
+        "overhead_factor": 30.827380952380953,
+        "overhead_percentage": 2982.7380952380954
+      },
+      "accuracy": {
+        "mean_absolute_error": 0.0,
+        "max_absolute_error": 0.0,
+        "mean_relative_error_percent": 0.0,
+        "sample_count": 4
+      }
+    },
+    "raw_data": {
+      "plaintext_latencies_ms": [
+        0.004291534423828125,
+        0.0026226043701171875,
+        0.0019073486328125,
+        0.0016689300537109375,
+        0.002384185791015625,
+        0.0016689300537109375,
+        0.0016689300537109375,
+        0.0016689300537109375,
+        0.0016689300537109375,
+        0.0019073486328125,
+        0.001430511474609375,
+        0.002384185791015625,
+        0.0021457672119140625,
+        0.0019073486328125,
+        0.0019073486328125,
+        0.0019073486328125,
+        0.0021457672119140625,
+        0.001430511474609375,
+        0.0016689300537109375,
+        0.0016689300537109375
+      ],
+      "encrypted_latencies_ms": [
+        0.08940696716308594,
+        0.06175041198730469,
+        0.05841255187988281,
+        0.05650520324707031,
+        0.058650970458984375,
+        0.05888938903808594,
+        0.05412101745605469,
+        0.05030632019042969,
+        0.08058547973632812,
+        0.07009506225585938,
+        0.05984306335449219,
+        0.07176399230957031,
+        0.05626678466796875,
+        0.05602836608886719,
+        0.09465217590332031,
+        0.04982948303222656,
+        0.051975250244140625,
+        0.05173683166503906,
+        0.051975250244140625,
+        0.051975250244140625
+      ],
+      "plaintext_results": [
+        {
+          "patient_id": 41906,
+          "plaintext_score": 75.28762819692115,
+          "iteration": 0
+        },
+        {
+          "patient_id": 7297,
+          "plaintext_score": 53.340530055871426,
+          "iteration": 0
+        },
+        {
+          "patient_id": 1640,
+          "plaintext_score": 67.86083043369283,
+          "iteration": 0
+        },
+        {
+          "patient_id": 48599,
+          "plaintext_score": 81.57040087789636,
+          "iteration": 0
+        }
+      ],
+      "encrypted_results": [
+        {
+          "patient_id": 41906,
+          "encrypted_score": 75.28762819692115,
+          "iteration": 0
+        },
+        {
+          "patient_id": 7297,
+          "encrypted_score": 53.340530055871426,
+          "iteration": 0
+        },
+        {
+          "patient_id": 1640,
+          "encrypted_score": 67.86083043369283,
+          "iteration": 0
+        },
+        {
+          "patient_id": 48599,
+          "encrypted_score": 81.57040087789636,
+          "iteration": 0
+        }
+      ]
+    }
+  },
+  "file_inventory": {
+    "data_files": [
+      "data\\covid_ct_cxr\\ckks_report.json",
+      "data\\covid_ct_cxr\\ckks_results.csv",
+      "data\\covid_ct_cxr\\crypto_eval.md",
+      "data\\covid_ct_cxr\\cxr_features.csv",
+      "data\\covid_ct_cxr\\healthcare_clean.csv",
+      "data\\covid_ct_cxr\\healthcare_dataset.csv",
+      "data\\covid_ct_cxr\\he_report.json",
+      "data\\covid_ct_cxr\\he_results.csv",
+      "data\\covid_ct_cxr\\manifest.csv",
+      "data\\covid_ct_cxr\\multimodal.csv"
+    ],
+    "config_files": [
+      "config\\selective_he_policy.json"
+    ],
+    "result_files": [
+      "results\\performance_comparison.png",
+      "results\\performance_comparison_results.json"
+    ],
+    "script_files": [
+      "build_multimodal_dataset.py",
+      "ckks_run_multimodal.py",
+      "extract_cxr_features.py",
+      "extract_docx_text.py",
+      "fetch_covid_ct_cxr.py",
+      "generate_final_report.py",
+      "he_run_multimodal.py",
+      "make_ckks_eval_report.py",
+      "make_crypto_eval_report.py",
+      "make_he_eval_report.py",
+      "make_manifest_covid_ct_cxr.py",
+      "nist_vectors_aes.py",
+      "nist_vectors_aes_ctr.py",
+      "nist_vectors_aes_ecb.py",
+      "nist_vectors_aes_gcm.py",
+      "nist_vectors_aes_gcm_crypto.py",
+      "nist_vectors_sha256.py",
+      "performance_comparison.py",
+      "prepare_healthcare.py",
+      "pyfhel_mock.py"
+    ]
+  }
+}

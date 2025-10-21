@@ -1,0 +1,287 @@
+{
+  "test_suite": "NIST-Style CKKS Validation with Real COVID Dataset",
+  "timestamp": "2025-10-21T02:59:23.945566",
+  "implementation": "Mock Pyfhel",
+  "dataset_source": "data/covid_ct_cxr/multimodal.csv",
+  "dataset_records": 4,
+  "encrypted_columns": [
+    "age",
+    "billing_amount_norm",
+    "test_results_score",
+    "cxr_mean_intensity",
+    "cxr_edge_density",
+    "cxr_entropy"
+  ],
+  "summary": {
+    "total_tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "errors": 0,
+    "success_rate": 100.0,
+    "execution_time": 0.0027298927307128906
+  },
+  "test_categories": {
+    "known_answer_tests": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "errors": 0
+    },
+    "operation_accuracy_tests": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "errors": 0
+    },
+    "parameter_validation_tests": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "errors": 0
+    }
+  },
+  "detailed_results": [
+    {
+      "test_id": "CKKS_REAL_KAT_001",
+      "status": "PASS",
+      "input_data": [
+        34,
+        81
+      ],
+      "expected_output": [
+        34,
+        81
+      ],
+      "actual_output": [
+        34.0,
+        81.0
+      ],
+      "max_error": 0.0,
+      "avg_error": 0.0,
+      "tolerance": 0.001,
+      "parameters": {
+        "n": 8192,
+        "scale": 1099511627776,
+        "security_level": 128
+      },
+      "data_source": "COVID CT/CXR Dataset - Patient Ages",
+      "execution_time": 0.001
+    },
+    {
+      "test_id": "CKKS_REAL_KAT_002",
+      "status": "PASS",
+      "input_data": [
+        0.4365487196301197,
+        0.8440106179329718,
+        0.6977513837287742,
+        0.4804338882643735
+      ],
+      "expected_output": [
+        0.4365487196301197,
+        0.8440106179329718,
+        0.6977513837287742,
+        0.4804338882643735
+      ],
+      "actual_output": [
+        0.4365487196301197,
+        0.8440106179329718,
+        0.6977513837287742,
+        0.4804338882643735
+      ],
+      "max_error": 0.0,
+      "avg_error": 0.0,
+      "tolerance": 0.0001,
+      "parameters": {
+        "n": 8192,
+        "scale": 1099511627776,
+        "security_level": 128
+      },
+      "data_source": "COVID CT/CXR Dataset - Billing Amounts",
+      "execution_time": 0.001
+    },
+    {
+      "test_id": "CKKS_REAL_KAT_003",
+      "status": "PASS",
+      "input_data": [
+        157.2104949951172,
+        111.43741607666016,
+        141.0277862548828
+      ],
+      "expected_output": [
+        157.2104949951172,
+        111.43741607666016,
+        141.0277862548828
+      ],
+      "actual_output": [
+        157.2104949951172,
+        111.43741607666016,
+        141.0277862548828
+      ],
+      "max_error": 0.0,
+      "avg_error": 0.0,
+      "tolerance": 0.01,
+      "parameters": {
+        "n": 16384,
+        "scale": 1125899906842624,
+        "security_level": 128
+      },
+      "data_source": "COVID CT/CXR Dataset - CXR Mean Intensity",
+      "execution_time": 0.001
+    },
+    {
+      "test_id": "CKKS_REAL_OP_ADD_001",
+      "status": "PASS",
+      "operation": "addition",
+      "expected_result": [
+        101,
+        112
+      ],
+      "actual_result": [
+        101.0,
+        112.0
+      ],
+      "max_error": 0.0,
+      "avg_error": 0.0,
+      "tolerance": 0.001,
+      "parameters": {
+        "n": 8192,
+        "scale": 1099511627776,
+        "security_level": 128
+      },
+      "data_source": "COVID Patient Ages Addition",
+      "execution_time": 0.002
+    },
+    {
+      "test_id": "CKKS_REAL_OP_MUL_001",
+      "status": "PASS",
+      "operation": "multiplication",
+      "expected_result": [
+        1.572104949951172,
+        1.1143741607666016,
+        1.4102778625488281,
+        0.0
+      ],
+      "actual_result": [
+        1.572104949951172,
+        1.1143741607666016,
+        1.4102778625488281,
+        0.0
+      ],
+      "max_error": 0.0,
+      "avg_error": 0.0,
+      "tolerance": 0.01,
+      "parameters": {
+        "n": 8192,
+        "scale": 1099511627776,
+        "security_level": 128
+      },
+      "data_source": "COVID Test Scores × CXR Intensities",
+      "execution_time": 0.002
+    },
+    {
+      "test_id": "CKKS_REAL_OP_SCALAR_001",
+      "status": "PASS",
+      "operation": "scalar_multiplication",
+      "expected_result": [
+        0.5020310275746376,
+        0.9706122106229176,
+        0.8024140912880903,
+        0.5524989715040295
+      ],
+      "actual_result": [
+        0.5020310275746376,
+        0.9706122106229176,
+        0.8024140912880903,
+        0.5524989715040295
+      ],
+      "max_error": 0.0,
+      "avg_error": 0.0,
+      "tolerance": 0.001,
+      "parameters": {
+        "n": 8192,
+        "scale": 1099511627776,
+        "security_level": 128
+      },
+      "data_source": "COVID Billing Amount Scalar Multiplication",
+      "execution_time": 0.002
+    },
+    {
+      "test_id": "CKKS_REAL_PARAM_001",
+      "status": "PASS",
+      "test_data": [
+        34,
+        81,
+        67,
+        31
+      ],
+      "decrypted_data": [
+        34.0,
+        81.0,
+        67.0,
+        31.0
+      ],
+      "max_error": 0.0,
+      "avg_error": 0.0,
+      "tolerance": 0.01,
+      "parameters": {
+        "n": 4096,
+        "scale": 1073741824,
+        "security_level": 128
+      },
+      "data_source": "COVID Patient Ages",
+      "execution_time": 0.001
+    },
+    {
+      "test_id": "CKKS_REAL_PARAM_002",
+      "status": "PASS",
+      "test_data": [
+        34,
+        81,
+        67,
+        31
+      ],
+      "decrypted_data": [
+        34.0,
+        81.0,
+        67.0,
+        31.0
+      ],
+      "max_error": 0.0,
+      "avg_error": 0.0,
+      "tolerance": 0.001,
+      "parameters": {
+        "n": 8192,
+        "scale": 1099511627776,
+        "security_level": 128
+      },
+      "data_source": "COVID Patient Ages",
+      "execution_time": 0.001
+    },
+    {
+      "test_id": "CKKS_REAL_PARAM_003",
+      "status": "PASS",
+      "test_data": [
+        7.359954595487967,
+        7.044740070915616,
+        7.747365927440586,
+        6.008287784184062
+      ],
+      "decrypted_data": [
+        7.359954595487967,
+        7.044740070915616,
+        7.747365927440586,
+        6.008287784184062
+      ],
+      "max_error": 0.0,
+      "avg_error": 0.0,
+      "tolerance": 0.001,
+      "parameters": {
+        "n": 16384,
+        "scale": 1125899906842624,
+        "security_level": 128
+      },
+      "data_source": "COVID CXR Entropy Values",
+      "execution_time": 0.001
+    }
+  ]
+}
