@@ -1,0 +1,3352 @@
+{
+  "metadata": {
+    "test_date": "2025-11-11T02:01:07.766297",
+    "total_configurations": 6,
+    "total_scenarios": 10,
+    "optimal_params": {
+      "n": 8192,
+      "scale": 1099511627776,
+      "qi_sizes": [
+        60,
+        40,
+        40,
+        60
+      ]
+    },
+    "data_size": 100
+  },
+  "weight_configurations": [
+    {
+      "name": "Standart",
+      "description": "Orijinal ağırlıklandırma",
+      "weights": {
+        "age": 0.02,
+        "billing_amount_norm": 5e-05,
+        "test_results_score": 1.0,
+        "cxr_mean_intensity": 0.5,
+        "cxr_edge_density": 0.1
+      },
+      "bias": -5.0,
+      "priority": "balanced"
+    },
+    {
+      "name": "Klinik Ağırlıklı",
+      "description": "Test sonuçlarına daha fazla ağırlık",
+      "weights": {
+        "age": 0.01,
+        "billing_amount_norm": 1e-05,
+        "test_results_score": 2.0,
+        "cxr_mean_intensity": 0.3,
+        "cxr_edge_density": 0.05
+      },
+      "bias": -3.0,
+      "priority": "accuracy"
+    },
+    {
+      "name": "Görüntü Odaklı",
+      "description": "CXR özelliklerine daha fazla ağırlık",
+      "weights": {
+        "age": 0.01,
+        "billing_amount_norm": 1e-05,
+        "test_results_score": 0.5,
+        "cxr_mean_intensity": 1.0,
+        "cxr_edge_density": 0.3
+      },
+      "bias": -2.0,
+      "priority": "accuracy"
+    },
+    {
+      "name": "Hızlı Değerlendirme",
+      "description": "Daha az özellik, daha hızlı işlem",
+      "weights": {
+        "age": 0.05,
+        "billing_amount_norm": 0.0001,
+        "test_results_score": 1.5,
+        "cxr_mean_intensity": 0.2,
+        "cxr_edge_density": 0.05
+      },
+      "bias": -4.0,
+      "priority": "speed"
+    },
+    {
+      "name": "Dengeli Kapsamlı",
+      "description": "Tüm özellikleri dengeli şekilde kullan",
+      "weights": {
+        "age": 0.03,
+        "billing_amount_norm": 0.0001,
+        "test_results_score": 1.2,
+        "cxr_mean_intensity": 0.6,
+        "cxr_edge_density": 0.15
+      },
+      "bias": -4.5,
+      "priority": "balanced"
+    },
+    {
+      "name": "Yaş ve Maliyet Odaklı",
+      "description": "Yaş ve maliyet faktörlerine ağırlık",
+      "weights": {
+        "age": 0.1,
+        "billing_amount_norm": 0.001,
+        "test_results_score": 0.8,
+        "cxr_mean_intensity": 0.4,
+        "cxr_edge_density": 0.08
+      },
+      "bias": -6.0,
+      "priority": "accuracy"
+    }
+  ],
+  "test_scenarios": [
+    {
+      "name": "Mükemmel Senaryo",
+      "description": "Tüm hastalar iyi (100% başarı)",
+      "good_ratio": 1.0,
+      "total_patients": 100,
+      "noise_level": 0.0,
+      "difficulty": "easy"
+    },
+    {
+      "name": "Kötü Senaryo",
+      "description": "Tüm hastalar kötü (0% başarı)",
+      "good_ratio": 0.0,
+      "total_patients": 100,
+      "noise_level": 0.0,
+      "difficulty": "hard"
+    },
+    {
+      "name": "Dengeli Karışım",
+      "description": "50-50 iyi-kötü dengesi",
+      "good_ratio": 0.5,
+      "total_patients": 100,
+      "noise_level": 0.1,
+      "difficulty": "medium"
+    },
+    {
+      "name": "Ağırlıklı İyi",
+      "description": "80% iyi, 20% kötü",
+      "good_ratio": 0.8,
+      "total_patients": 100,
+      "noise_level": 0.05,
+      "difficulty": "easy"
+    },
+    {
+      "name": "Ağırlıklı Kötü",
+      "description": "20% iyi, 80% kötü",
+      "good_ratio": 0.2,
+      "total_patients": 100,
+      "noise_level": 0.15,
+      "difficulty": "hard"
+    },
+    {
+      "name": "Marjinal İyi",
+      "description": "95% iyi, 5% kötü (sınır vakası)",
+      "good_ratio": 0.95,
+      "total_patients": 100,
+      "noise_level": 0.02,
+      "difficulty": "edge"
+    },
+    {
+      "name": "Marjinal Kötü",
+      "description": "5% iyi, 95% kötü (sınır vakası)",
+      "good_ratio": 0.05,
+      "total_patients": 100,
+      "noise_level": 0.2,
+      "difficulty": "edge"
+    },
+    {
+      "name": "Gürültülü Dengeli",
+      "description": "50-50 dengesi ama yüksek gürültü",
+      "good_ratio": 0.5,
+      "total_patients": 100,
+      "noise_level": 0.3,
+      "difficulty": "hard"
+    },
+    {
+      "name": "Küçük Örneklem",
+      "description": "Düşük hasta sayısı, dengeli",
+      "good_ratio": 0.5,
+      "total_patients": 20,
+      "noise_level": 0.05,
+      "difficulty": "medium"
+    },
+    {
+      "name": "Büyük Örneklem",
+      "description": "Yüksek hasta sayısı, dengeli",
+      "good_ratio": 0.5,
+      "total_patients": 500,
+      "noise_level": 0.05,
+      "difficulty": "medium"
+    }
+  ],
+  "all_results": [
+    {
+      "configuration_name": "Dengeli Kapsamlı_config",
+      "weight_config": {
+        "name": "Dengeli Kapsamlı",
+        "description": "Tüm özellikleri dengeli şekilde kullan",
+        "priority": "balanced",
+        "weights": {
+          "age": 0.03,
+          "billing_amount_norm": 0.0001,
+          "test_results_score": 1.2,
+          "cxr_mean_intensity": 0.6,
+          "cxr_edge_density": 0.15
+        },
+        "bias": -4.5
+      },
+      "scenario_results": [
+        {
+          "scenario_name": "Mükemmel Senaryo",
+          "description": "Tüm hastalar iyi (100% başarı)",
+          "difficulty": "easy",
+          "patient_counts": {
+            "good": 100,
+            "bad": 0,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 8632.255104078606,
+            "sum_bad": 0.0,
+            "mean_good": 86.32255104078605,
+            "mean_bad": 0,
+            "delta_mean": 86.32255104078605
+          },
+          "expected_values": {
+            "sum_good": 8632.25510407688,
+            "sum_bad": 0,
+            "mean_good": 86.3225510407688,
+            "mean_bad": 0,
+            "delta_mean": 86.3225510407688
+          },
+          "errors": {
+            "sum_good": 1.7262209439650178e-09,
+            "sum_bad": 0.0,
+            "mean_good": 1.7251977624255233e-11,
+            "mean_bad": 0,
+            "delta_mean": 1.7251977624255233e-11
+          },
+          "performance": {
+            "encryption_time_ms": 522.6290225982666,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999998,
+            "mean_accuracy": 0.9999999999998002,
+            "delta_accuracy": 0.9999999999998002,
+            "max_error": 1.7262209439650178e-09
+          }
+        },
+        {
+          "scenario_name": "Kötü Senaryo",
+          "description": "Tüm hastalar kötü (0% başarı)",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 0,
+            "bad": 100,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 0.0,
+            "sum_bad": 7612.759240605532,
+            "mean_good": 0,
+            "mean_bad": 76.12759240605531,
+            "delta_mean": -76.12759240605531
+          },
+          "expected_values": {
+            "sum_good": 0,
+            "sum_bad": 7612.759240602347,
+            "mean_good": 0,
+            "mean_bad": 76.12759240602347,
+            "delta_mean": -76.12759240602347
+          },
+          "errors": {
+            "sum_good": 0.0,
+            "sum_bad": 3.1850504456087947e-09,
+            "mean_good": 0,
+            "mean_bad": 3.184652541676769e-11,
+            "delta_mean": 3.184652541676769e-11
+          },
+          "performance": {
+            "encryption_time_ms": 616.1425113677979,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999995817,
+            "mean_accuracy": 0.9999999999995817,
+            "delta_accuracy": 0.9999999999995817,
+            "max_error": 3.1850504456087947e-09
+          }
+        },
+        {
+          "scenario_name": "Dengeli Karışım",
+          "description": "50-50 iyi-kötü dengesi",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 50,
+            "bad": 50,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 4294.017190780434,
+            "sum_bad": 3992.31951577604,
+            "mean_good": 85.88034381560868,
+            "mean_bad": 79.84639031552081,
+            "delta_mean": 6.0339535000878755
+          },
+          "expected_values": {
+            "sum_good": 4294.0171907827535,
+            "sum_bad": 3992.3195157763935,
+            "mean_good": 85.88034381565507,
+            "mean_bad": 79.84639031552787,
+            "delta_mean": 6.033953500127197
+          },
+          "errors": {
+            "sum_good": 2.319211489520967e-09,
+            "sum_bad": 3.533386916387826e-10,
+            "mean_good": 4.638422979041934e-11,
+            "mean_bad": 7.062794793455396e-12,
+            "delta_mean": 3.9321434996963944e-11
+          },
+          "performance": {
+            "encryption_time_ms": 529.7682285308838,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999996775,
+            "mean_accuracy": 0.9999999999996775,
+            "delta_accuracy": 0.9999999999934833,
+            "max_error": 2.319211489520967e-09
+          }
+        },
+        {
+          "scenario_name": "Ağırlıklı İyi",
+          "description": "80% iyi, 20% kötü",
+          "difficulty": "easy",
+          "patient_counts": {
+            "good": 80,
+            "bad": 20,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 6949.328461507709,
+            "sum_bad": 1473.0756089777294,
+            "mean_good": 86.86660576884637,
+            "mean_bad": 73.65378044888647,
+            "delta_mean": 13.212825319959904
+          },
+          "expected_values": {
+            "sum_good": 6949.328461507666,
+            "sum_bad": 1473.075608977109,
+            "mean_good": 86.86660576884583,
+            "mean_bad": 73.65378044885544,
+            "delta_mean": 13.212825319990387
+          },
+          "errors": {
+            "sum_good": 4.274625098332763e-11,
+            "sum_bad": 6.205027602845803e-10,
+            "mean_good": 5.400124791776761e-13,
+            "mean_bad": 3.1022295843285974e-11,
+            "delta_mean": 3.04822833641083e-11
+          },
+          "performance": {
+            "encryption_time_ms": 526.4050960540771,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999999213,
+            "mean_accuracy": 0.9999999999998034,
+            "delta_accuracy": 0.999999999997693,
+            "max_error": 6.205027602845803e-10
+          }
+        },
+        {
+          "scenario_name": "Ağırlıklı Kötü",
+          "description": "20% iyi, 80% kötü",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 20,
+            "bad": 80,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 1650.3102401852216,
+            "sum_bad": 6590.9838673532495,
+            "mean_good": 82.51551200926107,
+            "mean_bad": 82.38729834191562,
+            "delta_mean": 0.1282136673454488
+          },
+          "expected_values": {
+            "sum_good": 1650.3102401832314,
+            "sum_bad": 6590.983867353475,
+            "mean_good": 82.51551200916157,
+            "mean_bad": 82.38729834191844,
+            "delta_mean": 0.12821366724313066
+          },
+          "errors": {
+            "sum_good": 1.9902017811546102e-09,
+            "sum_bad": 2.255546860396862e-10,
+            "mean_good": 9.950440471584443e-11,
+            "mean_bad": 2.8137492336099967e-12,
+            "delta_mean": 1.0231815394945443e-10
+          },
+          "performance": {
+            "encryption_time_ms": 532.99880027771,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999997311,
+            "mean_accuracy": 0.9999999999993795,
+            "delta_accuracy": 0.9999999992019716,
+            "max_error": 1.9902017811546102e-09
+          }
+        },
+        {
+          "scenario_name": "Marjinal İyi",
+          "description": "95% iyi, 5% kötü (sınır vakası)",
+          "difficulty": "edge",
+          "patient_counts": {
+            "good": 95,
+            "bad": 5,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 8009.613726261905,
+            "sum_bad": 393.7366519054707,
+            "mean_good": 84.31172343433585,
+            "mean_bad": 78.74733038109414,
+            "delta_mean": 5.564393053241702
+          },
+          "expected_values": {
+            "sum_good": 8009.613726263532,
+            "sum_bad": 393.73665190640725,
+            "mean_good": 84.31172343435297,
+            "mean_bad": 78.74733038128144,
+            "delta_mean": 5.564393053071527
+          },
+          "errors": {
+            "sum_good": 1.6270860214717686e-09,
+            "sum_bad": 9.365521691506729e-10,
+            "mean_good": 1.7124079931818414e-11,
+            "mean_bad": 1.872990651463624e-10,
+            "delta_mean": 1.70174985214544e-10
+          },
+          "performance": {
+            "encryption_time_ms": 536.7231369018555,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999996949,
+            "mean_accuracy": 0.9999999999987463,
+            "delta_accuracy": 0.9999999999694171,
+            "max_error": 1.6270860214717686e-09
+          }
+        },
+        {
+          "scenario_name": "Marjinal Kötü",
+          "description": "5% iyi, 95% kötü (sınır vakası)",
+          "difficulty": "edge",
+          "patient_counts": {
+            "good": 5,
+            "bad": 95,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 462.5731917900263,
+            "sum_bad": 7528.159857649746,
+            "mean_good": 92.51463835800527,
+            "mean_bad": 79.24378797526049,
+            "delta_mean": 13.270850382744783
+          },
+          "expected_values": {
+            "sum_good": 462.57319178984085,
+            "sum_bad": 7528.159857646496,
+            "mean_good": 92.51463835796817,
+            "mean_bad": 79.24378797522627,
+            "delta_mean": 13.270850382741898
+          },
+          "errors": {
+            "sum_good": 1.8548007574281655e-10,
+            "sum_bad": 3.2505340641364455e-09,
+            "mean_good": 3.710454166139243e-11,
+            "mean_bad": 3.4219738154206425e-11,
+            "delta_mean": 2.8848035071860068e-12
+          },
+          "performance": {
+            "encryption_time_ms": 526.8573760986328,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.99999999999957,
+            "mean_accuracy": 0.9999999999995848,
+            "delta_accuracy": 0.9999999999997826,
+            "max_error": 3.2505340641364455e-09
+          }
+        },
+        {
+          "scenario_name": "Gürültülü Dengeli",
+          "description": "50-50 dengesi ama yüksek gürültü",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 50,
+            "bad": 50,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 4329.8970239720875,
+            "sum_bad": 3970.3284967372183,
+            "mean_good": 86.59794047944175,
+            "mean_bad": 79.40656993474437,
+            "delta_mean": 7.191370544697378
+          },
+          "expected_values": {
+            "sum_good": 4329.897023974105,
+            "sum_bad": 3970.3284967377363,
+            "mean_good": 86.59794047948209,
+            "mean_bad": 79.40656993475473,
+            "delta_mean": 7.191370544727363
+          },
+          "errors": {
+            "sum_good": 2.017259248532355e-09,
+            "sum_bad": 5.179572326596826e-10,
+            "mean_good": 4.034461653645849e-11,
+            "mean_bad": 1.035971308738226e-11,
+            "delta_mean": 2.998490344907623e-11
+          },
+          "performance": {
+            "encryption_time_ms": 546.6077327728271,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999996946,
+            "mean_accuracy": 0.9999999999996946,
+            "delta_accuracy": 0.9999999999958304,
+            "max_error": 2.017259248532355e-09
+          }
+        },
+        {
+          "scenario_name": "Küçük Örneklem",
+          "description": "Düşük hasta sayısı, dengeli",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 10,
+            "bad": 10,
+            "total": 20
+          },
+          "results": {
+            "sum_good": 794.6431668650031,
+            "sum_bad": 733.0346828707691,
+            "mean_good": 79.46431668650031,
+            "mean_bad": 73.30346828707691,
+            "delta_mean": 6.160848399423401
+          },
+          "expected_values": {
+            "sum_good": 794.6431668653364,
+            "sum_bad": 733.034682870927,
+            "mean_good": 79.46431668653364,
+            "mean_bad": 73.3034682870927,
+            "delta_mean": 6.160848399440937
+          },
+          "errors": {
+            "sum_good": 3.333298081997782e-10,
+            "sum_bad": 1.5791101759532467e-10,
+            "mean_good": 3.33244543071487e-11,
+            "mean_bad": 1.5788259588589426e-11,
+            "delta_mean": 1.7536194718559273e-11
+          },
+          "performance": {
+            "encryption_time_ms": 106.4600944519043,
+            "total_operations": 20
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999996785,
+            "mean_accuracy": 0.9999999999996785,
+            "delta_accuracy": 0.9999999999971536,
+            "max_error": 3.333298081997782e-10
+          }
+        },
+        {
+          "scenario_name": "Büyük Örneklem",
+          "description": "Yüksek hasta sayısı, dengeli",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 250,
+            "bad": 250,
+            "total": 500
+          },
+          "results": {
+            "sum_good": 21341.28454000216,
+            "sum_bad": 19667.55143136336,
+            "mean_good": 85.36513816000864,
+            "mean_bad": 78.67020572545344,
+            "delta_mean": 6.694932434555199
+          },
+          "expected_values": {
+            "sum_good": 21341.28453999904,
+            "sum_bad": 19667.551431366042,
+            "mean_good": 85.36513815999616,
+            "mean_bad": 78.67020572546417,
+            "delta_mean": 6.694932434531992
+          },
+          "errors": {
+            "sum_good": 3.1213858164846897e-09,
+            "sum_bad": 2.6811903808265924e-09,
+            "mean_good": 1.247713043994736e-11,
+            "mean_bad": 1.0729195309977513e-11,
+            "delta_mean": 2.3206325749924872e-11
+          },
+          "performance": {
+            "encryption_time_ms": 2443.507194519043,
+            "total_operations": 500
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999998586,
+            "mean_accuracy": 0.9999999999998586,
+            "delta_accuracy": 0.9999999999965338,
+            "max_error": 3.1213858164846897e-09
+          }
+        }
+      ],
+      "summary": {
+        "avg_accuracy": 0.9999999999995804,
+        "min_accuracy": 0.9999999999987463,
+        "max_accuracy": 0.9999999999998586,
+        "avg_time_ms": 688.8099193572998,
+        "total_time_ms": 6888.099193572998,
+        "avg_max_error": 2.0190782379359007e-09,
+        "scenario_count": 10
+      }
+    },
+    {
+      "configuration_name": "Görüntü Odaklı_config",
+      "weight_config": {
+        "name": "Görüntü Odaklı",
+        "description": "CXR özelliklerine daha fazla ağırlık",
+        "priority": "accuracy",
+        "weights": {
+          "age": 0.01,
+          "billing_amount_norm": 1e-05,
+          "test_results_score": 0.5,
+          "cxr_mean_intensity": 1.0,
+          "cxr_edge_density": 0.3
+        },
+        "bias": -2.0
+      },
+      "scenario_results": [
+        {
+          "scenario_name": "Mükemmel Senaryo",
+          "description": "Tüm hastalar iyi (100% başarı)",
+          "difficulty": "easy",
+          "patient_counts": {
+            "good": 100,
+            "bad": 0,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 14468.420151495,
+            "sum_bad": 0.0,
+            "mean_good": 144.68420151495,
+            "mean_bad": 0,
+            "delta_mean": 144.68420151495
+          },
+          "expected_values": {
+            "sum_good": 14468.420151490054,
+            "sum_bad": 0,
+            "mean_good": 144.68420151490054,
+            "mean_bad": 0,
+            "delta_mean": 144.68420151490054
+          },
+          "errors": {
+            "sum_good": 4.945832188241184e-09,
+            "sum_bad": 0.0,
+            "mean_good": 4.945377440890297e-11,
+            "mean_bad": 0,
+            "delta_mean": 4.945377440890297e-11
+          },
+          "performance": {
+            "encryption_time_ms": 481.4908504486084,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999996582,
+            "mean_accuracy": 0.9999999999996582,
+            "delta_accuracy": 0.9999999999996582,
+            "max_error": 4.945832188241184e-09
+          }
+        },
+        {
+          "scenario_name": "Kötü Senaryo",
+          "description": "Tüm hastalar kötü (0% başarı)",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 0,
+            "bad": 100,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 0.0,
+            "sum_bad": 13960.109328248145,
+            "mean_good": 0,
+            "mean_bad": 139.60109328248146,
+            "delta_mean": -139.60109328248146
+          },
+          "expected_values": {
+            "sum_good": 0,
+            "sum_bad": 13960.10932825068,
+            "mean_good": 0,
+            "mean_bad": 139.6010932825068,
+            "delta_mean": -139.6010932825068
+          },
+          "errors": {
+            "sum_good": 0.0,
+            "sum_bad": 2.535671228542924e-09,
+            "mean_good": 0,
+            "mean_bad": 2.5352164811920375e-11,
+            "delta_mean": 2.5352164811920375e-11
+          },
+          "performance": {
+            "encryption_time_ms": 501.73234939575195,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999998184,
+            "mean_accuracy": 0.9999999999998184,
+            "delta_accuracy": 0.9999999999998184,
+            "max_error": 2.535671228542924e-09
+          }
+        },
+        {
+          "scenario_name": "Dengeli Karışım",
+          "description": "50-50 iyi-kötü dengesi",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 50,
+            "bad": 50,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 7341.141710781816,
+            "sum_bad": 7021.8792070306135,
+            "mean_good": 146.82283421563633,
+            "mean_bad": 140.43758414061227,
+            "delta_mean": 6.385250075024061
+          },
+          "expected_values": {
+            "sum_good": 7341.141710788068,
+            "sum_bad": 7021.879207023969,
+            "mean_good": 146.82283421576136,
+            "mean_bad": 140.43758414047937,
+            "delta_mean": 6.385250075281988
+          },
+          "errors": {
+            "sum_good": 6.251866579987109e-09,
+            "sum_bad": 6.644768291153014e-09,
+            "mean_good": 1.2502709978434723e-10,
+            "mean_bad": 1.3289991329656914e-10,
+            "delta_mean": 2.5792701308091637e-10
+          },
+          "performance": {
+            "encryption_time_ms": 481.07242584228516,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.999999999999102,
+            "mean_accuracy": 0.9999999999991022,
+            "delta_accuracy": 0.9999999999596058,
+            "max_error": 6.644768291153014e-09
+          }
+        },
+        {
+          "scenario_name": "Ağırlıklı İyi",
+          "description": "80% iyi, 20% kötü",
+          "difficulty": "easy",
+          "patient_counts": {
+            "good": 80,
+            "bad": 20,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 11822.138707853017,
+            "sum_bad": 2640.073134829918,
+            "mean_good": 147.7767338481627,
+            "mean_bad": 132.00365674149592,
+            "delta_mean": 15.77307710666679
+          },
+          "expected_values": {
+            "sum_good": 11822.138707864618,
+            "sum_bad": 2640.0731348295753,
+            "mean_good": 147.77673384830774,
+            "mean_bad": 132.00365674147878,
+            "delta_mean": 15.773077106828964
+          },
+          "errors": {
+            "sum_good": 1.1601514415815473e-08,
+            "sum_bad": 3.4287950256839395e-10,
+            "mean_good": 1.4503598322335165e-10,
+            "mean_bad": 1.7138290786533616e-11,
+            "delta_mean": 1.6217427400988527e-10
+          },
+          "performance": {
+            "encryption_time_ms": 480.8940887451172,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999991741,
+            "mean_accuracy": 0.9999999999994204,
+            "delta_accuracy": 0.9999999999897183,
+            "max_error": 1.1601514415815473e-08
+          }
+        },
+        {
+          "scenario_name": "Ağırlıklı Kötü",
+          "description": "20% iyi, 80% kötü",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 20,
+            "bad": 80,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 2706.6699839697903,
+            "sum_bad": 11015.0291630373,
+            "mean_good": 135.3334991984895,
+            "mean_bad": 137.68786453796625,
+            "delta_mean": -2.354365339476743
+          },
+          "expected_values": {
+            "sum_good": 2706.6699839717407,
+            "sum_bad": 11015.029163025516,
+            "mean_good": 135.33349919858705,
+            "mean_bad": 137.68786453781894,
+            "delta_mean": -2.35436533923189
+          },
+          "errors": {
+            "sum_good": 1.9504113879520446e-09,
+            "sum_bad": 1.1783413356170058e-08,
+            "mean_good": 9.754330676514655e-11,
+            "mean_bad": 1.4730971997778397e-10,
+            "delta_mean": 2.448530267429305e-10
+          },
+          "performance": {
+            "encryption_time_ms": 480.12852668762207,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999989991,
+            "mean_accuracy": 0.9999999999991032,
+            "delta_accuracy": 0.9999999998960004,
+            "max_error": 1.1783413356170058e-08
+          }
+        },
+        {
+          "scenario_name": "Marjinal İyi",
+          "description": "95% iyi, 5% kötü (sınır vakası)",
+          "difficulty": "edge",
+          "patient_counts": {
+            "good": 95,
+            "bad": 5,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 14058.562655383277,
+            "sum_bad": 610.634556831651,
+            "mean_good": 147.98487005666607,
+            "mean_bad": 122.1269113663302,
+            "delta_mean": 25.857958690335863
+          },
+          "expected_values": {
+            "sum_good": 14058.562655401976,
+            "sum_bad": 610.6345568316473,
+            "mean_good": 147.98487005686292,
+            "mean_bad": 122.12691136632945,
+            "delta_mean": 25.857958690533465
+          },
+          "errors": {
+            "sum_good": 1.8699211068451405e-08,
+            "sum_bad": 3.751665644813329e-12,
+            "mean_good": 1.9684875951497816e-10,
+            "mean_bad": 7.531752999057062e-13,
+            "delta_mean": 1.9760193481488386e-10
+          },
+          "performance": {
+            "encryption_time_ms": 482.72109031677246,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.999999999998725,
+            "mean_accuracy": 0.9999999999992685,
+            "delta_accuracy": 0.9999999999923582,
+            "max_error": 1.8699211068451405e-08
+          }
+        },
+        {
+          "scenario_name": "Marjinal Kötü",
+          "description": "5% iyi, 95% kötü (sınır vakası)",
+          "difficulty": "edge",
+          "patient_counts": {
+            "good": 5,
+            "bad": 95,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 775.6455084771203,
+            "sum_bad": 13107.146542266237,
+            "mean_good": 155.12910169542405,
+            "mean_bad": 137.9699636028025,
+            "delta_mean": 17.15913809262156
+          },
+          "expected_values": {
+            "sum_good": 775.6455084759583,
+            "sum_bad": 13107.146542258026,
+            "mean_good": 155.12910169519165,
+            "mean_bad": 137.96996360271606,
+            "delta_mean": 17.159138092475587
+          },
+          "errors": {
+            "sum_good": 1.1619931683526374e-09,
+            "sum_bad": 8.210918167605996e-09,
+            "mean_good": 2.3240431801241357e-10,
+            "mean_bad": 8.643041837785859e-11,
+            "delta_mean": 1.4597389963455498e-10
+          },
+          "performance": {
+            "encryption_time_ms": 476.1815071105957,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999993249,
+            "mean_accuracy": 0.9999999999989122,
+            "delta_accuracy": 0.9999999999914929,
+            "max_error": 8.210918167605996e-09
+          }
+        },
+        {
+          "scenario_name": "Gürültülü Dengeli",
+          "description": "50-50 dengesi ama yüksek gürültü",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 50,
+            "bad": 50,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 7601.274307610137,
+            "sum_bad": 7080.427694893549,
+            "mean_good": 152.02548615220275,
+            "mean_bad": 141.608553897871,
+            "delta_mean": 10.416932254331755
+          },
+          "expected_values": {
+            "sum_good": 7601.274307610929,
+            "sum_bad": 7080.427694893887,
+            "mean_good": 152.02548615221858,
+            "mean_bad": 141.60855389787773,
+            "delta_mean": 10.41693225434085
+          },
+          "errors": {
+            "sum_good": 7.921698852442205e-10,
+            "sum_bad": 3.374225343577564e-10,
+            "mean_good": 1.5830892152735032e-11,
+            "mean_bad": 6.73594513500575e-12,
+            "delta_mean": 9.094947017729282e-12
+          },
+          "performance": {
+            "encryption_time_ms": 485.33082008361816,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999999231,
+            "mean_accuracy": 0.9999999999999232,
+            "delta_accuracy": 0.9999999999991269,
+            "max_error": 7.921698852442205e-10
+          }
+        },
+        {
+          "scenario_name": "Küçük Örneklem",
+          "description": "Düşük hasta sayısı, dengeli",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 10,
+            "bad": 10,
+            "total": 20
+          },
+          "results": {
+            "sum_good": 1407.7775502793716,
+            "sum_bad": 1449.4002900168794,
+            "mean_good": 140.77775502793716,
+            "mean_bad": 144.94002900168795,
+            "delta_mean": -4.162273973750786
+          },
+          "expected_values": {
+            "sum_good": 1407.7775502778854,
+            "sum_bad": 1449.400290013987,
+            "mean_good": 140.77775502778854,
+            "mean_bad": 144.9400290013987,
+            "delta_mean": -4.162273973610155
+          },
+          "errors": {
+            "sum_good": 1.4861143426969647e-09,
+            "sum_bad": 2.892420525313355e-09,
+            "mean_good": 1.4861711861158255e-10,
+            "mean_bad": 2.892477368732216e-10,
+            "delta_mean": 1.4063061826163903e-10
+          },
+          "performance": {
+            "encryption_time_ms": 106.16803169250488,
+            "total_operations": 20
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999984676,
+            "mean_accuracy": 0.9999999999984674,
+            "delta_accuracy": 0.999999999966213,
+            "max_error": 2.892420525313355e-09
+          }
+        },
+        {
+          "scenario_name": "Büyük Örneklem",
+          "description": "Yüksek hasta sayısı, dengeli",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 250,
+            "bad": 250,
+            "total": 500
+          },
+          "results": {
+            "sum_good": 36977.46606619968,
+            "sum_bad": 33915.51873119024,
+            "mean_good": 147.90986426479873,
+            "mean_bad": 135.66207492476096,
+            "delta_mean": 12.24778934003777
+          },
+          "expected_values": {
+            "sum_good": 36977.46606621135,
+            "sum_bad": 33915.51873116813,
+            "mean_good": 147.90986426484542,
+            "mean_bad": 135.6620749246725,
+            "delta_mean": 12.247789340172915
+          },
+          "errors": {
+            "sum_good": 1.1670636013150215e-08,
+            "sum_bad": 2.211163518950343e-08,
+            "mean_good": 4.6696868594153784e-11,
+            "mean_bad": 8.844835974741727e-11,
+            "delta_mean": 1.3514522834157106e-10
+          },
+          "performance": {
+            "encryption_time_ms": 2576.1044025421143,
+            "total_operations": 500
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999995235,
+            "mean_accuracy": 0.9999999999995234,
+            "delta_accuracy": 0.9999999999889657,
+            "max_error": 2.211163518950343e-08
+          }
+        }
+      ],
+      "summary": {
+        "avg_accuracy": 0.9999999999993197,
+        "min_accuracy": 0.9999999999984674,
+        "max_accuracy": 0.9999999999999232,
+        "avg_time_ms": 655.182409286499,
+        "total_time_ms": 6551.82409286499,
+        "avg_max_error": 9.021755431604106e-09,
+        "scenario_count": 10
+      }
+    },
+    {
+      "configuration_name": "Standart_config",
+      "weight_config": {
+        "name": "Standart",
+        "description": "Orijinal ağırlıklandırma",
+        "priority": "balanced",
+        "weights": {
+          "age": 0.02,
+          "billing_amount_norm": 5e-05,
+          "test_results_score": 1.0,
+          "cxr_mean_intensity": 0.5,
+          "cxr_edge_density": 0.1
+        },
+        "bias": -5.0
+      },
+      "scenario_results": [
+        {
+          "scenario_name": "Mükemmel Senaryo",
+          "description": "Tüm hastalar iyi (100% başarı)",
+          "difficulty": "easy",
+          "patient_counts": {
+            "good": 100,
+            "bad": 0,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 6763.495040602506,
+            "sum_bad": 0.0,
+            "mean_good": 67.63495040602507,
+            "mean_bad": 0,
+            "delta_mean": 67.63495040602507
+          },
+          "expected_values": {
+            "sum_good": 6763.495040599378,
+            "sum_bad": 0,
+            "mean_good": 67.63495040599378,
+            "mean_bad": 0,
+            "delta_mean": 67.63495040599378
+          },
+          "errors": {
+            "sum_good": 3.128661774098873e-09,
+            "sum_bad": 0.0,
+            "mean_good": 3.129230208287481e-11,
+            "mean_bad": 0,
+            "delta_mean": 3.129230208287481e-11
+          },
+          "performance": {
+            "encryption_time_ms": 540.1370525360107,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999995374,
+            "mean_accuracy": 0.9999999999995374,
+            "delta_accuracy": 0.9999999999995374,
+            "max_error": 3.128661774098873e-09
+          }
+        },
+        {
+          "scenario_name": "Kötü Senaryo",
+          "description": "Tüm hastalar kötü (0% başarı)",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 0,
+            "bad": 100,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 0.0,
+            "sum_bad": 6375.697275347355,
+            "mean_good": 0,
+            "mean_bad": 63.75697275347355,
+            "delta_mean": -63.75697275347355
+          },
+          "expected_values": {
+            "sum_good": 0,
+            "sum_bad": 6375.697275342022,
+            "mean_good": 0,
+            "mean_bad": 63.75697275342022,
+            "delta_mean": -63.75697275342022
+          },
+          "errors": {
+            "sum_good": 0.0,
+            "sum_bad": 5.332367436494678e-09,
+            "mean_good": 0,
+            "mean_bad": 5.332623231879552e-11,
+            "delta_mean": 5.332623231879552e-11
+          },
+          "performance": {
+            "encryption_time_ms": 543.4360504150391,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999991637,
+            "mean_accuracy": 0.9999999999991636,
+            "delta_accuracy": 0.9999999999991636,
+            "max_error": 5.332367436494678e-09
+          }
+        },
+        {
+          "scenario_name": "Dengeli Karışım",
+          "description": "50-50 iyi-kötü dengesi",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 50,
+            "bad": 50,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 3518.878385319345,
+            "sum_bad": 3118.969875347759,
+            "mean_good": 70.3775677063869,
+            "mean_bad": 62.379397506955186,
+            "delta_mean": 7.998170199431712
+          },
+          "expected_values": {
+            "sum_good": 3518.878385316795,
+            "sum_bad": 3118.9698753509674,
+            "mean_good": 70.37756770633591,
+            "mean_bad": 62.37939750701935,
+            "delta_mean": 7.9981701993165615
+          },
+          "errors": {
+            "sum_good": 2.5497683964204043e-09,
+            "sum_bad": 3.2082425605040044e-09,
+            "mean_good": 5.098854671814479e-11,
+            "mean_bad": 6.416200903913705e-11,
+            "delta_mean": 1.1515055575728184e-10
+          },
+          "performance": {
+            "encryption_time_ms": 561.5155696868896,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999991326,
+            "mean_accuracy": 0.9999999999991326,
+            "delta_accuracy": 0.9999999999856028,
+            "max_error": 3.2082425605040044e-09
+          }
+        },
+        {
+          "scenario_name": "Ağırlıklı İyi",
+          "description": "80% iyi, 20% kötü",
+          "difficulty": "easy",
+          "patient_counts": {
+            "good": 80,
+            "bad": 20,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 5572.062368945995,
+            "sum_bad": 1259.1331006040828,
+            "mean_good": 69.65077961182494,
+            "mean_bad": 62.95665503020414,
+            "delta_mean": 6.694124581620805
+          },
+          "expected_values": {
+            "sum_good": 5572.062368943501,
+            "sum_bad": 1259.1331005996428,
+            "mean_good": 69.65077961179375,
+            "mean_bad": 62.956655029982144,
+            "delta_mean": 6.694124581811607
+          },
+          "errors": {
+            "sum_good": 2.494743966963142e-09,
+            "sum_bad": 4.4399257603799924e-09,
+            "mean_good": 3.11928260998684e-11,
+            "mean_bad": 2.219948669335281e-10,
+            "delta_mean": 1.908020408336597e-10
+          },
+          "performance": {
+            "encryption_time_ms": 543.7002182006836,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999989848,
+            "mean_accuracy": 0.9999999999980907,
+            "delta_accuracy": 0.9999999999714971,
+            "max_error": 4.4399257603799924e-09
+          }
+        },
+        {
+          "scenario_name": "Ağırlıklı Kötü",
+          "description": "20% iyi, 80% kötü",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 20,
+            "bad": 80,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 1474.7171227746092,
+            "sum_bad": 4984.570201762772,
+            "mean_good": 73.73585613873045,
+            "mean_bad": 62.30712752203465,
+            "delta_mean": 11.428728616695807
+          },
+          "expected_values": {
+            "sum_good": 1474.717122774583,
+            "sum_bad": 4984.5702017523545,
+            "mean_good": 73.73585613872915,
+            "mean_bad": 62.307127521904434,
+            "delta_mean": 11.428728616824714
+          },
+          "errors": {
+            "sum_good": 2.6147972675971687e-11,
+            "sum_bad": 1.041735231410712e-08,
+            "mean_good": 1.3073986337985843e-12,
+            "mean_bad": 1.3021406175539596e-10,
+            "delta_mean": 1.2890666312159738e-10
+          },
+          "performance": {
+            "encryption_time_ms": 558.478832244873,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999983832,
+            "mean_accuracy": 0.9999999999990332,
+            "delta_accuracy": 0.9999999999887208,
+            "max_error": 1.041735231410712e-08
+          }
+        },
+        {
+          "scenario_name": "Marjinal İyi",
+          "description": "95% iyi, 5% kötü (sınır vakası)",
+          "difficulty": "edge",
+          "patient_counts": {
+            "good": 95,
+            "bad": 5,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 6479.353180089088,
+            "sum_bad": 340.6385977797893,
+            "mean_good": 68.20371768514829,
+            "mean_bad": 68.12771955595785,
+            "delta_mean": 0.07599812919043814
+          },
+          "expected_values": {
+            "sum_good": 6479.353180094142,
+            "sum_bad": 340.6385977825572,
+            "mean_good": 68.2037176852015,
+            "mean_bad": 68.12771955651144,
+            "delta_mean": 0.07599812869005973
+          },
+          "errors": {
+            "sum_good": 5.054062057752162e-09,
+            "sum_bad": 2.7679334380081855e-09,
+            "mean_good": 5.32054400537163e-11,
+            "mean_bad": 5.535838454306941e-10,
+            "delta_mean": 5.003784053769778e-10
+          },
+          "performance": {
+            "encryption_time_ms": 614.9959564208984,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.999999999998853,
+            "mean_accuracy": 0.9999999999955491,
+            "delta_accuracy": 0.9999999934159115,
+            "max_error": 5.054062057752162e-09
+          }
+        },
+        {
+          "scenario_name": "Marjinal Kötü",
+          "description": "5% iyi, 95% kötü (sınır vakası)",
+          "difficulty": "edge",
+          "patient_counts": {
+            "good": 5,
+            "bad": 95,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 290.75320267292227,
+            "sum_bad": 6343.798613904644,
+            "mean_good": 58.150640534584454,
+            "mean_bad": 66.77682751478572,
+            "delta_mean": -8.626186980201268
+          },
+          "expected_values": {
+            "sum_good": 290.7532026751785,
+            "sum_bad": 6343.798613908108,
+            "mean_good": 58.1506405350357,
+            "mean_bad": 66.77682751482219,
+            "delta_mean": -8.626186979786489
+          },
+          "errors": {
+            "sum_good": 2.2562289814231917e-09,
+            "sum_bad": 3.4633558243513107e-09,
+            "mean_good": 4.512443751991668e-10,
+            "mean_bad": 3.646505319920834e-11,
+            "delta_mean": 4.147793219999585e-10
+          },
+          "performance": {
+            "encryption_time_ms": 494.4632053375244,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999991379,
+            "mean_accuracy": 0.999999999996096,
+            "delta_accuracy": 0.9999999999519162,
+            "max_error": 3.4633558243513107e-09
+          }
+        },
+        {
+          "scenario_name": "Gürültülü Dengeli",
+          "description": "50-50 dengesi ama yüksek gürültü",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 50,
+            "bad": 50,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 3378.4077335942793,
+            "sum_bad": 3282.684904509515,
+            "mean_good": 67.56815467188558,
+            "mean_bad": 65.6536980901903,
+            "delta_mean": 1.9144565816952763
+          },
+          "expected_values": {
+            "sum_good": 3378.407733588289,
+            "sum_bad": 3282.68490451696,
+            "mean_good": 67.56815467176578,
+            "mean_bad": 65.6536980903392,
+            "delta_mean": 1.9144565814265775
+          },
+          "errors": {
+            "sum_good": 5.990386853227392e-09,
+            "sum_bad": 7.4451236287131906e-09,
+            "mean_good": 1.197975052491529e-10,
+            "mean_bad": 1.489013357058866e-10,
+            "delta_mean": 2.686988409550395e-10
+          },
+          "performance": {
+            "encryption_time_ms": 494.8892593383789,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.999999999997983,
+            "mean_accuracy": 0.9999999999979831,
+            "delta_accuracy": 0.9999999998596475,
+            "max_error": 7.4451236287131906e-09
+          }
+        },
+        {
+          "scenario_name": "Küçük Örneklem",
+          "description": "Düşük hasta sayısı, dengeli",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 10,
+            "bad": 10,
+            "total": 20
+          },
+          "results": {
+            "sum_good": 703.9666178594289,
+            "sum_bad": 684.9928132437669,
+            "mean_good": 70.39666178594288,
+            "mean_bad": 68.4992813243767,
+            "delta_mean": 1.8973804615661862
+          },
+          "expected_values": {
+            "sum_good": 703.966617854514,
+            "sum_bad": 684.9928132438857,
+            "mean_good": 70.3966617854514,
+            "mean_bad": 68.49928132438858,
+            "delta_mean": 1.8973804610628235
+          },
+          "errors": {
+            "sum_good": 4.914909368380904e-09,
+            "sum_bad": 1.1880274541908875e-10,
+            "mean_good": 4.914824103252613e-10,
+            "mean_bad": 1.1880274541908875e-11,
+            "delta_mean": 5.033626848671702e-10
+          },
+          "performance": {
+            "encryption_time_ms": 99.45416450500488,
+            "total_operations": 20
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999963759,
+            "mean_accuracy": 0.999999999996376,
+            "delta_accuracy": 0.9999999997347065,
+            "max_error": 4.914909368380904e-09
+          }
+        },
+        {
+          "scenario_name": "Büyük Örneklem",
+          "description": "Yüksek hasta sayısı, dengeli",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 250,
+            "bad": 250,
+            "total": 500
+          },
+          "results": {
+            "sum_good": 17476.914256340435,
+            "sum_bad": 16223.537318453571,
+            "mean_good": 69.90765702536174,
+            "mean_bad": 64.89414927381428,
+            "delta_mean": 5.013507751547465
+          },
+          "expected_values": {
+            "sum_good": 17476.914256289117,
+            "sum_bad": 16223.537318463994,
+            "mean_good": 69.90765702515647,
+            "mean_bad": 64.89414927385597,
+            "delta_mean": 5.013507751300494
+          },
+          "errors": {
+            "sum_good": 5.13173290528357e-08,
+            "sum_bad": 1.0422809282317758e-08,
+            "mean_good": 2.0527579636109294e-10,
+            "mean_bad": 4.169464773440268e-11,
+            "delta_mean": 2.469704440954956e-10
+          },
+          "performance": {
+            "encryption_time_ms": 2460.9432220458984,
+            "total_operations": 500
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.999999999998168,
+            "mean_accuracy": 0.9999999999981679,
+            "delta_accuracy": 0.999999999950739,
+            "max_error": 5.13173290528357e-08
+          }
+        }
+      ],
+      "summary": {
+        "avg_accuracy": 0.999999999997913,
+        "min_accuracy": 0.9999999999955491,
+        "max_accuracy": 0.9999999999995374,
+        "avg_time_ms": 691.2013530731201,
+        "total_time_ms": 6912.013530731201,
+        "avg_max_error": 9.872132977761794e-09,
+        "scenario_count": 10
+      }
+    },
+    {
+      "configuration_name": "Hızlı Değerlendirme_config",
+      "weight_config": {
+        "name": "Hızlı Değerlendirme",
+        "description": "Daha az özellik, daha hızlı işlem",
+        "priority": "speed",
+        "weights": {
+          "age": 0.05,
+          "billing_amount_norm": 0.0001,
+          "test_results_score": 1.5,
+          "cxr_mean_intensity": 0.2,
+          "cxr_edge_density": 0.05
+        },
+        "bias": -4.0
+      },
+      "scenario_results": [
+        {
+          "scenario_name": "Mükemmel Senaryo",
+          "description": "Tüm hastalar iyi (100% başarı)",
+          "difficulty": "easy",
+          "patient_counts": {
+            "good": 100,
+            "bad": 0,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 2866.7705465305257,
+            "sum_bad": 0.0,
+            "mean_good": 28.667705465305257,
+            "mean_bad": 0,
+            "delta_mean": 28.667705465305257
+          },
+          "expected_values": {
+            "sum_good": 2866.770546533276,
+            "sum_bad": 0,
+            "mean_good": 28.66770546533276,
+            "mean_bad": 0,
+            "delta_mean": 28.66770546533276
+          },
+          "errors": {
+            "sum_good": 2.750311978161335e-09,
+            "sum_bad": 0.0,
+            "mean_good": 2.7501556587594678e-11,
+            "mean_bad": 0,
+            "delta_mean": 2.7501556587594678e-11
+          },
+          "performance": {
+            "encryption_time_ms": 522.0301151275635,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999990407,
+            "mean_accuracy": 0.9999999999990407,
+            "delta_accuracy": 0.9999999999990407,
+            "max_error": 2.750311978161335e-09
+          }
+        },
+        {
+          "scenario_name": "Kötü Senaryo",
+          "description": "Tüm hastalar kötü (0% başarı)",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 0,
+            "bad": 100,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 0.0,
+            "sum_bad": 2568.0141761295145,
+            "mean_good": 0,
+            "mean_bad": 25.680141761295143,
+            "delta_mean": -25.680141761295143
+          },
+          "expected_values": {
+            "sum_good": 0,
+            "sum_bad": 2568.0141761361706,
+            "mean_good": 0,
+            "mean_bad": 25.680141761361707,
+            "delta_mean": -25.680141761361707
+          },
+          "errors": {
+            "sum_good": 0.0,
+            "sum_bad": 6.656136974925175e-09,
+            "mean_good": 0,
+            "mean_bad": 6.656364348600619e-11,
+            "delta_mean": 6.656364348600619e-11
+          },
+          "performance": {
+            "encryption_time_ms": 516.7491436004639,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999974081,
+            "mean_accuracy": 0.999999999997408,
+            "delta_accuracy": 0.999999999997408,
+            "max_error": 6.656136974925175e-09
+          }
+        },
+        {
+          "scenario_name": "Dengeli Karışım",
+          "description": "50-50 iyi-kötü dengesi",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 50,
+            "bad": 50,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 1477.2853850141685,
+            "sum_bad": 1293.68830912027,
+            "mean_good": 29.54570770028337,
+            "mean_bad": 25.8737661824054,
+            "delta_mean": 3.6719415178779684
+          },
+          "expected_values": {
+            "sum_good": 1477.2853850151344,
+            "sum_bad": 1293.6883091187208,
+            "mean_good": 29.545707700302685,
+            "mean_bad": 25.873766182374414,
+            "delta_mean": 3.6719415179282713
+          },
+          "errors": {
+            "sum_good": 9.658833732828498e-10,
+            "sum_bad": 1.5493242244701833e-09,
+            "mean_good": 1.9316104271638324e-11,
+            "mean_bad": 3.098676870649797e-11,
+            "delta_mean": 5.030287297813629e-11
+          },
+          "performance": {
+            "encryption_time_ms": 521.1281776428223,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999990923,
+            "mean_accuracy": 0.9999999999990923,
+            "delta_accuracy": 0.9999999999863007,
+            "max_error": 1.5493242244701833e-09
+          }
+        },
+        {
+          "scenario_name": "Ağırlıklı İyi",
+          "description": "80% iyi, 20% kötü",
+          "difficulty": "easy",
+          "patient_counts": {
+            "good": 80,
+            "bad": 20,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 2235.495053105491,
+            "sum_bad": 566.5718007189919,
+            "mean_good": 27.94368816381864,
+            "mean_bad": 28.328590035949595,
+            "delta_mean": -0.38490187213095695
+          },
+          "expected_values": {
+            "sum_good": 2235.4950531112772,
+            "sum_bad": 566.57180072019,
+            "mean_good": 27.943688163890965,
+            "mean_bad": 28.3285900360095,
+            "delta_mean": -0.38490187211853666
+          },
+          "errors": {
+            "sum_good": 5.7862052926793694e-09,
+            "sum_bad": 1.1981455827481113e-09,
+            "mean_good": 7.23261450730206e-11,
+            "mean_bad": 5.990585805193405e-11,
+            "delta_mean": 1.2420287021086551e-11
+          },
+          "performance": {
+            "encryption_time_ms": 508.05044174194336,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999975074,
+            "mean_accuracy": 0.9999999999976501,
+            "delta_accuracy": 0.9999999999677313,
+            "max_error": 5.7862052926793694e-09
+          }
+        },
+        {
+          "scenario_name": "Ağırlıklı Kötü",
+          "description": "20% iyi, 80% kötü",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 20,
+            "bad": 80,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 673.8835293119803,
+            "sum_bad": 2043.8538840756607,
+            "mean_good": 33.694176465599014,
+            "mean_bad": 25.54817355094576,
+            "delta_mean": 8.146002914653256
+          },
+          "expected_values": {
+            "sum_good": 673.883529312743,
+            "sum_bad": 2043.853884078869,
+            "mean_good": 33.69417646563715,
+            "mean_bad": 25.54817355098586,
+            "delta_mean": 8.146002914651287
+          },
+          "errors": {
+            "sum_good": 7.627249942743219e-10,
+            "sum_bad": 3.2082425605040044e-09,
+            "mean_good": 3.813482862824458e-11,
+            "mean_bad": 4.0103032006300054e-11,
+            "delta_mean": 1.9682033780554775e-12
+          },
+          "performance": {
+            "encryption_time_ms": 480.06653785705566,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999985388,
+            "mean_accuracy": 0.9999999999986794,
+            "delta_accuracy": 0.9999999999997584,
+            "max_error": 3.2082425605040044e-09
+          }
+        },
+        {
+          "scenario_name": "Marjinal İyi",
+          "description": "95% iyi, 5% kötü (sınır vakası)",
+          "difficulty": "edge",
+          "patient_counts": {
+            "good": 95,
+            "bad": 5,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 2798.0801955800866,
+            "sum_bad": 114.5744068111024,
+            "mean_good": 29.45347574294828,
+            "mean_bad": 22.91488136222048,
+            "delta_mean": 6.538594380727801
+          },
+          "expected_values": {
+            "sum_good": 2798.0801955769534,
+            "sum_bad": 114.57440680899734,
+            "mean_good": 29.4534757429153,
+            "mean_bad": 22.914881361799466,
+            "delta_mean": 6.538594381115832
+          },
+          "errors": {
+            "sum_good": 3.1332092476077378e-09,
+            "sum_bad": 2.105068119817588e-09,
+            "mean_good": 3.298339379398385e-11,
+            "mean_bad": 4.2101433450625336e-10,
+            "delta_mean": 3.880309407122695e-10
+          },
+          "performance": {
+            "encryption_time_ms": 473.04654121398926,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999982015,
+            "mean_accuracy": 0.9999999999913307,
+            "delta_accuracy": 0.9999999999406552,
+            "max_error": 3.1332092476077378e-09
+          }
+        },
+        {
+          "scenario_name": "Marjinal Kötü",
+          "description": "5% iyi, 95% kötü (sınır vakası)",
+          "difficulty": "edge",
+          "patient_counts": {
+            "good": 5,
+            "bad": 95,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 134.07638231405775,
+            "sum_bad": 2308.1596361173406,
+            "mean_good": 26.81527646281155,
+            "mean_bad": 24.296417222287797,
+            "delta_mean": 2.518859240523753
+          },
+          "expected_values": {
+            "sum_good": 134.0763823143632,
+            "sum_bad": 2308.1596361122447,
+            "mean_good": 26.81527646287264,
+            "mean_bad": 24.296417222234155,
+            "delta_mean": 2.518859240638484
+          },
+          "errors": {
+            "sum_good": 3.0544811124855187e-10,
+            "sum_bad": 5.095898814033717e-09,
+            "mean_good": 6.108891170697461e-11,
+            "mean_bad": 5.3642423836208764e-11,
+            "delta_mean": 1.1473133554318338e-10
+          },
+          "performance": {
+            "encryption_time_ms": 487.6058101654053,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999977883,
+            "mean_accuracy": 0.9999999999977552,
+            "delta_accuracy": 0.9999999999544511,
+            "max_error": 5.095898814033717e-09
+          }
+        },
+        {
+          "scenario_name": "Gürültülü Dengeli",
+          "description": "50-50 dengesi ama yüksek gürültü",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 50,
+            "bad": 50,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 1515.1872849118004,
+            "sum_bad": 1157.5625747615563,
+            "mean_good": 30.303745698236007,
+            "mean_bad": 23.151251495231126,
+            "delta_mean": 7.152494203004881
+          },
+          "expected_values": {
+            "sum_good": 1515.1872849094846,
+            "sum_bad": 1157.5625747678816,
+            "mean_good": 30.30374569818969,
+            "mean_bad": 23.151251495357634,
+            "delta_mean": 7.152494202832056
+          },
+          "errors": {
+            "sum_good": 2.3158008843893185e-09,
+            "sum_bad": 6.325308277155273e-09,
+            "mean_good": 4.631672823052213e-11,
+            "mean_bad": 1.2650858138840704e-10,
+            "delta_mean": 1.7282530961892917e-10
+          },
+          "performance": {
+            "encryption_time_ms": 490.94653129577637,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999967669,
+            "mean_accuracy": 0.9999999999967669,
+            "delta_accuracy": 0.9999999999758371,
+            "max_error": 6.325308277155273e-09
+          }
+        },
+        {
+          "scenario_name": "Küçük Örneklem",
+          "description": "Düşük hasta sayısı, dengeli",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 10,
+            "bad": 10,
+            "total": 20
+          },
+          "results": {
+            "sum_good": 269.4052060307776,
+            "sum_bad": 271.49352927733656,
+            "mean_good": 26.94052060307776,
+            "mean_bad": 27.149352927733656,
+            "delta_mean": -0.2088323246558943
+          },
+          "expected_values": {
+            "sum_good": 269.4052060314078,
+            "sum_bad": 271.4935292799407,
+            "mean_good": 26.940520603140776,
+            "mean_bad": 27.149352927994066,
+            "delta_mean": -0.20883232485329017
+          },
+          "errors": {
+            "sum_good": 6.301661414909177e-10,
+            "sum_bad": 2.6041107048513368e-09,
+            "mean_good": 6.301448252088448e-11,
+            "mean_bad": 2.604103599423979e-10,
+            "delta_mean": 1.9739587742151343e-10
+          },
+          "performance": {
+            "encryption_time_ms": 100.42834281921387,
+            "total_operations": 20
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999940206,
+            "mean_accuracy": 0.9999999999940206,
+            "delta_accuracy": 0.9999999990547638,
+            "max_error": 2.6041107048513368e-09
+          }
+        },
+        {
+          "scenario_name": "Büyük Örneklem",
+          "description": "Yüksek hasta sayısı, dengeli",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 250,
+            "bad": 250,
+            "total": 500
+          },
+          "results": {
+            "sum_good": 7209.521432088517,
+            "sum_bad": 6568.0885829931885,
+            "mean_good": 28.838085728354066,
+            "mean_bad": 26.272354331972753,
+            "delta_mean": 2.565731396381313
+          },
+          "expected_values": {
+            "sum_good": 7209.521432084154,
+            "sum_bad": 6568.088582997279,
+            "mean_good": 28.838085728336615,
+            "mean_bad": 26.272354331989117,
+            "delta_mean": 2.5657313963474984
+          },
+          "errors": {
+            "sum_good": 4.362846084404737e-09,
+            "sum_bad": 4.090907168574631e-09,
+            "mean_good": 1.745092959026806e-11,
+            "mean_bad": 1.6363799204555107e-11,
+            "delta_mean": 3.381472879482317e-11
+          },
+          "performance": {
+            "encryption_time_ms": 2418.292284011841,
+            "total_operations": 500
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999993864,
+            "mean_accuracy": 0.9999999999993864,
+            "delta_accuracy": 0.9999999999868207,
+            "max_error": 4.362846084404737e-09
+          }
+        }
+      ],
+      "summary": {
+        "avg_accuracy": 0.9999999999971131,
+        "min_accuracy": 0.9999999999913307,
+        "max_accuracy": 0.9999999999993864,
+        "avg_time_ms": 651.8343925476074,
+        "total_time_ms": 6518.343925476074,
+        "avg_max_error": 4.147159415879287e-09,
+        "scenario_count": 10
+      }
+    },
+    {
+      "configuration_name": "Yaş ve Maliyet Odaklı_config",
+      "weight_config": {
+        "name": "Yaş ve Maliyet Odaklı",
+        "description": "Yaş ve maliyet faktörlerine ağırlık",
+        "priority": "accuracy",
+        "weights": {
+          "age": 0.1,
+          "billing_amount_norm": 0.001,
+          "test_results_score": 0.8,
+          "cxr_mean_intensity": 0.4,
+          "cxr_edge_density": 0.08
+        },
+        "bias": -6.0
+      },
+      "scenario_results": [
+        {
+          "scenario_name": "Mükemmel Senaryo",
+          "description": "Tüm hastalar iyi (100% başarı)",
+          "difficulty": "easy",
+          "patient_counts": {
+            "good": 100,
+            "bad": 0,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 5963.313054843514,
+            "sum_bad": 0.0,
+            "mean_good": 59.63313054843514,
+            "mean_bad": 0,
+            "delta_mean": 59.63313054843514
+          },
+          "expected_values": {
+            "sum_good": 5963.313054838116,
+            "sum_bad": 0,
+            "mean_good": 59.63313054838116,
+            "mean_bad": 0,
+            "delta_mean": 59.63313054838116
+          },
+          "errors": {
+            "sum_good": 5.397851055022329e-09,
+            "sum_bad": 0.0,
+            "mean_good": 5.397993163569481e-11,
+            "mean_bad": 0,
+            "delta_mean": 5.397993163569481e-11
+          },
+          "performance": {
+            "encryption_time_ms": 482.2251796722412,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999990948,
+            "mean_accuracy": 0.9999999999990948,
+            "delta_accuracy": 0.9999999999990948,
+            "max_error": 5.397851055022329e-09
+          }
+        },
+        {
+          "scenario_name": "Kötü Senaryo",
+          "description": "Tüm hastalar kötü (0% başarı)",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 0,
+            "bad": 100,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 0.0,
+            "sum_bad": 5354.335500469223,
+            "mean_good": 0,
+            "mean_bad": 53.54335500469223,
+            "delta_mean": -53.54335500469223
+          },
+          "expected_values": {
+            "sum_good": 0,
+            "sum_bad": 5354.335500458323,
+            "mean_good": 0,
+            "mean_bad": 53.543355004583226,
+            "delta_mean": -53.543355004583226
+          },
+          "errors": {
+            "sum_good": 0.0,
+            "sum_bad": 1.0900294000748545e-08,
+            "mean_good": 0,
+            "mean_bad": 1.0900436109295697e-10,
+            "delta_mean": 1.0900436109295697e-10
+          },
+          "performance": {
+            "encryption_time_ms": 482.2866916656494,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999979642,
+            "mean_accuracy": 0.9999999999979642,
+            "delta_accuracy": 0.9999999999979642,
+            "max_error": 1.0900294000748545e-08
+          }
+        },
+        {
+          "scenario_name": "Dengeli Karışım",
+          "description": "50-50 iyi-kötü dengesi",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 50,
+            "bad": 50,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 2867.519524852341,
+            "sum_bad": 2579.6001686843583,
+            "mean_good": 57.35039049704682,
+            "mean_bad": 51.59200337368716,
+            "delta_mean": 5.758387123359654
+          },
+          "expected_values": {
+            "sum_good": 2867.519524831708,
+            "sum_bad": 2579.600168685311,
+            "mean_good": 57.35039049663416,
+            "mean_bad": 51.59200337370622,
+            "delta_mean": 5.758387122927942
+          },
+          "errors": {
+            "sum_good": 2.063279680442065e-08,
+            "sum_bad": 9.526957001071423e-10,
+            "mean_good": 4.126547992200358e-10,
+            "mean_bad": 1.9056756173085887e-11,
+            "delta_mean": 4.3171155539312167e-10
+          },
+          "performance": {
+            "encryption_time_ms": 491.3520812988281,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999960373,
+            "mean_accuracy": 0.9999999999960373,
+            "delta_accuracy": 0.9999999999250291,
+            "max_error": 2.063279680442065e-08
+          }
+        },
+        {
+          "scenario_name": "Ağırlıklı İyi",
+          "description": "80% iyi, 20% kötü",
+          "difficulty": "easy",
+          "patient_counts": {
+            "good": 80,
+            "bad": 20,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 4749.938365407874,
+            "sum_bad": 1167.1366834066748,
+            "mean_good": 59.37422956759842,
+            "mean_bad": 58.35683417033374,
+            "delta_mean": 1.0173953972646785
+          },
+          "expected_values": {
+            "sum_good": 4749.9383654069525,
+            "sum_bad": 1167.1366834176024,
+            "mean_good": 59.37422956758691,
+            "mean_bad": 58.35683417088012,
+            "delta_mean": 1.0173953967067888
+          },
+          "errors": {
+            "sum_good": 9.213181328959763e-10,
+            "sum_bad": 1.0927578841801733e-08,
+            "mean_good": 1.1510792319313623e-11,
+            "mean_bad": 5.463789420900866e-10,
+            "delta_mean": 5.578897344094003e-10
+          },
+          "performance": {
+            "encryption_time_ms": 488.04664611816406,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999979975,
+            "mean_accuracy": 0.9999999999952613,
+            "delta_accuracy": 0.9999999994516491,
+            "max_error": 1.0927578841801733e-08
+          }
+        },
+        {
+          "scenario_name": "Ağırlıklı Kötü",
+          "description": "20% iyi, 80% kötü",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 20,
+            "bad": 80,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 1296.04040271731,
+            "sum_bad": 4254.376052763176,
+            "mean_good": 64.80202013586549,
+            "mean_bad": 53.1797006595397,
+            "delta_mean": 11.622319476325792
+          },
+          "expected_values": {
+            "sum_good": 1296.0404027162508,
+            "sum_bad": 4254.376052774109,
+            "mean_good": 64.80202013581254,
+            "mean_bad": 53.17970065967636,
+            "delta_mean": 11.622319476136184
+          },
+          "errors": {
+            "sum_good": 1.059106580214575e-09,
+            "sum_bad": 1.093303581001237e-08,
+            "mean_good": 5.2949644668842666e-11,
+            "mean_bad": 1.3665868436874007e-10,
+            "delta_mean": 1.8960832903758273e-10
+          },
+          "performance": {
+            "encryption_time_ms": 487.6368045806885,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999978394,
+            "mean_accuracy": 0.999999999998393,
+            "delta_accuracy": 0.9999999999836858,
+            "max_error": 1.093303581001237e-08
+          }
+        },
+        {
+          "scenario_name": "Marjinal İyi",
+          "description": "95% iyi, 5% kötü (sınır vakası)",
+          "difficulty": "edge",
+          "patient_counts": {
+            "good": 95,
+            "bad": 5,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 5507.1211737788835,
+            "sum_bad": 271.90186040358105,
+            "mean_good": 57.96969656609351,
+            "mean_bad": 54.380372080716214,
+            "delta_mean": 3.589324485377297
+          },
+          "expected_values": {
+            "sum_good": 5507.121173791723,
+            "sum_bad": 271.9018604018382,
+            "mean_good": 57.96969656622866,
+            "mean_bad": 54.380372080367636,
+            "delta_mean": 3.5893244858610274
+          },
+          "errors": {
+            "sum_good": 1.2839336704928428e-08,
+            "sum_bad": 1.7428760656912345e-09,
+            "mean_good": 1.3515233376892866e-10,
+            "mean_bad": 3.4857805530918995e-10,
+            "delta_mean": 4.837303890781186e-10
+          },
+          "performance": {
+            "encryption_time_ms": 491.0717010498047,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999974767,
+            "mean_accuracy": 0.9999999999956944,
+            "delta_accuracy": 0.9999999998652308,
+            "max_error": 1.2839336704928428e-08
+          }
+        },
+        {
+          "scenario_name": "Marjinal Kötü",
+          "description": "5% iyi, 95% kötü (sınır vakası)",
+          "difficulty": "edge",
+          "patient_counts": {
+            "good": 5,
+            "bad": 95,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 310.6899686425493,
+            "sum_bad": 5226.904476700129,
+            "mean_good": 62.137993728509855,
+            "mean_bad": 55.02004712315925,
+            "delta_mean": 7.117946605350603
+          },
+          "expected_values": {
+            "sum_good": 310.68996864534006,
+            "sum_bad": 5226.904476698359,
+            "mean_good": 62.137993729068015,
+            "mean_bad": 55.02004712314062,
+            "delta_mean": 7.1179466059273935
+          },
+          "errors": {
+            "sum_good": 2.7907844923902303e-09,
+            "sum_bad": 1.7698766896501184e-09,
+            "mean_good": 5.581597406489891e-10,
+            "mean_bad": 1.8630430531629827e-11,
+            "delta_mean": 5.767901711806189e-10
+          },
+          "performance": {
+            "encryption_time_ms": 524.2452621459961,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999991764,
+            "mean_accuracy": 0.9999999999950768,
+            "delta_accuracy": 0.9999999999189668,
+            "max_error": 2.7907844923902303e-09
+          }
+        },
+        {
+          "scenario_name": "Gürültülü Dengeli",
+          "description": "50-50 dengesi ama yüksek gürültü",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 50,
+            "bad": 50,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 2878.97400720633,
+            "sum_bad": 2627.776441812556,
+            "mean_good": 57.5794801441266,
+            "mean_bad": 52.55552883625112,
+            "delta_mean": 5.023951307875478
+          },
+          "expected_values": {
+            "sum_good": 2878.9740072121404,
+            "sum_bad": 2627.77644181351,
+            "mean_good": 57.57948014424281,
+            "mean_bad": 52.5555288362702,
+            "delta_mean": 5.0239513079726095
+          },
+          "errors": {
+            "sum_good": 5.810306902276352e-09,
+            "sum_bad": 9.536051948089153e-10,
+            "mean_good": 1.1620926443356439e-10,
+            "mean_bad": 1.907807245515869e-11,
+            "delta_mean": 9.71311919784057e-11
+          },
+          "performance": {
+            "encryption_time_ms": 542.9542064666748,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999987718,
+            "mean_accuracy": 0.9999999999987716,
+            "delta_accuracy": 0.9999999999806664,
+            "max_error": 5.810306902276352e-09
+          }
+        },
+        {
+          "scenario_name": "Küçük Örneklem",
+          "description": "Düşük hasta sayısı, dengeli",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 10,
+            "bad": 10,
+            "total": 20
+          },
+          "results": {
+            "sum_good": 557.8066514323302,
+            "sum_bad": 529.2812912735203,
+            "mean_good": 55.78066514323302,
+            "mean_bad": 52.92812912735203,
+            "delta_mean": 2.852536015880993
+          },
+          "expected_values": {
+            "sum_good": 557.8066514274625,
+            "sum_bad": 529.2812912703671,
+            "mean_good": 55.78066514274625,
+            "mean_bad": 52.92812912703671,
+            "delta_mean": 2.852536015709539
+          },
+          "errors": {
+            "sum_good": 4.8677293307264335e-09,
+            "sum_bad": 3.153218131046742e-09,
+            "mean_good": 4.867715119871718e-10,
+            "mean_bad": 3.1531754984825966e-10,
+            "delta_mean": 1.7145396213891217e-10
+          },
+          "performance": {
+            "encryption_time_ms": 112.38789558410645,
+            "total_operations": 20
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999926216,
+            "mean_accuracy": 0.9999999999926217,
+            "delta_accuracy": 0.9999999999398942,
+            "max_error": 4.8677293307264335e-09
+          }
+        },
+        {
+          "scenario_name": "Büyük Örneklem",
+          "description": "Yüksek hasta sayısı, dengeli",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 250,
+            "bad": 250,
+            "total": 500
+          },
+          "results": {
+            "sum_good": 15122.55053749192,
+            "sum_bad": 13537.868001985316,
+            "mean_good": 60.49020214996768,
+            "mean_bad": 54.151472007941265,
+            "delta_mean": 6.338730142026414
+          },
+          "expected_values": {
+            "sum_good": 15122.550537498662,
+            "sum_bad": 13537.868001983128,
+            "mean_good": 60.49020214999465,
+            "mean_bad": 54.15147200793251,
+            "delta_mean": 6.33873014206214
+          },
+          "errors": {
+            "sum_good": 6.74299371894449e-09,
+            "sum_bad": 2.1882442524656653e-09,
+            "mean_good": 2.6972202249453403e-11,
+            "mean_bad": 8.753886504564434e-12,
+            "delta_mean": 3.572608875401784e-11
+          },
+          "performance": {
+            "encryption_time_ms": 2694.6921348571777,
+            "total_operations": 500
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999996884,
+            "mean_accuracy": 0.9999999999996884,
+            "delta_accuracy": 0.9999999999943638,
+            "max_error": 6.74299371894449e-09
+          }
+        }
+      ],
+      "summary": {
+        "avg_accuracy": 0.9999999999968605,
+        "min_accuracy": 0.9999999999926217,
+        "max_accuracy": 0.9999999999996884,
+        "avg_time_ms": 679.6898603439331,
+        "total_time_ms": 6796.898603439331,
+        "avg_max_error": 9.184270766127156e-09,
+        "scenario_count": 10
+      }
+    },
+    {
+      "configuration_name": "Klinik Ağırlıklı_config",
+      "weight_config": {
+        "name": "Klinik Ağırlıklı",
+        "description": "Test sonuçlarına daha fazla ağırlık",
+        "priority": "accuracy",
+        "weights": {
+          "age": 0.01,
+          "billing_amount_norm": 1e-05,
+          "test_results_score": 2.0,
+          "cxr_mean_intensity": 0.3,
+          "cxr_edge_density": 0.05
+        },
+        "bias": -3.0
+      },
+      "scenario_results": [
+        {
+          "scenario_name": "Mükemmel Senaryo",
+          "description": "Tüm hastalar iyi (100% başarı)",
+          "difficulty": "easy",
+          "patient_counts": {
+            "good": 100,
+            "bad": 0,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 4298.575165712045,
+            "sum_bad": 0.0,
+            "mean_good": 42.98575165712045,
+            "mean_bad": 0,
+            "delta_mean": 42.98575165712045
+          },
+          "expected_values": {
+            "sum_good": 4298.575165706994,
+            "sum_bad": 0,
+            "mean_good": 42.98575165706994,
+            "mean_bad": 0,
+            "delta_mean": 42.98575165706994
+          },
+          "errors": {
+            "sum_good": 5.0513335736468434e-09,
+            "sum_bad": 0.0,
+            "mean_good": 5.051248308518552e-11,
+            "mean_bad": 0,
+            "delta_mean": 5.051248308518552e-11
+          },
+          "performance": {
+            "encryption_time_ms": 500.98299980163574,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999988248,
+            "mean_accuracy": 0.9999999999988249,
+            "delta_accuracy": 0.9999999999988249,
+            "max_error": 5.0513335736468434e-09
+          }
+        },
+        {
+          "scenario_name": "Kötü Senaryo",
+          "description": "Tüm hastalar kötü (0% başarı)",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 0,
+            "bad": 100,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 0.0,
+            "sum_bad": 3897.9782177488637,
+            "mean_good": 0,
+            "mean_bad": 38.97978217748864,
+            "delta_mean": -38.97978217748864
+          },
+          "expected_values": {
+            "sum_good": 0,
+            "sum_bad": 3897.978217736378,
+            "mean_good": 0,
+            "mean_bad": 38.97978217736378,
+            "delta_mean": -38.97978217736378
+          },
+          "errors": {
+            "sum_good": 0.0,
+            "sum_bad": 1.2485543265938759e-08,
+            "mean_good": 0,
+            "mean_bad": 1.248565695277648e-10,
+            "delta_mean": 1.248565695277648e-10
+          },
+          "performance": {
+            "encryption_time_ms": 491.1940097808838,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999967969,
+            "mean_accuracy": 0.9999999999967969,
+            "delta_accuracy": 0.9999999999967969,
+            "max_error": 1.2485543265938759e-08
+          }
+        },
+        {
+          "scenario_name": "Dengeli Karışım",
+          "description": "50-50 iyi-kötü dengesi",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 50,
+            "bad": 50,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 2148.62851346096,
+            "sum_bad": 1950.7820017756985,
+            "mean_good": 42.972570269219204,
+            "mean_bad": 39.01564003551397,
+            "delta_mean": 3.9569302337052363
+          },
+          "expected_values": {
+            "sum_good": 2148.6285134616387,
+            "sum_bad": 1950.7820017707854,
+            "mean_good": 42.972570269232776,
+            "mean_bad": 39.01564003541571,
+            "delta_mean": 3.9569302338170687
+          },
+          "errors": {
+            "sum_good": 6.784830475226045e-10,
+            "sum_bad": 4.913090378977358e-09,
+            "mean_good": 1.3571366253017914e-11,
+            "mean_bad": 9.826095492826425e-11,
+            "delta_mean": 1.1183232118128217e-10
+          },
+          "performance": {
+            "encryption_time_ms": 525.646448135376,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.999999999998636,
+            "mean_accuracy": 0.999999999998636,
+            "delta_accuracy": 0.9999999999717376,
+            "max_error": 4.913090378977358e-09
+          }
+        },
+        {
+          "scenario_name": "Ağırlıklı İyi",
+          "description": "80% iyi, 20% kötü",
+          "difficulty": "easy",
+          "patient_counts": {
+            "good": 80,
+            "bad": 20,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 3413.707461546376,
+            "sum_bad": 742.9240634518005,
+            "mean_good": 42.671343269329704,
+            "mean_bad": 37.14620317259003,
+            "delta_mean": 5.525140096739676
+          },
+          "expected_values": {
+            "sum_good": 3413.707461549528,
+            "sum_bad": 742.9240634480741,
+            "mean_good": 42.6713432693691,
+            "mean_bad": 37.1462031724037,
+            "delta_mean": 5.525140096965401
+          },
+          "errors": {
+            "sum_good": 3.151853888994083e-09,
+            "sum_bad": 3.72642716683913e-09,
+            "mean_good": 3.9399594697897555e-11,
+            "mean_bad": 1.8632562159837107e-10,
+            "delta_mean": 2.2572521629626863e-10
+          },
+          "performance": {
+            "encryption_time_ms": 533.2539081573486,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999983452,
+            "mean_accuracy": 0.999999999997172,
+            "delta_accuracy": 0.9999999999591458,
+            "max_error": 3.72642716683913e-09
+          }
+        },
+        {
+          "scenario_name": "Ağırlıklı Kötü",
+          "description": "20% iyi, 80% kötü",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 20,
+            "bad": 80,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 929.5431823994356,
+            "sum_bad": 3093.6855307251626,
+            "mean_good": 46.47715911997178,
+            "mean_bad": 38.67106913406453,
+            "delta_mean": 7.806089985907249
+          },
+          "expected_values": {
+            "sum_good": 929.543182401538,
+            "sum_bad": 3093.6855307172727,
+            "mean_good": 46.477159120076905,
+            "mean_bad": 38.67106913396591,
+            "delta_mean": 7.806089986110997
+          },
+          "errors": {
+            "sum_good": 2.1024106899858452e-09,
+            "sum_bad": 7.889866537880152e-09,
+            "mean_good": 1.0512479775570682e-10,
+            "mean_bad": 9.86233317235019e-11,
+            "delta_mean": 2.0374812947920873e-10
+          },
+          "performance": {
+            "encryption_time_ms": 538.5406017303467,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999975163,
+            "mean_accuracy": 0.9999999999976071,
+            "delta_accuracy": 0.9999999999738989,
+            "max_error": 7.889866537880152e-09
+          }
+        },
+        {
+          "scenario_name": "Marjinal İyi",
+          "description": "95% iyi, 5% kötü (sınır vakası)",
+          "difficulty": "edge",
+          "patient_counts": {
+            "good": 95,
+            "bad": 5,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 4157.376162572905,
+            "sum_bad": 200.59921520620753,
+            "mean_good": 43.76185434287268,
+            "mean_bad": 40.11984304124151,
+            "delta_mean": 3.6420113016311717
+          },
+          "expected_values": {
+            "sum_good": 4157.376162578737,
+            "sum_bad": 200.59921521076419,
+            "mean_good": 43.76185434293408,
+            "mean_bad": 40.11984304215284,
+            "delta_mean": 3.642011300781242
+          },
+          "errors": {
+            "sum_good": 5.832589522469789e-09,
+            "sum_bad": 4.556653721010662e-09,
+            "mean_good": 6.139799779703026e-11,
+            "mean_bad": 9.113279020311893e-10,
+            "delta_mean": 8.49929904234159e-10
+          },
+          "performance": {
+            "encryption_time_ms": 531.5725803375244,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.999999999997616,
+            "mean_accuracy": 0.9999999999884036,
+            "delta_accuracy": 0.9999999997666317,
+            "max_error": 5.832589522469789e-09
+          }
+        },
+        {
+          "scenario_name": "Marjinal Kötü",
+          "description": "5% iyi, 95% kötü (sınır vakası)",
+          "difficulty": "edge",
+          "patient_counts": {
+            "good": 5,
+            "bad": 95,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 208.17047083306508,
+            "sum_bad": 3667.36058531233,
+            "mean_good": 41.63409416661302,
+            "mean_bad": 38.60379563486663,
+            "delta_mean": 3.0302985317463893
+          },
+          "expected_values": {
+            "sum_good": 208.1704708317925,
+            "sum_bad": 3667.360585318532,
+            "mean_good": 41.6340941663585,
+            "mean_bad": 38.60379563493191,
+            "delta_mean": 3.0302985314265882
+          },
+          "errors": {
+            "sum_good": 1.2725820397463394e-09,
+            "sum_bad": 6.201844371389598e-09,
+            "mean_good": 2.545164079492679e-10,
+            "mean_bad": 6.5284666561638e-11,
+            "delta_mean": 3.198010745109059e-10
+          },
+          "performance": {
+            "encryption_time_ms": 529.8418998718262,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999980714,
+            "mean_accuracy": 0.9999999999960143,
+            "delta_accuracy": 0.9999999998944655,
+            "max_error": 6.201844371389598e-09
+          }
+        },
+        {
+          "scenario_name": "Gürültülü Dengeli",
+          "description": "50-50 dengesi ama yüksek gürültü",
+          "difficulty": "hard",
+          "patient_counts": {
+            "good": 50,
+            "bad": 50,
+            "total": 100
+          },
+          "results": {
+            "sum_good": 2280.5421341966785,
+            "sum_bad": 1892.3904872464936,
+            "mean_good": 45.61084268393357,
+            "mean_bad": 37.847809744929876,
+            "delta_mean": 7.763032939003693
+          },
+          "expected_values": {
+            "sum_good": 2280.5421342063137,
+            "sum_bad": 1892.3904872369976,
+            "mean_good": 45.610842684126276,
+            "mean_bad": 37.847809744739955,
+            "delta_mean": 7.763032939386321
+          },
+          "errors": {
+            "sum_good": 9.635186870582402e-09,
+            "sum_bad": 9.496034181211144e-09,
+            "mean_good": 1.9270629536549677e-10,
+            "mean_bad": 1.8992096784131718e-10,
+            "delta_mean": 3.8262726320681395e-10
+          },
+          "performance": {
+            "encryption_time_ms": 520.5354690551758,
+            "total_operations": 100
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999954154,
+            "mean_accuracy": 0.9999999999954153,
+            "delta_accuracy": 0.9999999999507116,
+            "max_error": 9.635186870582402e-09
+          }
+        },
+        {
+          "scenario_name": "Küçük Örneklem",
+          "description": "Düşük hasta sayısı, dengeli",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 10,
+            "bad": 10,
+            "total": 20
+          },
+          "results": {
+            "sum_good": 413.91033219566816,
+            "sum_bad": 416.97333791553734,
+            "mean_good": 41.391033219566815,
+            "mean_bad": 41.69733379155373,
+            "delta_mean": -0.30630057198691674
+          },
+          "expected_values": {
+            "sum_good": 413.9103321983381,
+            "sum_bad": 416.97333791220643,
+            "mean_good": 41.39103321983381,
+            "mean_bad": 41.69733379122064,
+            "delta_mean": -0.306300571386835
+          },
+          "errors": {
+            "sum_good": 2.6699353838921525e-09,
+            "sum_bad": 3.330910658405628e-09,
+            "mean_good": 2.6699353838921525e-10,
+            "mean_bad": 3.3308822366961977e-10,
+            "delta_mean": 6.00081762058835e-10
+          },
+          "performance": {
+            "encryption_time_ms": 102.59199142456055,
+            "total_operations": 20
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999927778,
+            "mean_accuracy": 0.9999999999927778,
+            "delta_accuracy": 0.9999999980408728,
+            "max_error": 3.330910658405628e-09
+          }
+        },
+        {
+          "scenario_name": "Büyük Örneklem",
+          "description": "Yüksek hasta sayısı, dengeli",
+          "difficulty": "medium",
+          "patient_counts": {
+            "good": 250,
+            "bad": 250,
+            "total": 500
+          },
+          "results": {
+            "sum_good": 10878.999600586732,
+            "sum_bad": 9672.648547403376,
+            "mean_good": 43.51599840234693,
+            "mean_bad": 38.690594189613506,
+            "delta_mean": 4.8254042127334245
+          },
+          "expected_values": {
+            "sum_good": 10878.999600594461,
+            "sum_bad": 9672.648547379336,
+            "mean_good": 43.515998402377846,
+            "mean_bad": 38.69059418951735,
+            "delta_mean": 4.825404212860498
+          },
+          "errors": {
+            "sum_good": 7.728885975666344e-09,
+            "sum_bad": 2.403976395726204e-08,
+            "mean_good": 3.091571443292196e-11,
+            "mean_bad": 9.615774843041436e-11,
+            "delta_mean": 1.2707346286333632e-10
+          },
+          "performance": {
+            "encryption_time_ms": 2514.007806777954,
+            "total_operations": 500
+          },
+          "accuracy_metrics": {
+            "sum_accuracy": 0.9999999999984542,
+            "mean_accuracy": 0.9999999999984542,
+            "delta_accuracy": 0.9999999999736657,
+            "max_error": 2.403976395726204e-08
+          }
+        }
+      ],
+      "summary": {
+        "avg_accuracy": 0.9999999999960103,
+        "min_accuracy": 0.9999999999884036,
+        "max_accuracy": 0.9999999999988249,
+        "avg_time_ms": 678.8167715072632,
+        "total_time_ms": 6788.167715072632,
+        "avg_max_error": 8.31065563033917e-09,
+        "scenario_count": 10
+      }
+    }
+  ],
+  "best_configuration": {
+    "configuration_name": "Dengeli Kapsamlı_config",
+    "weight_config": {
+      "name": "Dengeli Kapsamlı",
+      "description": "Tüm özellikleri dengeli şekilde kullan",
+      "priority": "balanced",
+      "weights": {
+        "age": 0.03,
+        "billing_amount_norm": 0.0001,
+        "test_results_score": 1.2,
+        "cxr_mean_intensity": 0.6,
+        "cxr_edge_density": 0.15
+      },
+      "bias": -4.5
+    },
+    "scenario_results": [
+      {
+        "scenario_name": "Mükemmel Senaryo",
+        "description": "Tüm hastalar iyi (100% başarı)",
+        "difficulty": "easy",
+        "patient_counts": {
+          "good": 100,
+          "bad": 0,
+          "total": 100
+        },
+        "results": {
+          "sum_good": 8632.255104078606,
+          "sum_bad": 0.0,
+          "mean_good": 86.32255104078605,
+          "mean_bad": 0,
+          "delta_mean": 86.32255104078605
+        },
+        "expected_values": {
+          "sum_good": 8632.25510407688,
+          "sum_bad": 0,
+          "mean_good": 86.3225510407688,
+          "mean_bad": 0,
+          "delta_mean": 86.3225510407688
+        },
+        "errors": {
+          "sum_good": 1.7262209439650178e-09,
+          "sum_bad": 0.0,
+          "mean_good": 1.7251977624255233e-11,
+          "mean_bad": 0,
+          "delta_mean": 1.7251977624255233e-11
+        },
+        "performance": {
+          "encryption_time_ms": 522.6290225982666,
+          "total_operations": 100
+        },
+        "accuracy_metrics": {
+          "sum_accuracy": 0.9999999999998,
+          "mean_accuracy": 0.9999999999998002,
+          "delta_accuracy": 0.9999999999998002,
+          "max_error": 1.7262209439650178e-09
+        }
+      },
+      {
+        "scenario_name": "Kötü Senaryo",
+        "description": "Tüm hastalar kötü (0% başarı)",
+        "difficulty": "hard",
+        "patient_counts": {
+          "good": 0,
+          "bad": 100,
+          "total": 100
+        },
+        "results": {
+          "sum_good": 0.0,
+          "sum_bad": 7612.759240605532,
+          "mean_good": 0,
+          "mean_bad": 76.12759240605531,
+          "delta_mean": -76.12759240605531
+        },
+        "expected_values": {
+          "sum_good": 0,
+          "sum_bad": 7612.759240602347,
+          "mean_good": 0,
+          "mean_bad": 76.12759240602347,
+          "delta_mean": -76.12759240602347
+        },
+        "errors": {
+          "sum_good": 0.0,
+          "sum_bad": 3.1850504456087947e-09,
+          "mean_good": 0,
+          "mean_bad": 3.184652541676769e-11,
+          "delta_mean": 3.184652541676769e-11
+        },
+        "performance": {
+          "encryption_time_ms": 616.1425113677979,
+          "total_operations": 100
+        },
+        "accuracy_metrics": {
+          "sum_accuracy": 0.9999999999995817,
+          "mean_accuracy": 0.9999999999995817,
+          "delta_accuracy": 0.9999999999995817,
+          "max_error": 3.1850504456087947e-09
+        }
+      },
+      {
+        "scenario_name": "Dengeli Karışım",
+        "description": "50-50 iyi-kötü dengesi",
+        "difficulty": "medium",
+        "patient_counts": {
+          "good": 50,
+          "bad": 50,
+          "total": 100
+        },
+        "results": {
+          "sum_good": 4294.017190780434,
+          "sum_bad": 3992.31951577604,
+          "mean_good": 85.88034381560868,
+          "mean_bad": 79.84639031552081,
+          "delta_mean": 6.0339535000878755
+        },
+        "expected_values": {
+          "sum_good": 4294.0171907827535,
+          "sum_bad": 3992.3195157763935,
+          "mean_good": 85.88034381565507,
+          "mean_bad": 79.84639031552787,
+          "delta_mean": 6.033953500127197
+        },
+        "errors": {
+          "sum_good": 2.319211489520967e-09,
+          "sum_bad": 3.533386916387826e-10,
+          "mean_good": 4.638422979041934e-11,
+          "mean_bad": 7.062794793455396e-12,
+          "delta_mean": 3.9321434996963944e-11
+        },
+        "performance": {
+          "encryption_time_ms": 529.7682285308838,
+          "total_operations": 100
+        },
+        "accuracy_metrics": {
+          "sum_accuracy": 0.9999999999996775,
+          "mean_accuracy": 0.9999999999996775,
+          "delta_accuracy": 0.9999999999934833,
+          "max_error": 2.319211489520967e-09
+        }
+      },
+      {
+        "scenario_name": "Ağırlıklı İyi",
+        "description": "80% iyi, 20% kötü",
+        "difficulty": "easy",
+        "patient_counts": {
+          "good": 80,
+          "bad": 20,
+          "total": 100
+        },
+        "results": {
+          "sum_good": 6949.328461507709,
+          "sum_bad": 1473.0756089777294,
+          "mean_good": 86.86660576884637,
+          "mean_bad": 73.65378044888647,
+          "delta_mean": 13.212825319959904
+        },
+        "expected_values": {
+          "sum_good": 6949.328461507666,
+          "sum_bad": 1473.075608977109,
+          "mean_good": 86.86660576884583,
+          "mean_bad": 73.65378044885544,
+          "delta_mean": 13.212825319990387
+        },
+        "errors": {
+          "sum_good": 4.274625098332763e-11,
+          "sum_bad": 6.205027602845803e-10,
+          "mean_good": 5.400124791776761e-13,
+          "mean_bad": 3.1022295843285974e-11,
+          "delta_mean": 3.04822833641083e-11
+        },
+        "performance": {
+          "encryption_time_ms": 526.4050960540771,
+          "total_operations": 100
+        },
+        "accuracy_metrics": {
+          "sum_accuracy": 0.9999999999999213,
+          "mean_accuracy": 0.9999999999998034,
+          "delta_accuracy": 0.999999999997693,
+          "max_error": 6.205027602845803e-10
+        }
+      },
+      {
+        "scenario_name": "Ağırlıklı Kötü",
+        "description": "20% iyi, 80% kötü",
+        "difficulty": "hard",
+        "patient_counts": {
+          "good": 20,
+          "bad": 80,
+          "total": 100
+        },
+        "results": {
+          "sum_good": 1650.3102401852216,
+          "sum_bad": 6590.9838673532495,
+          "mean_good": 82.51551200926107,
+          "mean_bad": 82.38729834191562,
+          "delta_mean": 0.1282136673454488
+        },
+        "expected_values": {
+          "sum_good": 1650.3102401832314,
+          "sum_bad": 6590.983867353475,
+          "mean_good": 82.51551200916157,
+          "mean_bad": 82.38729834191844,
+          "delta_mean": 0.12821366724313066
+        },
+        "errors": {
+          "sum_good": 1.9902017811546102e-09,
+          "sum_bad": 2.255546860396862e-10,
+          "mean_good": 9.950440471584443e-11,
+          "mean_bad": 2.8137492336099967e-12,
+          "delta_mean": 1.0231815394945443e-10
+        },
+        "performance": {
+          "encryption_time_ms": 532.99880027771,
+          "total_operations": 100
+        },
+        "accuracy_metrics": {
+          "sum_accuracy": 0.9999999999997311,
+          "mean_accuracy": 0.9999999999993795,
+          "delta_accuracy": 0.9999999992019716,
+          "max_error": 1.9902017811546102e-09
+        }
+      },
+      {
+        "scenario_name": "Marjinal İyi",
+        "description": "95% iyi, 5% kötü (sınır vakası)",
+        "difficulty": "edge",
+        "patient_counts": {
+          "good": 95,
+          "bad": 5,
+          "total": 100
+        },
+        "results": {
+          "sum_good": 8009.613726261905,
+          "sum_bad": 393.7366519054707,
+          "mean_good": 84.31172343433585,
+          "mean_bad": 78.74733038109414,
+          "delta_mean": 5.564393053241702
+        },
+        "expected_values": {
+          "sum_good": 8009.613726263532,
+          "sum_bad": 393.73665190640725,
+          "mean_good": 84.31172343435297,
+          "mean_bad": 78.74733038128144,
+          "delta_mean": 5.564393053071527
+        },
+        "errors": {
+          "sum_good": 1.6270860214717686e-09,
+          "sum_bad": 9.365521691506729e-10,
+          "mean_good": 1.7124079931818414e-11,
+          "mean_bad": 1.872990651463624e-10,
+          "delta_mean": 1.70174985214544e-10
+        },
+        "performance": {
+          "encryption_time_ms": 536.7231369018555,
+          "total_operations": 100
+        },
+        "accuracy_metrics": {
+          "sum_accuracy": 0.9999999999996949,
+          "mean_accuracy": 0.9999999999987463,
+          "delta_accuracy": 0.9999999999694171,
+          "max_error": 1.6270860214717686e-09
+        }
+      },
+      {
+        "scenario_name": "Marjinal Kötü",
+        "description": "5% iyi, 95% kötü (sınır vakası)",
+        "difficulty": "edge",
+        "patient_counts": {
+          "good": 5,
+          "bad": 95,
+          "total": 100
+        },
+        "results": {
+          "sum_good": 462.5731917900263,
+          "sum_bad": 7528.159857649746,
+          "mean_good": 92.51463835800527,
+          "mean_bad": 79.24378797526049,
+          "delta_mean": 13.270850382744783
+        },
+        "expected_values": {
+          "sum_good": 462.57319178984085,
+          "sum_bad": 7528.159857646496,
+          "mean_good": 92.51463835796817,
+          "mean_bad": 79.24378797522627,
+          "delta_mean": 13.270850382741898
+        },
+        "errors": {
+          "sum_good": 1.8548007574281655e-10,
+          "sum_bad": 3.2505340641364455e-09,
+          "mean_good": 3.710454166139243e-11,
+          "mean_bad": 3.4219738154206425e-11,
+          "delta_mean": 2.8848035071860068e-12
+        },
+        "performance": {
+          "encryption_time_ms": 526.8573760986328,
+          "total_operations": 100
+        },
+        "accuracy_metrics": {
+          "sum_accuracy": 0.99999999999957,
+          "mean_accuracy": 0.9999999999995848,
+          "delta_accuracy": 0.9999999999997826,
+          "max_error": 3.2505340641364455e-09
+        }
+      },
+      {
+        "scenario_name": "Gürültülü Dengeli",
+        "description": "50-50 dengesi ama yüksek gürültü",
+        "difficulty": "hard",
+        "patient_counts": {
+          "good": 50,
+          "bad": 50,
+          "total": 100
+        },
+        "results": {
+          "sum_good": 4329.8970239720875,
+          "sum_bad": 3970.3284967372183,
+          "mean_good": 86.59794047944175,
+          "mean_bad": 79.40656993474437,
+          "delta_mean": 7.191370544697378
+        },
+        "expected_values": {
+          "sum_good": 4329.897023974105,
+          "sum_bad": 3970.3284967377363,
+          "mean_good": 86.59794047948209,
+          "mean_bad": 79.40656993475473,
+          "delta_mean": 7.191370544727363
+        },
+        "errors": {
+          "sum_good": 2.017259248532355e-09,
+          "sum_bad": 5.179572326596826e-10,
+          "mean_good": 4.034461653645849e-11,
+          "mean_bad": 1.035971308738226e-11,
+          "delta_mean": 2.998490344907623e-11
+        },
+        "performance": {
+          "encryption_time_ms": 546.6077327728271,
+          "total_operations": 100
+        },
+        "accuracy_metrics": {
+          "sum_accuracy": 0.9999999999996946,
+          "mean_accuracy": 0.9999999999996946,
+          "delta_accuracy": 0.9999999999958304,
+          "max_error": 2.017259248532355e-09
+        }
+      },
+      {
+        "scenario_name": "Küçük Örneklem",
+        "description": "Düşük hasta sayısı, dengeli",
+        "difficulty": "medium",
+        "patient_counts": {
+          "good": 10,
+          "bad": 10,
+          "total": 20
+        },
+        "results": {
+          "sum_good": 794.6431668650031,
+          "sum_bad": 733.0346828707691,
+          "mean_good": 79.46431668650031,
+          "mean_bad": 73.30346828707691,
+          "delta_mean": 6.160848399423401
+        },
+        "expected_values": {
+          "sum_good": 794.6431668653364,
+          "sum_bad": 733.034682870927,
+          "mean_good": 79.46431668653364,
+          "mean_bad": 73.3034682870927,
+          "delta_mean": 6.160848399440937
+        },
+        "errors": {
+          "sum_good": 3.333298081997782e-10,
+          "sum_bad": 1.5791101759532467e-10,
+          "mean_good": 3.33244543071487e-11,
+          "mean_bad": 1.5788259588589426e-11,
+          "delta_mean": 1.7536194718559273e-11
+        },
+        "performance": {
+          "encryption_time_ms": 106.4600944519043,
+          "total_operations": 20
+        },
+        "accuracy_metrics": {
+          "sum_accuracy": 0.9999999999996785,
+          "mean_accuracy": 0.9999999999996785,
+          "delta_accuracy": 0.9999999999971536,
+          "max_error": 3.333298081997782e-10
+        }
+      },
+      {
+        "scenario_name": "Büyük Örneklem",
+        "description": "Yüksek hasta sayısı, dengeli",
+        "difficulty": "medium",
+        "patient_counts": {
+          "good": 250,
+          "bad": 250,
+          "total": 500
+        },
+        "results": {
+          "sum_good": 21341.28454000216,
+          "sum_bad": 19667.55143136336,
+          "mean_good": 85.36513816000864,
+          "mean_bad": 78.67020572545344,
+          "delta_mean": 6.694932434555199
+        },
+        "expected_values": {
+          "sum_good": 21341.28453999904,
+          "sum_bad": 19667.551431366042,
+          "mean_good": 85.36513815999616,
+          "mean_bad": 78.67020572546417,
+          "delta_mean": 6.694932434531992
+        },
+        "errors": {
+          "sum_good": 3.1213858164846897e-09,
+          "sum_bad": 2.6811903808265924e-09,
+          "mean_good": 1.247713043994736e-11,
+          "mean_bad": 1.0729195309977513e-11,
+          "delta_mean": 2.3206325749924872e-11
+        },
+        "performance": {
+          "encryption_time_ms": 2443.507194519043,
+          "total_operations": 500
+        },
+        "accuracy_metrics": {
+          "sum_accuracy": 0.9999999999998586,
+          "mean_accuracy": 0.9999999999998586,
+          "delta_accuracy": 0.9999999999965338,
+          "max_error": 3.1213858164846897e-09
+        }
+      }
+    ],
+    "summary": {
+      "avg_accuracy": 0.9999999999995804,
+      "min_accuracy": 0.9999999999987463,
+      "max_accuracy": 0.9999999999998586,
+      "avg_time_ms": 688.8099193572998,
+      "total_time_ms": 6888.099193572998,
+      "avg_max_error": 2.0190782379359007e-09,
+      "scenario_count": 10
+    }
+  },
+  "comparison": {
+    "accuracy_ranking": [
+      {
+        "rank": 1,
+        "config": "Dengeli Kapsamlı_config",
+        "accuracy": 0.9999999999995804,
+        "accuracy_range": "1.0000 - 1.0000"
+      },
+      {
+        "rank": 2,
+        "config": "Görüntü Odaklı_config",
+        "accuracy": 0.9999999999993197,
+        "accuracy_range": "1.0000 - 1.0000"
+      },
+      {
+        "rank": 3,
+        "config": "Standart_config",
+        "accuracy": 0.999999999997913,
+        "accuracy_range": "1.0000 - 1.0000"
+      },
+      {
+        "rank": 4,
+        "config": "Hızlı Değerlendirme_config",
+        "accuracy": 0.9999999999971131,
+        "accuracy_range": "1.0000 - 1.0000"
+      },
+      {
+        "rank": 5,
+        "config": "Yaş ve Maliyet Odaklı_config",
+        "accuracy": 0.9999999999968605,
+        "accuracy_range": "1.0000 - 1.0000"
+      },
+      {
+        "rank": 6,
+        "config": "Klinik Ağırlıklı_config",
+        "accuracy": 0.9999999999960103,
+        "accuracy_range": "1.0000 - 1.0000"
+      }
+    ],
+    "speed_ranking": [
+      {
+        "rank": 1,
+        "config": "Hızlı Değerlendirme_config",
+        "avg_time": 651.8343925476074,
+        "total_time": 6518.343925476074
+      },
+      {
+        "rank": 2,
+        "config": "Görüntü Odaklı_config",
+        "avg_time": 655.182409286499,
+        "total_time": 6551.82409286499
+      },
+      {
+        "rank": 3,
+        "config": "Klinik Ağırlıklı_config",
+        "avg_time": 678.8167715072632,
+        "total_time": 6788.167715072632
+      },
+      {
+        "rank": 4,
+        "config": "Yaş ve Maliyet Odaklı_config",
+        "avg_time": 679.6898603439331,
+        "total_time": 6796.898603439331
+      },
+      {
+        "rank": 5,
+        "config": "Dengeli Kapsamlı_config",
+        "avg_time": 688.8099193572998,
+        "total_time": 6888.099193572998
+      },
+      {
+        "rank": 6,
+        "config": "Standart_config",
+        "avg_time": 691.2013530731201,
+        "total_time": 6912.013530731201
+      }
+    ],
+    "error_ranking": [
+      {
+        "rank": 1,
+        "config": "Dengeli Kapsamlı_config",
+        "avg_max_error": 2.0190782379359007e-09
+      },
+      {
+        "rank": 2,
+        "config": "Hızlı Değerlendirme_config",
+        "avg_max_error": 4.147159415879287e-09
+      },
+      {
+        "rank": 3,
+        "config": "Klinik Ağırlıklı_config",
+        "avg_max_error": 8.31065563033917e-09
+      },
+      {
+        "rank": 4,
+        "config": "Görüntü Odaklı_config",
+        "avg_max_error": 9.021755431604106e-09
+      },
+      {
+        "rank": 5,
+        "config": "Yaş ve Maliyet Odaklı_config",
+        "avg_max_error": 9.184270766127156e-09
+      },
+      {
+        "rank": 6,
+        "config": "Standart_config",
+        "avg_max_error": 9.872132977761794e-09
+      }
+    ],
+    "overall_scores": []
+  }
+}

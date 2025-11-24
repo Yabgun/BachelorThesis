@@ -1,13 +1,17 @@
 import json
 import time
 import pandas as pd
+import numpy as np
 from pathlib import Path
 
+# Require real Pyfhel. If missing, guide user to install.
 try:
-    from Pyfhel import Pyfhel, PyCtxt, PyPtxt
-except ImportError:
-    print("Warning: Pyfhel not found, using mock implementation for testing...")
-    from pyfhel_mock import Pyfhel, PyCtxt, PyPtxt
+    from Pyfhel import Pyfhel
+except ImportError as e:
+    raise SystemExit(
+        "Pyfhel is required. Install with 'pip install pyfhel' or use Python 3.11–3.12 on Windows. "
+        "Ensure CMake, Ninja, and MSVC Build Tools if building from source."
+    ) from e
 
 DATA_DIR = Path("data/covid_ct_cxr")
 CONFIG_DIR = Path("config")
@@ -29,10 +33,9 @@ def load_policy(path: Path):
 
 def run_ckks(df: pd.DataFrame, cols, weights, bias):
     HE = Pyfhel()
-    # CKKS parameters: moderate size for demo; scale large enough for few ops
-    HE.contextGen(scheme='CKKS', n=2**13, scale=2**30, qi_sizes=[60, 40, 40, 60])
+    SCALE = 2**30
+    HE.contextGen(scheme='CKKS', n=2**13, scale=SCALE, qi_sizes=[60, 30, 30, 30, 60])
     HE.keyGen()
-    HE.relinKeyGen()  # not strictly needed for mul_plain, but good to have
 
     results = []
     lat_ckks = []
@@ -45,18 +48,16 @@ def run_ckks(df: pd.DataFrame, cols, weights, bias):
         plain_score = sum(w*x for w, x in zip(weights, xvals)) + bias
         lat_plain.append((time.time()-t0p)*1000.0)
 
-        # CKKS encrypted score: encrypt each scalar and multiply by plaintext weight, then sum
+        # CKKS encrypted score: integrate bias using (w=bias, x=1.0)
         t0 = time.time()
         ct_sum = None
-        for w, x in zip(weights, xvals):
-            ptxt_x = HE.encodeFrac([x])
+        for w, x in zip(weights + [bias], xvals + [1.0]):
+            ptxt_x = HE.encodeFrac(np.array([x], dtype=np.float64), scale=SCALE)
             ct_x = HE.encryptPtxt(ptxt_x)
-            ptxt_w = HE.encodeFrac([w])
-            ct_xw = ct_x * ptxt_w  # ciphertext-plaintext multiplication
+            ptxt_w = HE.encodeFrac(np.array([w], dtype=np.float64), scale=SCALE)
+            ct_xw = ct_x * ptxt_w
+            HE.rescale_to_next(ct_xw)
             ct_sum = ct_xw if ct_sum is None else (ct_sum + ct_xw)
-        # add bias as plaintext
-        ptxt_b = HE.encodeFrac([bias])
-        ct_sum = ct_sum + ptxt_b
 
         dec = HE.decryptFrac(ct_sum)
         ckks_score = float(dec[0])
@@ -76,6 +77,7 @@ def run_ckks(df: pd.DataFrame, cols, weights, bias):
 
 
 def main():
+    print("[ckks_run_multimodal_fixed] start")
     if not MULTIMODAL_PATH.exists():
         raise SystemExit(f"Multimodal file not found: {MULTIMODAL_PATH}")
     if not POLICY_PATH.exists():
@@ -86,10 +88,8 @@ def main():
 
     results, perf = run_ckks(df, cols, weights, bias)
 
-    # write results CSV
     pd.DataFrame(results).to_csv(CKKS_RESULTS, index=False)
 
-    # write report JSON
     report = {
         "samples": len(results),
         "mean_abs_error": sum(r["abs_error"] for r in results)/len(results) if results else None,
@@ -103,6 +103,7 @@ def main():
 
     print(f"CKKS results -> {CKKS_RESULTS}")
     print(f"CKKS report  -> {CKKS_REPORT}")
+    print("[ckks_run_multimodal_fixed] end")
 
 
 if __name__ == '__main__':

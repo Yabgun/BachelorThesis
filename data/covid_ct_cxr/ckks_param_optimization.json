@@ -1,0 +1,261 @@
+{
+  "results": [
+    {
+      "params": {
+        "n": 8192,
+        "scale": 1125899906842624,
+        "qi_sizes": [
+          60,
+          40,
+          40,
+          60
+        ]
+      },
+      "metrics": {
+        "sum_good": 100.0,
+        "sum_bad": 99.0,
+        "mean_good": 1.0,
+        "mean_bad": 0.99,
+        "err_sum_good": 0.0,
+        "err_sum_bad": 0.0,
+        "err_mean_good": 0.0,
+        "err_mean_bad": 0.0,
+        "delta_mean": 0.010000000000000009,
+        "exp_delta_mean": 0.010000000000000009,
+        "elapsed_ms": 0.4520416259765625
+      },
+      "score": 0.0
+    },
+    {
+      "params": {
+        "n": 16384,
+        "scale": 1125899906842624,
+        "qi_sizes": [
+          60,
+          40,
+          40,
+          60
+        ]
+      },
+      "metrics": {
+        "sum_good": 100.0,
+        "sum_bad": 99.0,
+        "mean_good": 1.0,
+        "mean_bad": 0.99,
+        "err_sum_good": 0.0,
+        "err_sum_bad": 0.0,
+        "err_mean_good": 0.0,
+        "err_mean_bad": 0.0,
+        "delta_mean": 0.010000000000000009,
+        "exp_delta_mean": 0.010000000000000009,
+        "elapsed_ms": 0.45371055603027344
+      },
+      "score": 0.0
+    },
+    {
+      "params": {
+        "n": 16384,
+        "scale": 1099511627776,
+        "qi_sizes": [
+          60,
+          40,
+          40,
+          60
+        ]
+      },
+      "metrics": {
+        "sum_good": 100.0,
+        "sum_bad": 99.0,
+        "mean_good": 1.0,
+        "mean_bad": 0.99,
+        "err_sum_good": 0.0,
+        "err_sum_bad": 0.0,
+        "err_mean_good": 0.0,
+        "err_mean_bad": 0.0,
+        "delta_mean": 0.010000000000000009,
+        "exp_delta_mean": 0.010000000000000009,
+        "elapsed_ms": 0.4553794860839844
+      },
+      "score": 0.0
+    },
+    {
+      "params": {
+        "n": 16384,
+        "scale": 1073741824,
+        "qi_sizes": [
+          60,
+          40,
+          40,
+          60
+        ]
+      },
+      "metrics": {
+        "sum_good": 100.0,
+        "sum_bad": 99.0,
+        "mean_good": 1.0,
+        "mean_bad": 0.99,
+        "err_sum_good": 0.0,
+        "err_sum_bad": 0.0,
+        "err_mean_good": 0.0,
+        "err_mean_bad": 0.0,
+        "delta_mean": 0.010000000000000009,
+        "exp_delta_mean": 0.010000000000000009,
+        "elapsed_ms": 0.4570484161376953
+      },
+      "score": 0.0
+    },
+    {
+      "params": {
+        "n": 8192,
+        "scale": 1073741824,
+        "qi_sizes": [
+          60,
+          40,
+          40,
+          60
+        ]
+      },
+      "metrics": {
+        "sum_good": 100.0,
+        "sum_bad": 99.0,
+        "mean_good": 1.0,
+        "mean_bad": 0.99,
+        "err_sum_good": 0.0,
+        "err_sum_bad": 0.0,
+        "err_mean_good": 0.0,
+        "err_mean_bad": 0.0,
+        "delta_mean": 0.010000000000000009,
+        "exp_delta_mean": 0.010000000000000009,
+        "elapsed_ms": 0.4730224609375
+      },
+      "score": 0.0
+    },
+    {
+      "params": {
+        "n": 8192,
+        "scale": 1099511627776,
+        "qi_sizes": [
+          60,
+          40,
+          40,
+          60
+        ]
+      },
+      "metrics": {
+        "sum_good": 100.0,
+        "sum_bad": 99.0,
+        "mean_good": 1.0,
+        "mean_bad": 0.99,
+        "err_sum_good": 0.0,
+        "err_sum_bad": 0.0,
+        "err_mean_good": 0.0,
+        "err_mean_bad": 0.0,
+        "delta_mean": 0.010000000000000009,
+        "exp_delta_mean": 0.010000000000000009,
+        "elapsed_ms": 0.5400180816650391
+      },
+      "score": 0.0
+    },
+    {
+      "params": {
+        "n": 4096,
+        "scale": 1125899906842624,
+        "qi_sizes": [
+          60,
+          40,
+          60
+        ]
+      },
+      "metrics": {
+        "sum_good": 100.0,
+        "sum_bad": 99.0,
+        "mean_good": 1.0,
+        "mean_bad": 0.99,
+        "err_sum_good": 0.0,
+        "err_sum_bad": 0.0,
+        "err_mean_good": 0.0,
+        "err_mean_bad": 0.0,
+        "delta_mean": 0.010000000000000009,
+        "exp_delta_mean": 0.010000000000000009,
+        "elapsed_ms": 0.7216930389404297
+      },
+      "score": 0.0
+    },
+    {
+      "params": {
+        "n": 4096,
+        "scale": 1073741824,
+        "qi_sizes": [
+          60,
+          40,
+          60
+        ]
+      },
+      "metrics": {
+        "sum_good": 100.0,
+        "sum_bad": 99.0,
+        "mean_good": 1.0,
+        "mean_bad": 0.99,
+        "err_sum_good": 0.0,
+        "err_sum_bad": 0.0,
+        "err_mean_good": 0.0,
+        "err_mean_bad": 0.0,
+        "delta_mean": 0.010000000000000009,
+        "exp_delta_mean": 0.010000000000000009,
+        "elapsed_ms": 0.8485317230224609
+      },
+      "score": 0.0
+    },
+    {
+      "params": {
+        "n": 4096,
+        "scale": 1099511627776,
+        "qi_sizes": [
+          60,
+          40,
+          60
+        ]
+      },
+      "metrics": {
+        "sum_good": 100.0,
+        "sum_bad": 99.0,
+        "mean_good": 1.0,
+        "mean_bad": 0.99,
+        "err_sum_good": 0.0,
+        "err_sum_bad": 0.0,
+        "err_mean_good": 0.0,
+        "err_mean_bad": 0.0,
+        "delta_mean": 0.010000000000000009,
+        "exp_delta_mean": 0.010000000000000009,
+        "elapsed_ms": 1.1191368103027344
+      },
+      "score": 0.0
+    }
+  ],
+  "best": {
+    "params": {
+      "n": 8192,
+      "scale": 1125899906842624,
+      "qi_sizes": [
+        60,
+        40,
+        40,
+        60
+      ]
+    },
+    "metrics": {
+      "sum_good": 100.0,
+      "sum_bad": 99.0,
+      "mean_good": 1.0,
+      "mean_bad": 0.99,
+      "err_sum_good": 0.0,
+      "err_sum_bad": 0.0,
+      "err_mean_good": 0.0,
+      "err_mean_bad": 0.0,
+      "delta_mean": 0.010000000000000009,
+      "exp_delta_mean": 0.010000000000000009,
+      "elapsed_ms": 0.4520416259765625
+    },
+    "score": 0.0
+  }
+}

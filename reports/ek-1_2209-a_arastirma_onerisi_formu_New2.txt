@@ -1,0 +1,168 @@
+TÜBİTAK–2209-A ÜNİVERSİTE ÖĞRENCİLERİ ARAŞTIRMA PROJELERİ DESTEĞİ PROGRAMI
+ARAŞTIRMA ÖNERİSİ FORMU
+2025 Yılı
+1. Dönem Başvurusu
+A. GENEL BİLGİLER
+Başvuru Sahibinin Adı Soyadı: Buğra TUTUMLU
+Araştırma Önerisinin Başlığı: Sağlık Verilerinde Homomorfik Şifreleme ve Zafiyet Analizi
+Danışmanın Adı Soyadı: Alper UĞUR
+Araştırmanın Yürütüleceği Kurum/Kuruluş: Pamukkale Üniversitesi
+ÖZET
+Türkçe özetin araştırma önerisinin (a) özgün değeri, (b) yöntemi, (c) yönetimi ve (d) yaygın etkisi hakkında bilgileri kapsaması beklenir. Bu bölümün en son yazılması önerilir.
+Bu araştırma önerisi, hasta verisi işleyen veri merkezlerinde kullanıcı verilerinin güvenliğini sağlamaya yönelik homomorfik şifreleme (HE) yöntemleri ve bu yöntemlerin zaafiyet analizi üzerine odaklanmayı planlamaktadır. Günümüzde sağlık verileri, finansal kayıtlar ve IoT sensör çıktıları gibi yüksek hassasiyet içeren veriler büyük ölçekli veri merkezlerinde işlenmektedir. Sağlık verilerinin mahremiyeti, içerdiği kişisel ve hassas bilgiler nedeniyle en üst düzeyde korunmalıdır; ancak projenin uygulama odağı, bu karmaşık (multimodal) verilerin tamamı değil, işlenme aşamasında üretilen ve sızıntı riski taşıyan kritik sayısal çıktılardır.  Geleneksel yaklaşımlarda verilerin açık biçimde saklanması ya da işlenmesi, yetkisiz erişim, veri sızıntısı ve yasal riskler doğurmaktadır. Bu bağlamda homomorfik şifreleme, verilerin çözülmeden matematiksel işlemlere tabi tutulmasına olanak sağlayarak veri gizliliği açısından önemli bir avantaj sunmaktadır.
+Araştırmanın özgün yönünün, literatürde sıklıkla önerilen tam homomorfik şifreleme (FHE) yönteminin yüksek işlem maliyetleri nedeniyle pratikte uygulanabilirliğinin sınırlı kalmasına çözüm araması hedeflenmektedir. Bu kapsamda çalışma, CKKS şeması altında seçici homomorfik şifreleme politikası önermektedir. Yalnızca yüksek sızıntı riski taşıyan işlenen (kayan nokta) veri bileşenlerinin şifrelenmesiyle saldırılara (Score Oracle gibi) karşı direnç sağlanırken işlem maliyetinin de yönetilebilir düzeyde tutulması hedeflenmektedir.
+Yöntem olarak deneysel araştırma yaklaşımı benimsenmiş olup, sentetik sağlık veri kümelerinden elde edilen sayısal çıktılar homomorfik şifreleme uygulanarak saldırı simülasyonları gerçekleştirilecektir. Bağımsız değişken şifreleme stratejisi (tam, seçici, şifresiz), bağımlı değişken ise saldırı başarı oranı, işlem maliyeti ve performans ölçütleridir. Başarı ölçütü olarak, saldırı başarı oranında en az %20 düşüş sağlanması ve şifreleme süresinin FHE'ye kıyasla en az %30 azaltılması hedeflenmektedir. Eğer homomorfik şifreleme işlemleri, beklenen teorik eşiğin üzerine çıkarak pratik uygulanabilirliği tehdit ederse (işlem maliyeti riskinin gerçekleşmesi), B planı olarak CKKS yerine BFV/BGV gibi tamsayı aritmetiği şemalarına geçilmesi ve hassas veri bileşenlerinin tamsayıya yuvarlanarak (quantization) şifrelenmesi planlanmaktadır. Analiz sürecinde TenSEAL, OpenFHE, Microsoft SEAL, Opacus, PyTorch ve Hugging Face gibi açık kaynaklı kütüphaneler kullanılması planlanmakta olup deneylerden elde edilen sonuçlar istatistiksel olarak karşılaştırılacaktır.
+Proje yönetiminde literatür taraması, yöntem tasarımı, deneylerin gerçekleştirilmesi ve sonuçların analizi olmak üzere dört temel iş paketi tanımlanmıştır. Riskler (hesaplama maliyetlerinin yüksekliği, kütüphane uyumsuzlukları) için B planı geliştirilmiş ve araştırmanın başarısına katkı sağlayacak önlemler alınmıştır. Yapılan araştırmalarla araştırma olanakları açısından kişisel bilgisayar altyapısı ve açık kaynak kütüphaneler yeterli olduğu düşünülmekte olup ek bütçe gereksinimi bulunmadığı yönünde bir çıkarımda bulunulmuştur.
+Önerilen çalışmanın yaygın etkisi, hem teorik hem de pratik katkılar sunmasıdır. Akademik açıdan literatüre seçici HE politikalarının uygulanabilirliğini gösteren yeni bir model kazandırılacak, deneysel bulgular makale veya bildirilerle yayımlanacaktır. Pratik açıdan ise düşük maliyetli ve ev ortamında dahi uygulanabilir bir gizlilik koruma çözümü sunularak, güvenlik ve veri merkezlerinde gizlilik politikalarına katkı sağlanacaktır.
+Anahtar Kelimeler: Homomorfik Şifreleme, CKKS, Kayan Veri, Seçici Şifreleme, Veri Güvenliği
+ÖZGÜN DEĞER
+1.1. Konunun Önemi, Araştırma Önerisinin Özgün Değeri ve Araştırma Sorusu/Hipotezi
+Araştırma önerisinde ele alınan konunun kapsamı ve sınırları ile önemi literatürün eleştirel bir değerlendirmesinin yanı sıra nitel veya nicel verilerle açıklanır.
+Özgün değer yazılırken araştırma önerisinin bilimsel değeri, farklılığı ve yeniliği, hangi eksikliği nasıl gidereceği veya hangi soruna nasıl bir çözüm geliştireceği ve/veya ilgili bilim veya teknoloji alan(lar)ına kavramsal, kuramsal ve/veya metodolojik olarak ne gibi özgün katkılarda bulunacağı literatüre atıf yapılarak açıklanır.
+Önerilen çalışmanın araştırma sorusu ve varsa hipotezi veya ele aldığı problem(ler)i açık bir şekilde ortaya konulur.
+Bu araştırma önerisi, günümüzde giderek artan veri güvenliği ve gizlilik sorunlarına odaklanmakta ve homomorfik şifreleme (HE) yöntemlerinin yanı sıra bu yöntemlerin zafiyet analizini kapsamlı biçimde ele almaktadır. Özellikle sağlık verileri, finansal kayıtlar gibi yüksek hassasiyet taşıyan verilerin büyük ölçekli veri merkezlerinde depolanması ve işlenmesi, kullanıcı mahremiyetinin korunmasını zorunlu kılmaktadır. Geleneksel veri işleme yaklaşımlarında, veriler açık biçimde saklandığı ya da işlendiği için yetkisiz erişim, veri sızıntısı, kötü niyetli saldırılar ve yasal sorumluluklar gibi riskler ortaya çıkmaktadır. Bu noktada, homomorfik şifreleme teknikleri, verilerin çözülmeden matematiksel işlemlere tabi tutulmasına olanak tanıyarak veri güvenliği açısından önemli bir avantaj sağlamaktadır.
+Araştırmanın önemi, literatürde sıkça vurgulanan tam homomorfik şifrelemenin (FHE) sağladığı yüksek güvenlik seviyesine rağmen, işlem maliyeti ve donanım gereksinimleri nedeniyle gerçek hayat uygulamalarında yaygınlaşamamasından kaynaklanmaktadır. Mevcut çalışmalarda verilerin tamamının homomorfik şifrelenmesi önerilmekte ancak bu yaklaşım, özellikle ev ortamı veya kısıtlı donanım imkanları olan senaryolarda uygulanabilir olmaktan uzaktır. Söz konusu araştırma ise bu noktadaki literatür eksikliğini gidermeyi amaçlamakta ve CKKS şeması altında seçici homomorfik şifreleme politikası önermektedir. Burada amaç, yalnızca yüksek sızıntı riski taşıyan bileşenlerin (örneğin modelin son katman ağırlıkları veya tahmin skorları) şifrelenmesiyle hem saldırı başarı oranlarının düşürülmesini hem de işlem maliyetlerinin yönetilebilir düzeyde tutulmasını hedeflemektedir
+Çalışmanın özgün değeri ise şu başlıklarda öne çıkmaktadır:
+Bilimsel Katkı ve Yenilik: Literatürde homomorfik şifrelemenin genellikle tüm veriler üzerinde uygulanması yüksek maliyetlere yol açmaktadır. Bu araştırma, seçici HE politikası ile güvenlik ve performans arasında optimal bir denge kurarak yenilikçi bir çözüm önermektedir.
+Pratik Uygulanabilirlik: Araştırma kapsamında, veri merkezi koşullarında sentetik verilerle deneysel bir model oluşturulacak ve böylece önerilen yaklaşımın ev ortamında dahi uygulanabilirliği gösterilecektir. Sonuçta, hem akademik hem de endüstriyel açıdan kullanılabilecek pratik bir çerçeve sunulmuş olacaktır.
+Kuramsal Katkı: Çalışma, homomorfik şifreleme yöntemlerinin teorik temellerini seçici şifreleme politikalarıyla birleştirerek literatüre yeni bir bakış açısı kazandırmayı hedeflemektedir. Böylelikle veri gizliliği araştırmalarına ve yapay zekâ güvenliği gibi alanlara katkı sağlanması amaçlanmaktadır.
+Metodolojik Katkı: Araştırmada, TenSEAL, OpenFHE ve Opacus gibi güncel ve açık kaynak kütüphaneler kullanılması hedeflenmekte olup homomorfik şifrelemenin modern yapay zekâ sistemleriyle entegrasyonu incelenecektir. Bu yaklaşım, literatürde az sayıda ele alınmış bir uygulama alanı sunmakta ve metodolojik çeşitlilik kazandırmaktadır.
+Sonuç olarak, araştırmanın temel sorusu şu şekilde özetlenebilir: “Seçici homomorfik şifreleme kullanımı, veri merkezlerinde saldırıların başarı oranını anlamlı düzeyde azaltırken işlem maliyetini ev ortamında uygulanabilir seviyede tutabilir mi?”
+Bu soruya yanıt aranırken, hem mevcut literatürün eksiklikleri eleştirel biçimde tartışılacak hem de önerilen çözümün deneysel olarak uygulanabilirliği gösterilecektir. Böylece, çalışmanın katkısı yalnızca teorik düzeyde kalmayacak, aynı zamanda gerçek dünya senaryoları için de yol gösterici olacaktır.
+Amaç ve Hedefler
+Araştırma önerisinin amacı ve hedefleri açık, ölçülebilir, gerçekçi ve araştırma süresince ulaşılabilir nitelikte olacak şekilde yazılır.
+Bu araştırmanın temel amacı, veri merkezlerinde kullanıcı verilerinin güvenliğini artırmak amacıyla seçici homomorfik şifreleme politikalarının etkinliğini incelemek ve bu yöntemlerin mevcut zaafiyetlere karşı ne ölçüde koruma sağladığını ortaya koymaktır. Özellikle, Score Oracle gibi saldırıların veri gizliliği üzerindeki etkilerini azaltmaya yönelik çözümler geliştirmek hedeflenmektedir.
+Araştırmanın özel hedefleri şu şekilde sıralanabilir:
+Veri merkezlerinde kullanılan tam homomorfik şifrelemenin yüksek işlem maliyetini aşmak için CKKS tabanlı seçici HE yaklaşımını uygulamak ve performans/güvenlik dengesini test etmek.
+Yalnızca yüksek sızıntı riski taşıyan bileşenlerin (ör. model skorları veya kayıp fonksiyonu çıktıları) şifrelenmesi durumunda saldırı başarı oranlarının ne ölçüde düştüğünü deneysel olarak incelemek.
+TenSEAL, OpenFHE ve Opacus gibi güncel açık kaynak kütüphaneler kullanılarak ev ortamında uygulanabilir deneysel bir model geliştirmek.
+Literatürde sınırlı sayıda ele alınan seçici homomorfik şifreleme yöntemine yönelik kuramsal, metodolojik ve uygulamalı katkılar sağlamak.
+Bu hedeflere ulaşılmasıyla, yalnızca teorik düzeyde değil, aynı zamanda pratik olarak da uygulanabilir, düşük maliyetli ve güvenliği artırılmış bir şifreleme yaklaşımının ortaya konulması amaçlanmaktadır.
+YÖNTEM
+Araştırma önerisinde uygulanacak yöntem ve araştırma teknikleri (veri toplama araçları ve analiz yöntemleri dahil) ilgili literatüre atıf yapılarak açıklanır. Yöntem ve tekniklerin çalışmada öngörülen amaç ve hedeflere ulaşmaya elverişli olduğu ortaya konulur.
+Yöntem bölümünün araştırmanın tasarımını, bağımlı ve bağımsız değişkenleri ve istatistiksel yöntemleri kapsaması gerekir. Araştırma önerisinde herhangi bir ön çalışma veya fizibilite yapıldıysa bunların sunulması beklenir. Araştırma önerisinde sunulan yöntemlerin iş paketleri ile ilişkilendirilmesi gerekir.
+Bu çalışmada yöntem olarak deneysel araştırma yaklaşımının benimsenmesi planlanmaktadır. Araştırmanın, veri merkezinde hasta verisi işleyen yapay zeka modellerinin veri mahremiyetini koruma ihtiyacına odaklanılarak kurgulanması amaçlanmaktadır. Bu kurgu, böylece aslında hem hasta verisi işleyen model hem de gizlilik sağlayan mekanizma hem de karşılaştırma fırsatı sunmayı hedefleyecektir.
+Veri merkezlerinde kullanıcı verilerinin gizliliğini tehdit eden modelin tahmin skorlarına (Score Oracle) ve diğer veri çıkarma (extraction) zafiyetlerine karşı CKKS şeması altında seçici homomorfik şifreleme uygulanması düşünülmektedir. Araştırmanın bağımsız değişkeninin şifreleme stratejisi (tam şifreleme, seçici şifreleme, şifresiz durum), bağımlı değişkeninin ise saldırı başarı oranı, işlem maliyeti ve performans ölçütleri olması öngörülmektedir.
+Veri Tipi: Çalışmanın, CKKS şemasıyla uyumlu olacak şekilde, modelin kayıp fonksiyonu ve skorları gibi işlenme (kayan) aşamasında olan kayan nokta aritmetiği verilerine odaklanması planlanmaktadır. Bu yaklaşım, multimodal ham verinin şifreleme karmaşıklığını ortadan kaldırarak sadece saldırganın hedeflediği kritik sayısal bileşene odaklanılmasını sağlayacaktır.
+Senaryo: Deneysel senaryoların, sağlık verisi ve kurumsal dokümanların içerdiği hassasiyeti modelleyen sentetik veri kümeleri üzerinden tasarlanması öngörülmektedir. Verilerin homomorfik olarak şifrelenerek merkezi sunucuya aktarılması, ardından Score Oracle gibi özelleştirilmiş saldırılar simüle edilerek elde edilen sonuçların değerlendirilmesi beklenmektedir.
+Başarı Ölçütü ve Risk Yönetimi açısından ise;
+Başarı Ölçütü: Çalışmanın temel başarı ölçütü olarak, önerilen seçici homomorfik şifreleme stratejisinin uygulanması sonucunda saldırı başarı oranında şifresiz duruma göre en az %20 düşüş sağlanması ve hesaplama şifreleme süresinin tam HE’ye göre en az %30 azaltılması hedeflenmektedir.
+Risk Yönetimi (B Planı): Eğer homomorfik şifreleme işlemleri, beklenen teorik eşiğin üzerine çıkarak pratik uygulanabilirliği tehdit ederse (işlem maliyeti riskinin gerçekleşmesi), B planı olarak CKKS yerine BFV/BGV gibi tamsayı aritmetiği şemalarına geçilmesi ve hassas veri bileşenlerinin tamsayıya yuvarlanarak (quantization) şifrelenmesi planlanmaktadır. Bu yaklaşımın, araştırma hedeflerinden sapmadan maliyet sorununa alternatif bir çözüm sunması beklenmektedir.
+Analiz aşamasında, saldırı başarı oranları, hesaplama süresi ve kaynak tüketimi gibi nicel metriklerin karşılaştırılması amaçlanmaktadır. Yöntemin uygulanmasında TenSEAL, OpenFHE, Microsoft SEAL, Opacus, PyTorch gibi açık kaynaklı kütüphanelerin kullanılması düşünülmektedir.
+Elde edilen sonuçların istatistiksel olarak değerlendirilmesi, farklı şifreleme politikalarının güvenlik ve maliyet üzerindeki etkisinin ölçülmesi ve önerilen modelin literatürdeki mevcut yöntemlerle karşılaştırmalı analizinin yapılması hedeflenmektedir.
+PROJE YÖNETİMİ
+İş- Zaman Çizelgesi
+Araştırma önerisinde yer alacak başlıca iş paketleri ve hedefleri, her bir iş paketinin hangi sürede gerçekleştirileceği, başarı ölçütü ve araştırmanın başarısına katkısı “İş-Zaman Çizelgesi” doldurularak verilir. Literatür taraması, gelişme ve sonuç raporu hazırlama aşamaları, araştırma sonuçlarının paylaşımı, makale yazımı ve malzeme alımı ayrı birer iş paketi olarak gösterilmemelidir.
+Başarı ölçütü olarak her bir iş paketinin hangi kriterleri sağladığında başarılı sayılacağı açıklanır. Başarı ölçütü, ölçülebilir ve izlenebilir nitelikte olacak şekilde nicel veya nitel ölçütlerle (ifade, sayı, yüzde, vb.) belirtilir.
+İŞ-ZAMAN ÇİZELGESİ (*)
+İP No
+İş Paketlerinin Adı ve Hedefleri
+Kim(ler) Tarafından Gerçekleştirileceği
+Zaman Aralığı
+(..-.. Ay)
+Başarı Ölçütü ve Projenin Başarısına Katkısı
+1
+Homomorfik Şifreleme (HE) ve Score Oracle, Model Çıkarma gibi güncel veri gizliliği zafiyetleri ile ilgili çalışmaların incelenmesi, literatürdeki boşlukların belirlenmesi
+Buğra TUTUMLU
+1-2 Ay
+En az 15 makalenin incelenmesi, literatürdeki yapılan çalışmaları ve eksikliklerinin belirlenmesi; çalışmaya teorik temel kazandırma
+2
+CKKS tabanlı seçici homomorfik şifreleme politikalarının tasarlanması, bağımlı/bağımsız değişkenlerin tanımlanması, deneysel senaryonun oluşturulması
+Buğra TUTUMLU
+1-2 Ay
+Yöntem tasarım raporunun hazırlanması, deneysel planın netleştirilmesi; uygulanabilirlik sağlanması
+3
+TenSEAL, OpenFHE, Opacus, PyTorch gibi kütüphanelerle deneylerin gerçekleştirilmesi; sentetik veriler üzerinde HE’nin uygulanması
+Buğra TUTUMLU
+1-2 Ay
+Bir veri seti üzerinde deney yapılması; saldırı başarı oranlarının %20’nin üzerinde düşüş göstermesi VE şifreleme-hesaplama süresinin Tam HE'ye göre en az %30 azaltılması; hipotezin deneysel olarak sınanması.
+4
+Deneylerden elde edilen verilerin istatistiksel olarak incelenmesi, maliyet ve güvenlik açısından yöntemlerin karşılaştırılması, Araştırma sonuçlarının tez raporuna aktarılması
+Buğra TUTUMLU
+1-2 Ay
+Sonuç tablolarının ve grafiklerin hazırlanması; hipotezin geçerliliğinin sınanması, tez tamamlanması
+(*) Çizelgedeki satırlar ve sütunlar gerektiği kadar genişletilebilir ve çoğaltılabilir.
+Risk Yönetimi
+Araştırmanın başarısını olumsuz yönde etkileyebilecek riskler ve bu risklerle karşılaşıldığında araştırmanın başarıyla yürütülmesini sağlamak için alınacak tedbirler (B Planı) ilgili iş paketleri belirtilerek ana hatlarıyla aşağıdaki Risk Yönetimi Tablosu’nda ifade edilir. B planlarının uygulanması araştırmanın temel hedeflerinden sapmaya yol açmamalıdır.
+RİSK YÖNETİMİ TABLOSU*
+İP No
+En Önemli Riskler
+Risk Yönetimi (B Planı)
+1
+Hesaplama maliyetlerinin yüksek olması: Homomorfik şifreleme işlemleri özellikle büyük veri kümelerinde zaman alıcı olabilir.
+Seçici CKKS şifrelemesinin yüksek maliyet riskini tetiklemesi durumunda, BFV/BGV gibi tamsayı aritmetiği şemalarına geçilmesi ve hassas veri bileşenlerinin tamsayıya yuvarlanarak (quantization) şifrelenmesi planlanmaktadır. Bu sayede projenin odağı korunur.
+2
+Kütüphane/araç uyumsuzlukları: TenSEAL, OpenFHE, Opacus gibi farklı dillerde/ortamlarda çalışan kütüphaneler entegrasyonda sorun çıkarabilir.
+Kütüphane entegrasyonunda çözülemeyen sorunlar ortaya çıkarsa, daha basit bir sınıflandırıcı modeline geçilir veya proje kapsamı, entegrasyon gerektirmeyen, salt şifreli veri işleme senaryoları üzerine yoğunlaştırılacak ve seçici HE'nin bu senaryolardaki performansı ve saldırılara karşı direnci analiz edilecektir.
+3
+Herhangi bir multimodal veri tipi ile çalışmanın getireceği zorlukla başa çıkamama
+Tamamen unimodal veriler ile ilerlenilecektir.
+(*) Tablodaki satırlar gerektiği kadar genişletilebilir ve çoğaltılabilir.
+Araştırma Olanakları
+Bu bölümde projenin yürütüleceği kurum ve kuruluşlarda var olan ve projede kullanılacak olan altyapı/ekipman (laboratuvar, araç, makine-teçhizat, vb.) olanakları belirtilir.
+ARAŞTIRMA OLANAKLARI TABLOSU (*)
+Kuruluşta Bulunan Altyapı/Ekipman Türü, Modeli
+(Laboratuvar, Araç, Makine-Teçhizat, vb.)
+Projede Kullanım Amacı
+Kişisel Bilgisayar (Laptop, 16 GB RAM, GPU destekli işlemci)
+Deneysel homomorfik şifreleme uygulamalarının ve simülasyonların gerçekleştirilmesi
+OpenFHE, TenSEAL, Microsoft SEAL kütüphaneleri
+CKKS tabanlı homomorfik şifreleme deneylerinin yürütülmesi
+PyTorch ve Opacus Kütüphaneleri
+Basit Sinir Ağı Modellerinin ve saldırı simülasyonlarının gerçekleştirilmesi
+(*) Tablodaki satırlar gerektiği kadar genişletilebilir ve çoğaltılabilir.
+YAYGIN ETKİ
+Önerilen çalışma başarıyla gerçekleştirildiği takdirde araştırmadan elde edilmesi öngörülen ve beklenen yaygın etkilerin neler olabileceği, diğer bir ifadeyle yapılan araştırmadan ne gibi çıktı, sonuç ve etkilerin elde edileceği aşağıdaki tabloda verilir.
+ARAŞTIRMA ÖNERİSİNDEN BEKLENEN YAYGIN ETKİ TABLOSU
+Yaygın Etki Türleri
+Önerilen Araştırmadan Beklenen Çıktı, Sonuç ve Etkiler
+Bilimsel/Akademik
+(Makale, Bildiri, Kitap Bölümü, Kitap)
+Ekonomik/Ticari/Sosyal
+(Ürün, Prototip, Patent, Faydalı Model, Üretim İzni, Çeşit Tescili, Spin-off/Start- up Şirket, Görsel/İşitsel Arşiv, Envanter/Veri Tabanı/Belgeleme Üretimi, Telife Konu Olan Eser, Medyada Yer Alma, Fuar, Proje Pazarı, Çalıştay, Eğitim vb. Bilimsel Etkinlik, Proje Sonuçlarını Kullanacak Kurum/Kuruluş, vb. diğer yaygın etkiler)
+Araştırmacı Yetiştirilmesi ve Yeni Proje(ler) Oluşturma
+(Yüksek Lisans/Doktora Tezi, Ulusal/Uluslararası Yeni Proje)
+5. BÜTÇE TALEP ÇİZELGESİ
+Bütçe Türü
+Talep Edilen Bütçe Miktarı (TL)
+Talep Gerekçesi
+Sarf Malzeme
+Makina/Teçhizat (Demirbaş)
+Hizmet Alımı
+Ulaşım
+TOPLAM
+NOT: Bütçe talebiniz olması halinde hem bu tablonun hem de TÜBİTAK Yönetim Bilgi Sistemi (TYBS) başvuru ekranında karşınıza gelecek olan bütçe alanlarının doldurulması gerekmektedir. Yukardaki tabloda girilen bütçe kalemlerindeki rakamlar ile, TYBS başvuru ekranındaki rakamlar arasında farklılık olması halinde TYBS ekranındaki veriler dikkate alınır ve başvuru sonrasında değiştirilemez.
+6. BELİRTMEK İSTEDİĞİNİZ DİĞER KONULAR
+Sadece araştırma önerisinin değerlendirilmesine katkı sağlayabilecek bilgi/veri (grafik, tablo, vb.) eklenebilir.
+Bu araştırma önerisinin değerlendirilmesine katkı sağlayacak bazı noktalar şunlardır:
+Çalışmada kullanılacak TenSEAL, OpenFHE, Microsoft SEAL, PyTorch, Hugging Face ve Opacus gibi kütüphaneler tamamen açık kaynaklı olup, herhangi bir lisans maliyeti bulunmamaktadır. Bu sayede proje, ev ortamında veya üniversite altyapısında ek bütçe ihtiyacı olmadan yürütülebilecektir.
+Araştırma sürecinde kullanılacak veriler sentetik olarak üretilecektir; bu durum hem veri gizliliği riskini ortadan kaldırmakta hem de araştırmanın tekrar edilebilirliğini artırmaktadır.
+Çalışma çıktıları yalnızca teorik düzeyde kalmayacak, aynı zamanda pratik olarak uygulanabilir bir yöntem önerisi sunacaktır. Bu da araştırmanın hem akademik literatüre katkısını hem de gerçek dünyadaki kullanım potansiyelini artıracaktır.
+Araştırmanın ilerleyen aşamalarında, elde edilen sonuçların görsel sunumunu desteklemek amacıyla grafik, tablo ve istatistiksel özetler hazırlanması hedeflenmektedir.
+7. EKLER
+EK-1:  KAYNAKLAR
+Kahya, A. (2022). Machine learning over encrypted data with fully homomorphic encryption (Tez No. 750200) [Yüksek lisans tezi, Orta Doğu Teknik Üniversitesi]. YÖK Ulusal Tez Merkezi.
+C. Gentry, Fully Homomorphic Encryption Using Ideal Lattices, STOC, 2009.
+J. H. Cheon, A. Kim, M. Kim, Y. Song, Homomorphic Encryption for Arithmetic of Approximate Numbers (CKKS), ASIACRYPT, 2017.
+Z. Zhu, et al., Deep Leakage from Gradients, NeurIPS, 2019.
+Z. Zhao, et al., iDLG: Improved Deep Leakage from Gradients, arXiv, 2020.
+W. Zhang, et al., SPEAR: Stochastic Proximal Gradient-based Data Extraction Attacks, NeurIPS, 2024.
+Z. Brakerski, C. Gentry, V. Vaikuntanathan, (BGV Scheme) Fully Homomorphic Encryption without Bootstrapping, ITCS, 2012.
+Z. Brakerski, J. Fan, M. Vercauteren, BFV Scheme: Somewhat Homomorphic Encryption, MIT Technical Report.
+X. Ding, et al., Improved Gradient Leakage Attack Against Compressed Gradients, Neurocomputing, 2024.
+M. Ali Najjar, R.-Y. Huang, D. Samaraweera, P. Shekhar, Secure Distributed Learning for CAVs: Defending Against Gradient Leakage with Leveled Homomorphic Encryption, arXiv, 2025
+Hugging Face Transformers.
+Hugging Face, PEFT (Parameter-Efficient Fine-Tuning).
+OpenMined, TenSEAL Library.
+OpenFHE, Open-Source Fully Homomorphic Encryption Library.
+Opacus, Differential Privacy for PyTorch.
+Github, DLG (Deep Leakage from Gradients) Attack Implementation
+Github, iDLG (Improved Deep Leakage from Gradients)
+
+[Headers/Footers]
+2209/A ÜNİVERSİTE ÖĞRENCİLERİ ARAŞTIRMA PROJELERİ DESTEĞİ PROGRAMI ARAŞTIRMA ÖNERİSİ FORMU
+3
+2209/A ÜNİVERSİTE ÖĞRENCİLERİ ARAŞTIRMA PROJELERİ DESTEĞİ PROGRAMI ARAŞTIRMA ÖNERİSİ FORMU
+4
+2209/A ÜNİVERSİTE ÖĞRENCİLERİ ARAŞTIRMA PROJELERİ DESTEĞİ PROGRAMI ARAŞTIRMA ÖNERİSİ FORMU
+6

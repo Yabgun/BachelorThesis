@@ -1,22 +1,12 @@
 {
   "test_suite": "NIST-Style CKKS Validation",
-  "timestamp": "2025-10-21 02:42:16",
-  "implementation": "Mock Pyfhel",
+  "timestamp": "2025-11-11 01:22:54",
+  "implementation": "Real Pyfhel",
   "kat_results": [
     {
       "test_id": "CKKS_KAT_001",
-      "status": "PASS",
-      "input": [
-        3.14159
-      ],
-      "expected": [
-        3.14159
-      ],
-      "actual": [
-        3.14159
-      ],
-      "max_error": 0.0,
-      "tolerance": 0.001,
+      "status": "ERROR",
+      "error": "encryption parameters are not set correctly",
       "parameters": {
         "n": 4096,
         "scale": 1099511627776,
@@ -29,30 +19,8 @@
     },
     {
       "test_id": "CKKS_KAT_002",
-      "status": "PASS",
-      "input": [
-        1.0,
-        2.5,
-        -3.7,
-        0.0,
-        42.42
-      ],
-      "expected": [
-        1.0,
-        2.5,
-        -3.7,
-        0.0,
-        42.42
-      ],
-      "actual": [
-        1.0,
-        2.5,
-        -3.7,
-        0.0,
-        42.42
-      ],
-      "max_error": 0.0,
-      "tolerance": 0.0001,
+      "status": "ERROR",
+      "error": "a bytes-like object is required, not 'list'",
       "parameters": {
         "n": 8192,
         "scale": 1073741824,
@@ -66,24 +34,8 @@
     },
     {
       "test_id": "CKKS_KAT_003",
-      "status": "PASS",
-      "input": [
-        0.001,
-        0.0001,
-        1e-05
-      ],
-      "expected": [
-        0.001,
-        0.0001,
-        1e-05
-      ],
-      "actual": [
-        0.001,
-        0.0001,
-        1e-05
-      ],
-      "max_error": 0.0,
-      "tolerance": 1e-05,
+      "status": "ERROR",
+      "error": "a bytes-like object is required, not 'list'",
       "parameters": {
         "n": 16384,
         "scale": 1125899906842624,
@@ -100,19 +52,8 @@
     {
       "test_id": "CKKS_OP_ADD_001",
       "operation": "addition",
-      "status": "PASS",
-      "expected": [
-        8.7,
-        1.5,
-        2.4
-      ],
-      "actual": [
-        8.7,
-        1.4999999999999998,
-        2.3999999999999995
-      ],
-      "max_error": 4.440892098500626e-16,
-      "tolerance": 0.001,
+      "status": "ERROR",
+      "error": "a bytes-like object is required, not 'list'",
       "parameters": {
         "n": 8192,
         "scale": 1099511627776,
@@ -127,19 +68,8 @@
     {
       "test_id": "CKKS_OP_MUL_001",
       "operation": "multiplication",
-      "status": "PASS",
-      "expected": [
-        8.0,
-        -6.0,
-        -3.0
-      ],
-      "actual": [
-        8.0,
-        -6.0,
-        -3.0
-      ],
-      "max_error": 0.0,
-      "tolerance": 0.01,
+      "status": "ERROR",
+      "error": "a bytes-like object is required, not 'list'",
       "parameters": {
         "n": 8192,
         "scale": 1099511627776,
@@ -154,19 +84,8 @@
     {
       "test_id": "CKKS_OP_SCALAR_001",
       "operation": "scalar_multiplication",
-      "status": "PASS",
-      "expected": [
-        2.5,
-        5.0,
-        7.5
-      ],
-      "actual": [
-        2.5,
-        5.0,
-        7.5
-      ],
-      "max_error": 0.0,
-      "tolerance": 0.001,
+      "status": "ERROR",
+      "error": "a bytes-like object is required, not 'list'",
       "parameters": {
         "n": 8192,
         "scale": 1099511627776,
@@ -182,7 +101,8 @@
   "parameter_results": [
     {
       "test_id": "CKKS_PARAM_N_001",
-      "status": "PASS",
+      "status": "ERROR",
+      "error": "encryption parameters are not set correctly",
       "parameters": {
         "n": 4096,
         "scale": 1099511627776,
@@ -191,22 +111,12 @@
           40,
           60
         ]
-      },
-      "test_data": [
-        1.0,
-        2.0,
-        3.0
-      ],
-      "decrypted": [
-        1.0,
-        2.0,
-        3.0
-      ],
-      "max_error": 0.0
+      }
     },
     {
       "test_id": "CKKS_PARAM_N_002",
-      "status": "PASS",
+      "status": "ERROR",
+      "error": "a bytes-like object is required, not 'list'",
       "parameters": {
         "n": 8192,
         "scale": 1099511627776,
@@ -215,22 +125,12 @@
           40,
           60
         ]
-      },
-      "test_data": [
-        1.0,
-        2.0,
-        3.0
-      ],
-      "decrypted": [
-        1.0,
-        2.0,
-        3.0
-      ],
-      "max_error": 0.0
+      }
     },
     {
       "test_id": "CKKS_PARAM_N_003",
-      "status": "PASS",
+      "status": "ERROR",
+      "error": "a bytes-like object is required, not 'list'",
       "parameters": {
         "n": 16384,
         "scale": 1099511627776,
@@ -239,22 +139,12 @@
           40,
           60
         ]
-      },
-      "test_data": [
-        1.0,
-        2.0,
-        3.0
-      ],
-      "decrypted": [
-        1.0,
-        2.0,
-        3.0
-      ],
-      "max_error": 0.0
+      }
     },
     {
       "test_id": "CKKS_PARAM_SCALE_001",
-      "status": "PASS",
+      "status": "ERROR",
+      "error": "a bytes-like object is required, not 'list'",
       "parameters": {
         "n": 8192,
         "scale": 1073741824,
@@ -264,22 +154,12 @@
           40,
           60
         ]
-      },
-      "test_data": [
-        0.1,
-        0.01,
-        0.001
-      ],
-      "decrypted": [
-        0.1,
-        0.01,
-        0.001
-      ],
-      "max_error": 0.0
+      }
     },
     {
       "test_id": "CKKS_PARAM_SCALE_002",
-      "status": "PASS",
+      "status": "ERROR",
+      "error": "a bytes-like object is required, not 'list'",
       "parameters": {
         "n": 8192,
         "scale": 1099511627776,
@@ -289,22 +169,12 @@
           40,
           60
         ]
-      },
-      "test_data": [
-        0.1,
-        0.01,
-        0.001
-      ],
-      "decrypted": [
-        0.1,
-        0.01,
-        0.001
-      ],
-      "max_error": 0.0
+      }
     },
     {
       "test_id": "CKKS_PARAM_SCALE_003",
-      "status": "PASS",
+      "status": "ERROR",
+      "error": "a bytes-like object is required, not 'list'",
       "parameters": {
         "n": 8192,
         "scale": 1125899906842624,
@@ -314,26 +184,15 @@
           40,
           60
         ]
-      },
-      "test_data": [
-        0.1,
-        0.01,
-        0.001
-      ],
-      "decrypted": [
-        0.1,
-        0.01,
-        0.001
-      ],
-      "max_error": 0.0
+      }
     }
   ],
   "summary": {
     "total_tests": 12,
-    "passed": 12,
+    "passed": 0,
     "failed": 0,
-    "errors": 0,
-    "success_rate": 100.0,
-    "execution_time_seconds": 0.005207538604736328
+    "errors": 12,
+    "success_rate": 0.0,
+    "execution_time_seconds": 1.8235385417938232
   }
 }

@@ -1,0 +1,127 @@
+{
+  "metadata": {
+    "test_date": "2025-11-11T02:00:21.942658",
+    "total_scenarios": 11,
+    "total_params": 85,
+    "a_value": 66.77198317758072,
+    "b_value": 76.09767075029907,
+    "a_b_meta": {
+      "a_test_results_score": 1.0,
+      "b_test_results_score": 0.0,
+      "a_patient_id": 22542,
+      "b_patient_id": 42591,
+      "a_row_index": 53,
+      "b_row_index": 27
+    }
+  },
+  "policy": {
+    "encrypt_columns": [
+      "age",
+      "billing_amount_norm",
+      "test_results_score",
+      "cxr_mean_intensity",
+      "cxr_edge_density"
+    ],
+    "weights": {
+      "age": 0.02,
+      "billing_amount_norm": 5e-05,
+      "test_results_score": 1.0,
+      "cxr_mean_intensity": 0.5,
+      "cxr_edge_density": 0.1
+    },
+    "bias": -5.0
+  },
+  "test_scenarios": [
+    {
+      "name": "İyi Senaryo",
+      "description": "100 iyi hasta, 0 kötü hasta",
+      "a_multiplier": 100,
+      "b_multiplier": 0,
+      "expected_diff": 0.0,
+      "is_edge_case": false
+    },
+    {
+      "name": "Kötü Senaryo",
+      "description": "0 iyi hasta, 100 kötü hasta",
+      "a_multiplier": 0,
+      "b_multiplier": 100,
+      "expected_diff": 0.0,
+      "is_edge_case": false
+    },
+    {
+      "name": "Karışık Dengeli",
+      "description": "50 iyi hasta, 50 kötü hasta",
+      "a_multiplier": 50,
+      "b_multiplier": 50,
+      "expected_diff": 0.0,
+      "is_edge_case": false
+    },
+    {
+      "name": "Ağırlıklı İyi",
+      "description": "80 iyi hasta, 20 kötü hasta",
+      "a_multiplier": 80,
+      "b_multiplier": 20,
+      "expected_diff": 0.0,
+      "is_edge_case": false
+    },
+    {
+      "name": "Ağırlıklı Kötü",
+      "description": "20 iyi hasta, 80 kötü hasta",
+      "a_multiplier": 20,
+      "b_multiplier": 80,
+      "expected_diff": 0.0,
+      "is_edge_case": false
+    },
+    {
+      "name": "Marjinal İyi",
+      "description": "95 iyi hasta, 5 kötü hasta",
+      "a_multiplier": 95,
+      "b_multiplier": 5,
+      "expected_diff": 0.0,
+      "is_edge_case": false
+    },
+    {
+      "name": "Marjinal Kötü",
+      "description": "5 iyi hasta, 95 kötü hasta",
+      "a_multiplier": 5,
+      "b_multiplier": 95,
+      "expected_diff": 0.0,
+      "is_edge_case": false
+    },
+    {
+      "name": "Sınır Vakası 1",
+      "description": "99 iyi hasta, 1 kötü hasta",
+      "a_multiplier": 99,
+      "b_multiplier": 1,
+      "expected_diff": 0.0,
+      "is_edge_case": true
+    },
+    {
+      "name": "Sınır Vakası 2",
+      "description": "1 iyi hasta, 99 kötü hasta",
+      "a_multiplier": 1,
+      "b_multiplier": 99,
+      "expected_diff": 0.0,
+      "is_edge_case": true
+    },
+    {
+      "name": "Dengesiz Büyük",
+      "description": "150 iyi hasta, 50 kötü hasta",
+      "a_multiplier": 150,
+      "b_multiplier": 50,
+      "expected_diff": 0.0,
+      "is_edge_case": true
+    },
+    {
+      "name": "Dengesiz Küçük",
+      "description": "10 iyi hasta, 90 kötü hasta",
+      "a_multiplier": 10,
+      "b_multiplier": 90,
+      "expected_diff": 0.0,
+      "is_edge_case": true
+    }
+  ],
+  "all_results": [],
+  "best_result": null,
+  "summary": {}
+}

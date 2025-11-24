@@ -1,4 +1,5 @@
 import os, json, random, zipfile, io, re
+import argparse
 from pathlib import Path
 import requests
 
@@ -102,6 +103,13 @@ def fetch_images(max_images:int=30):
         raise RuntimeError("No suitable assets found (JSON or subfigure zip)")
     return total
 
+def parse_args():
+    p = argparse.ArgumentParser()
+    p.add_argument("--max-images", type=int, default=int(os.environ.get("MAX_IMAGES", "30")))
+    return p.parse_args()
+
+
 if __name__ == "__main__":
-    count = fetch_images(max_images=int(os.environ.get("MAX_IMAGES", "30")))
+    args = parse_args()
+    count = fetch_images(max_images=args.max_images)
     print(f"Fetched {count} images into {IMG_DIR}")
