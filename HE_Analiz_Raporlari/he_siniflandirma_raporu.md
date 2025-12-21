@@ -7,9 +7,9 @@ Bu rapor, hastaların **"Yüksek Riskli"** veya **"Düşük Riskli"** olarak sı
 
 | Yöntem | Süre (400 Hasta) | Doğruluk (Accuracy) | Açıklama |
 | :--- | :--- | :--- | :--- |
-| **Tam HE** | 5.0712 s | %99.75 | Tüm veriler şifreli işlendi. |
-| **Seçici HE** | 3.8618 s | %99.75 | Hibrit şifreleme kullanıldı. |
-| **Fark** | **1.31x Hız Artışı** | **Fark Yok** | Doğruluk kaybı yaşanmadı. |
+| **Tam HE** | 4.9996 s | %99.75 | Tüm veriler şifreli işlendi. |
+| **Seçici HE** | 3.9981 s | %99.75 | Hibrit şifreleme kullanıldı. |
+| **Fark** | **1.25x Hız Artışı** | **Fark Yok** | Doğruluk kaybı yaşanmadı. |
 
 ## Detaylı Analiz
 Modelimiz, hastaların verilerini kullanarak 0 ile 1 arasında bir **Risk Skoru** üretmiştir. 

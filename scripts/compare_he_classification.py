@@ -146,7 +146,6 @@ def main():
     # We plot the raw probabilities (0 to 1) to show how close they are
     ax2.scatter(range(len(y_test)), full_probs, alpha=0.6, label='Tam HE Olasılık', c='#3498db', s=20)
     ax2.scatter(range(len(y_test)), sel_probs, alpha=0.6, label='Seçici HE Olasılık', c='#f1c40f', marker='x', s=40)
-    ax2.axhline(y=0.5, color='r', linestyle='--', label='Karar Sınırı (0.5)')
     
     ax2.set_xlabel('Hasta ID (Test Seti)', fontsize=12)
     ax2.set_ylabel('Risk Olasılığı (0-1)', fontsize=12)
