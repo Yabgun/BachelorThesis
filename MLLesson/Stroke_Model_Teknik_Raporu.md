@@ -73,3 +73,15 @@ Test seti üzerindeki güncel performans metrikleri (`artifacts/stroke_classific
     *   *Yorum:* Yüksek duyarlılık hedefi nedeniyle, model "yalancı pozitif" (False Positive) üretmeye meyillidir. Yani riski olmayan bazı kişilere de risk uyarısı verebilir. Bu, hastalığı kaçırmaktan daha güvenli bir yaklaşımdır.
 *   **ROC AUC:** ~0.837
 *   **PR AUC (Average Precision):** ~0.201
+
+## 7. Modelin "Neden" Karar Verdiğini Açıkla (Explainability - SHAP)
+Bu bölümde modelin karar mekanizmasını daha şeffaf hale getirmek için SHAP (SHapley Additive exPlanations) kullanılmıştır. SHAP, her bir özelliğin (feature) modelin çıktısına ne yönde ve ne kadar katkı yaptığını örnekler üzerinde hesaplayarak global bir önem analizi sunar.
+
+Raporun bu sürümünde kullanılan SHAP grafiği, eğitilmiş pipeline üzerinden (imputation + scaling + one-hot encoding sonrasında) üretilen özellik uzayında hesaplanan SHAP değerlerinin özetidir.
+
+![SHAP Summary Plot](artifacts/stroke_shap_summary.png)
+
+Grafiği okuma kılavuzu:
+*   Her satır bir özelliği temsil eder; üstte olanlar modele daha fazla etki eder.
+*   X ekseni SHAP değeridir: pozitif değerler modelin "stroke=1" (risk var) yönünde, negatif değerler "stroke=0" yönünde itmesini gösterir.
+*   Noktaların rengi genellikle ilgili özelliğin değer seviyesini ifade eder (yüksek/düşük); bu sayede hangi değer aralıklarının riski artırdığı/azalttığı gözlemlenebilir.

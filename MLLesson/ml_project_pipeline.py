@@ -390,6 +390,77 @@ def predict_stroke(
     return out, eval_metrics
 
 
+def generate_shap_summary_plot(
+    pipeline: object,
+    metrics: dict,
+    df: pd.DataFrame,
+    out_path: Path,
+    max_samples: int = 1000,
+    max_display: int = 25,
+    random_state: int = 42,
+) -> Path:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import shap
+
+    target = str(metrics.get("target", "stroke"))
+    feature_engineering = str(metrics.get("feature_engineering", "none"))
+
+    X = df.drop(columns=[target, "id"], errors="ignore")
+    X = engineer_features(X, mode=feature_engineering)
+
+    n_rows = int(len(X))
+    if n_rows == 0:
+        raise ValueError("Empty dataset for SHAP plot generation.")
+
+    max_samples = int(max(1, min(int(max_samples), n_rows)))
+    rng = np.random.default_rng(int(random_state))
+    sample_idx = rng.choice(np.arange(n_rows), size=max_samples, replace=False) if max_samples < n_rows else None
+    X_sample = X.iloc[sample_idx].reset_index(drop=True) if sample_idx is not None else X.reset_index(drop=True)
+
+    prep = pipeline.named_steps["prep"]
+    model = pipeline.named_steps["model"]
+
+    try:
+        feature_names = list(prep.get_feature_names_out())
+    except Exception:
+        feature_names = None
+
+    X_trans = prep.transform(X_sample)
+    X_trans_dense = X_trans.toarray() if hasattr(X_trans, "toarray") else np.asarray(X_trans)
+
+    bg_size = int(max(1, min(200, X_trans_dense.shape[0])))
+    bg_idx = rng.choice(np.arange(X_trans_dense.shape[0]), size=bg_size, replace=False) if bg_size < X_trans_dense.shape[0] else None
+    background = X_trans_dense[bg_idx] if bg_idx is not None else X_trans_dense
+
+    if hasattr(model, "estimators_"):
+        explainer = shap.TreeExplainer(model, data=background)
+    else:
+        explainer = shap.LinearExplainer(model, background)
+
+    values = None
+    try:
+        explained = explainer(X_trans_dense)
+        values = explained.values if hasattr(explained, "values") else explained
+    except Exception:
+        values = explainer.shap_values(X_trans_dense)
+
+    if isinstance(values, list):
+        values = values[1] if len(values) > 1 else values[0]
+    if isinstance(values, np.ndarray) and values.ndim == 3:
+        values = values[:, :, 1]
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.figure(figsize=(12, 7))
+    shap.summary_plot(values, X_trans_dense, feature_names=feature_names, show=False, max_display=int(max_display))
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=200, bbox_inches="tight")
+    plt.close()
+    return out_path
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", default=str(DATASET_PATH))
@@ -406,8 +477,35 @@ def main():
     parser.add_argument("--predict-input", default=None)
     parser.add_argument("--predict-output", default=None)
     parser.add_argument("--predict-threshold", type=float, default=None)
+    parser.add_argument("--shap", action="store_true")
+    parser.add_argument("--shap-input", default=None)
+    parser.add_argument("--shap-output", default=None)
+    parser.add_argument("--shap-max-samples", type=int, default=1000)
+    parser.add_argument("--shap-max-display", type=int, default=25)
     parser.add_argument("--artifacts-dir", default=str(ARTIFACTS_DIR))
     args = parser.parse_args()
+
+    if args.shap:
+        artifacts_dir = Path(args.artifacts_dir)
+        pipeline, metrics = load_artifacts(task="stroke_classification", artifacts_dir=artifacts_dir)
+        shap_input = Path(args.shap_input) if args.shap_input else Path(args.dataset)
+        shap_df = load_stroke_dataset(shap_input)
+        out_path = (
+            Path(args.shap_output)
+            if args.shap_output
+            else (artifacts_dir / "stroke_shap_summary.png")
+        )
+        saved_path = generate_shap_summary_plot(
+            pipeline=pipeline,
+            metrics=metrics,
+            df=shap_df,
+            out_path=out_path,
+            max_samples=args.shap_max_samples,
+            max_display=args.shap_max_display,
+            random_state=args.random_state,
+        )
+        print(f"Saved: {saved_path}")
+        return
 
     if args.predict:
         artifacts_dir = Path(args.artifacts_dir)
