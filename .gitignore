@@ -250,3 +250,4 @@ micromamba.exe
 # External dependencies
 external/*/
 !external/README.md
+health_risk_model/XrayData/*
