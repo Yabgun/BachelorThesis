@@ -28,7 +28,7 @@ from sklearn.preprocessing import StandardScaler
 from Pyfhel import Pyfhel, PyCtxt, PyPtxt
 
 # Import our ML models
-from ml_classification_model import RiskClassificationModel, ModelConfig
+from health_risk_model.core_model import RiskClassificationModel, ModelConfig
 from ml_regression_model import TreatmentCostRegressionModel, RegressionConfig
 
 # Configure logging
