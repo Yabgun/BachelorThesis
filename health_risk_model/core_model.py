@@ -7,7 +7,6 @@ Encapsulates the ML model, configuration, and complete training/evaluation flow.
 """
 
 import os
-import json
 import time
 import logging
 from typing import Dict, Tuple, Any
@@ -23,16 +22,7 @@ try:
 except Exception:
     Pyfhel = Any
 
-try:
-    from concrete.ml.sklearn import LogisticRegression as ConcreteLogisticRegression
-    HAS_CONCRETE_ML = True
-except Exception:
-    ConcreteLogisticRegression = None
-    HAS_CONCRETE_ML = False
-
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
 from sklearn.base import clone
 from sklearn.model_selection import cross_val_score, train_test_split, StratifiedKFold
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, f1_score
@@ -46,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ModelConfig:
-    model_type: str = "random_forest"
+    model_type: str = "logistic_regression"
     handle_encrypted: bool = True
     encryption_threshold: float = 0.1
     cv_folds: int = 5
@@ -123,9 +113,6 @@ class RiskClassificationModel:
         if self.config.model_type != "logistic_regression":
             raise ValueError("Tuning is only supported for logistic_regression model type.")
 
-        if HAS_CONCRETE_ML:
-            raise ValueError("C tuning is not supported when concrete-ml LogisticRegression is enabled.")
-
         if candidate_cs is None:
             candidate_cs = [0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0, 30.0, 100.0, 300.0, 1000.0, 3000.0]
 
@@ -170,33 +157,10 @@ class RiskClassificationModel:
     def initialize_model(self) -> None:
         logger.info(f"Initializing {self.config.model_type} model for risk classification")
 
-        if self.config.model_type == "random_forest":
-            self.model = RandomForestClassifier(
-                n_estimators=100,
-                max_depth=10,
-                random_state=self.config.random_state,
-                n_jobs=-1,
-            )
-        elif self.config.model_type == "logistic_regression":
-            if HAS_CONCRETE_ML:
-                self.model = ConcreteLogisticRegression(n_bits=8)
-            else:
-                self.model = self._build_sklearn_logistic_regression()
-        elif self.config.model_type == "gradient_boosting":
-            self.model = GradientBoostingClassifier(
-                n_estimators=100,
-                learning_rate=0.1,
-                max_depth=5,
-                random_state=self.config.random_state,
-            )
-        elif self.config.model_type == "svm":
-            self.model = SVC(
-                kernel="rbf",
-                random_state=self.config.random_state,
-                probability=True,
-            )
-        else:
-            raise ValueError(f"Unknown model type: {self.config.model_type}")
+        if self.config.model_type != "logistic_regression":
+            raise ValueError(f"Only logistic_regression is supported. Got: {self.config.model_type}")
+
+        self.model = self._build_sklearn_logistic_regression()
 
     def prepare_features(
         self,
@@ -236,7 +200,6 @@ class RiskClassificationModel:
 
         if (
             self.config.model_type == "logistic_regression"
-            and not HAS_CONCRETE_ML
             and self.config.logistic_class_weight == "balanced_sqrt"
         ):
             classes, counts = np.unique(y_train_encoded, return_counts=True)
@@ -248,7 +211,7 @@ class RiskClassificationModel:
                 weights[int(cls)] = float(np.sqrt(balanced))
             self._computed_class_weight = weights
 
-        if self.config.model_type == "logistic_regression" and self.config.tune_logistic_c and not HAS_CONCRETE_ML:
+        if self.config.model_type == "logistic_regression" and self.config.tune_logistic_c:
             self.tune_logistic_regression_c(X_train=X_train, y_train=y_train)
 
         self.initialize_model()
@@ -264,7 +227,7 @@ class RiskClassificationModel:
         logger.info(f"Training accuracy: {train_accuracy:.4f}")
 
         coef_info: Dict[str, Any] = {}
-        if self.config.model_type == "logistic_regression" and not HAS_CONCRETE_ML:
+        if self.config.model_type == "logistic_regression":
             if hasattr(self.model, "coef_"):
                 coef = np.asarray(self.model.coef_, dtype=float)
                 intercept = np.asarray(getattr(self.model, "intercept_", np.array([])), dtype=float)
@@ -642,154 +605,21 @@ def run_multimodal_core_model(
     results = pipeline.run_complete_pipeline(datasets, pyfhel_context=None)
     return results
 
-    def save_results(self, output_dir: str) -> None:
-        os.makedirs(output_dir, exist_ok=True)
-
-        results_path = os.path.join(output_dir, "classification_results.json")
-        with open(results_path, "w") as f:
-            json.dump(self.results, f, indent=2, default=str)
-
-        model_path = os.path.join(output_dir, "classification_model.pkl")
-        self.classification_model.save_model(model_path)
-
-        self.generate_report(output_dir)
-        logger.info(f"Results saved to: {output_dir}")
-
-    def generate_report(self, output_dir: str) -> None:
-        report_path = os.path.join(output_dir, "classification_report.md")
-
-        with open(report_path, "w") as f:
-            f.write("# Risk Classification Model Report\n\n")
-            f.write("## Model Configuration\n\n")
-            f.write(f"- **Model Type**: {self.config.model_type}\n")
-            f.write(f"- **Handles Encrypted Features**: {self.config.handle_encrypted}\n")
-            f.write(f"- **Cross-Validation Folds**: {self.config.cv_folds}\n\n")
-
-            f.write("## Training Results\n\n")
-            train_results = self.results["training_results"]
-            f.write(f"- **Training Time**: {train_results['training_time']:.4f}s\n")
-            f.write(f"- **Training Accuracy**: {train_results['train_accuracy']:.4f}\n")
-            f.write(f"- **Samples**: {train_results['n_samples']}\n")
-            f.write(f"- **Features**: {train_results['n_features']}\n\n")
-
-            f.write("## Evaluation Results\n\n")
-            eval_results = self.results["evaluation_results"]
-            f.write(f"- **Test Accuracy**: {eval_results['accuracy']:.4f}\n")
-            f.write(f"- **Test Samples**: {eval_results['test_samples']}\n")
-            f.write(f"- **Prediction Time**: {eval_results['prediction_info']['prediction_time']:.4f}s\n\n")
-
-            f.write("## Cross-Validation Results\n\n")
-            cv_results = self.results["cross_validation_results"]
-            f.write(
-                f"- **Mean CV Score**: {cv_results['mean_cv_score']:.4f} (±{cv_results['std_cv_score']:.4f})\n"
-            )
-            f.write(f"- **CV Folds**: {cv_results['cv_folds']}\n\n")
-
-            f.write("## Pipeline Performance\n\n")
-            f.write(f"- **Total Pipeline Time**: {self.results['pipeline_time']:.4f}s\n")
-            f.write(
-                f"- **Dataset Size**: {self.results['datasets_info']['n_train']} train, "
-                f"{self.results['datasets_info']['n_test']} test\n\n"
-            )
-
-            f.write("## Encrypted Data Handling\n\n")
-            f.write("This model supports mixed encrypted/plaintext features as specified in the research proposal:\n")
-            f.write("- Encrypted features (test_results_score, cxr_mean_intensity, cxr_edge_density) are processed\n")
-            f.write("- Plaintext features (age, billing_amount_norm) are used directly\n")
-            f.write("- Model maintains accuracy while preserving privacy through selective encryption\n")
-
-
-def load_datasets_and_context(
-    datasets_path: str = "data/ml_encrypted/ml_datasets.json",
-    context_path: str = "data/ml_encrypted/pyfhel_context.pkl",
-) -> tuple[Dict[str, Any], Pyfhel]:
-    if not all(os.path.exists(p) for p in [datasets_path, context_path]):
-        raise FileNotFoundError("Required data files not found. Run ml_encrypted_data_preparation.py first.")
-
-    with open(datasets_path, "r") as f:
-        datasets_data = json.load(f)
-
-    X_train = pd.DataFrame(datasets_data["X_train"])
-    X_test = pd.DataFrame(datasets_data["X_test"])
-    y_train = pd.Series(datasets_data["y_train"])
-    y_test = pd.Series(datasets_data["y_test"])
-
-    datasets = {
-        "X_train": X_train,
-        "X_test": X_test,
-        "y_train": y_train,
-        "y_test": y_test,
-    }
-
-    pyfhel_context = joblib.load(context_path)
-    return datasets, pyfhel_context
-
-
-def run_model_suite() -> Dict[str, Any]:
-    datasets, pyfhel_context = load_datasets_and_context()
-
-    model_types = ["random_forest", "logistic_regression", "gradient_boosting"]
-    all_results: Dict[str, Any] = {}
-
-    for model_type in model_types:
-        logger.info(f"Testing {model_type} model...")
-
-        config = ModelConfig(model_type=model_type)
-        pipeline = MLPipeline(config)
-
-        results = pipeline.run_complete_pipeline(datasets, pyfhel_context)
-        all_results[model_type] = results
-
-        output_dir = f"data/ml_models/{model_type}"
-        pipeline.save_results(output_dir)
-
-    generate_comparative_report(all_results)
-    return all_results
-
-
-def generate_comparative_report(all_results: Dict[str, Any]) -> None:
-    report_path = "data/ml_models/comparative_report.md"
-    os.makedirs(os.path.dirname(report_path), exist_ok=True)
-
-    with open(report_path, "w") as f:
-        f.write("# Comparative Model Performance Report\n\n")
-        f.write("## Model Comparison Summary\n\n")
-
-        f.write("| Model Type | Test Accuracy | CV Score | Training Time | Prediction Time |\n")
-        f.write("|------------|---------------|----------|---------------|-----------------|\n")
-
-        for model_type, results in all_results.items():
-            eval_acc = results["evaluation_results"]["accuracy"]
-            cv_score = results["cross_validation_results"]["mean_cv_score"]
-            train_time = results["training_results"]["training_time"]
-            pred_time = results["evaluation_results"]["prediction_info"]["prediction_time"]
-
-            f.write(
-                f"| {model_type} | {eval_acc:.4f} | {cv_score:.4f} "
-                f"(±{results['cross_validation_results']['std_cv_score']:.4f}) | "
-                f"{train_time:.4f}s | {pred_time:.4f}s |\n"
-            )
-
-        f.write("\n## Best Model Recommendation\n\n")
-        best_model = max(all_results.keys(), key=lambda x: all_results[x]["evaluation_results"]["accuracy"])
-        f.write(f"**Recommended Model**: {best_model}\n")
-        f.write(
-            f"- Highest test accuracy: {all_results[best_model]['evaluation_results']['accuracy']:.4f}\n"
-        )
-        f.write(
-            f"- Good cross-validation performance: "
-            f"{all_results[best_model]['cross_validation_results']['mean_cv_score']:.4f}\n"
-        )
-        f.write(
-            f"- Reasonable training time: {all_results[best_model]['training_results']['training_time']:.4f}s\n"
-        )
 
 
 def main() -> None:
     logger.info("Starting central Health Risk Classification Pipeline")
 
     try:
-        run_model_suite()
+        results = run_multimodal_core_model()
+        eval_results = results.get("evaluation_results", {})
+        acc = eval_results.get("accuracy")
+        acc_value = float(acc) if acc is not None else float("nan")
+        report_path = generate_stay_logistic_regression_report(results=results)
+        logger.info(
+            "Health Risk Classification completed. "
+            f"Test accuracy: {acc_value:.4f}"
+        )
         logger.info("Health Risk Classification Pipeline completed successfully!")
     except Exception as e:
         logger.error(f"Health risk pipeline failed: {str(e)}")

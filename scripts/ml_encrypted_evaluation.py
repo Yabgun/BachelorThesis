@@ -10,6 +10,7 @@ import os
 import json
 import time
 import logging
+import sys
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -18,6 +19,8 @@ from dataclasses import dataclass, asdict
 import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 # ML libraries
 from sklearn.model_selection import train_test_split
@@ -235,7 +238,7 @@ class EncryptedPlaintextEvaluator:
         y_regression = datasets['y_regression']
         
         # Model types to test
-        classification_models = ['random_forest', 'logistic_regression', 'gradient_boosting']
+        classification_models = ['logistic_regression']
         regression_models = ['random_forest', 'linear_regression', 'ridge']
         
         all_results = {}
