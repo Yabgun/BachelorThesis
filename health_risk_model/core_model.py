@@ -398,6 +398,8 @@ def load_multimodal_datasets_from_csv(
     csv_path: str | None = None,
     test_size: float = 0.2,
     random_state: int = 42,
+    encoding_mode: str = "target_encoding",
+    target_encoding_smoothing: float = 20.0,
 ) -> Dict[str, Any]:
     base_dir = Path(__file__).resolve().parent
     if csv_path is None:
@@ -464,12 +466,30 @@ def load_multimodal_datasets_from_csv(
     train_df = df.loc[train_idx].copy()
     stay_index_train = train_df["stay_index"]
 
-    for col in ["Department", "Ward_Type"]:
-        if col in train_df.columns:
-            te_name = f"{col}_te"
-            means = train_df.groupby(col)["stay_index"].mean()
-            global_mean = stay_index_train.mean()
-            df[te_name] = df[col].map(means).fillna(global_mean)
+    global_mean = float(stay_index_train.mean())
+    target_encoding_cols = [
+        "Hospital_type_code",
+        "Hospital_region_code",
+        "Department",
+        "Ward_Type",
+        "Ward_Facility_Code",
+        "Type of Admission",
+        "Severity of Illness",
+        "Age",
+    ]
+    if encoding_mode not in {"target_encoding", "onehot"}:
+        raise ValueError(f"Unknown encoding_mode: {encoding_mode}")
+
+    if encoding_mode == "target_encoding":
+        for col in target_encoding_cols:
+            if col not in train_df.columns:
+                continue
+            stats = train_df.groupby(col)["stay_index"].agg(["mean", "count"])
+            smooth = (stats["mean"] * stats["count"] + global_mean * target_encoding_smoothing) / (
+                stats["count"] + target_encoding_smoothing
+            )
+            df[f"{col}_te"] = df[col].map(smooth).fillna(global_mean).astype(float)
+        df = df.drop(columns=[c for c in target_encoding_cols if c in df.columns])
 
     df = df.drop(columns=["stay_index"])
 
@@ -527,11 +547,15 @@ def run_multimodal_core_model(
     random_state: int = 42,
     logistic_c: float | None = None,
     tune_logistic_c: bool = False,
+    encoding_mode: str = "target_encoding",
+    target_encoding_smoothing: float = 20.0,
 ) -> Dict[str, Any]:
     datasets = load_multimodal_datasets_from_csv(
         csv_path=csv_path,
         test_size=test_size,
         random_state=random_state,
+        encoding_mode=encoding_mode,
+        target_encoding_smoothing=target_encoding_smoothing,
     )
 
     config = ModelConfig(
