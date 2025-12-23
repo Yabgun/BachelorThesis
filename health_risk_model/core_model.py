@@ -35,7 +35,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.base import clone
 from sklearn.model_selection import cross_val_score, train_test_split, StratifiedKFold
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, f1_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 
@@ -51,11 +51,13 @@ class ModelConfig:
     encryption_threshold: float = 0.1
     cv_folds: int = 5
     random_state: int = 42
-    logistic_c: float = 100.0
+    logistic_c: float = 3000.0
     logistic_max_iter: int = 5000
     logistic_solver: str = "lbfgs"
     logistic_class_weight: str | None = None
     tune_logistic_c: bool = False
+    decision_rule: str = "argmax"
+    prior_adjustment_alpha: float = 0.0
 
 
 class EncryptedFeatureProcessor:
@@ -94,14 +96,22 @@ class RiskClassificationModel:
         self.training_time = 0.0
         self.prediction_time = 0.0
         self.tuning_info: Dict[str, Any] = {}
+        self._computed_class_weight: dict[int, float] | str | None = None
+        self._class_priors: np.ndarray | None = None
 
     def _build_sklearn_logistic_regression(self) -> LogisticRegression:
+        class_weight: dict[int, float] | str | None
+        if self._computed_class_weight is not None:
+            class_weight = self._computed_class_weight
+        else:
+            class_weight = self.config.logistic_class_weight
+
         return LogisticRegression(
             random_state=self.config.random_state,
             max_iter=self.config.logistic_max_iter,
             C=self.config.logistic_c,
             solver=self.config.logistic_solver,
-            class_weight=self.config.logistic_class_weight,
+            class_weight=class_weight,
         )
 
     def tune_logistic_regression_c(
@@ -117,7 +127,7 @@ class RiskClassificationModel:
             raise ValueError("C tuning is not supported when concrete-ml LogisticRegression is enabled.")
 
         if candidate_cs is None:
-            candidate_cs = [0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0, 30.0, 100.0]
+            candidate_cs = [0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0, 30.0, 100.0, 300.0, 1000.0, 3000.0]
 
         X_raw = self.prepare_features(X_train, pyfhel_context=None, scale=False)
         if y_train.dtype == "object":
@@ -213,16 +223,36 @@ class RiskClassificationModel:
         logger.info("Training risk classification model")
         start_time = time.time()
 
-        if self.config.model_type == "logistic_regression" and self.config.tune_logistic_c and not HAS_CONCRETE_ML:
-            self.tune_logistic_regression_c(X_train=X_train, y_train=y_train)
-
-        self.initialize_model()
-        X_train_processed = self.prepare_features(X_train, pyfhel_context, scale=True)
+        self._computed_class_weight = None
 
         if y_train.dtype == "object":
             y_train_encoded = self.label_encoder.fit_transform(y_train)
         else:
             y_train_encoded = y_train.values
+
+        if y_train_encoded is not None and len(y_train_encoded) > 0:
+            _, counts = np.unique(y_train_encoded, return_counts=True)
+            self._class_priors = counts.astype(float) / float(len(y_train_encoded))
+
+        if (
+            self.config.model_type == "logistic_regression"
+            and not HAS_CONCRETE_ML
+            and self.config.logistic_class_weight == "balanced_sqrt"
+        ):
+            classes, counts = np.unique(y_train_encoded, return_counts=True)
+            n_samples = float(len(y_train_encoded))
+            n_classes = float(len(classes))
+            weights = {}
+            for cls, cnt in zip(classes.tolist(), counts.tolist()):
+                balanced = n_samples / (n_classes * float(cnt))
+                weights[int(cls)] = float(np.sqrt(balanced))
+            self._computed_class_weight = weights
+
+        if self.config.model_type == "logistic_regression" and self.config.tune_logistic_c and not HAS_CONCRETE_ML:
+            self.tune_logistic_regression_c(X_train=X_train, y_train=y_train)
+
+        self.initialize_model()
+        X_train_processed = self.prepare_features(X_train, pyfhel_context, scale=True)
 
         self.model.fit(X_train_processed, y_train_encoded)
         self.training_time = time.time() - start_time
@@ -233,6 +263,17 @@ class RiskClassificationModel:
         logger.info(f"Model training completed in {self.training_time:.4f}s")
         logger.info(f"Training accuracy: {train_accuracy:.4f}")
 
+        coef_info: Dict[str, Any] = {}
+        if self.config.model_type == "logistic_regression" and not HAS_CONCRETE_ML:
+            if hasattr(self.model, "coef_"):
+                coef = np.asarray(self.model.coef_, dtype=float)
+                intercept = np.asarray(getattr(self.model, "intercept_", np.array([])), dtype=float)
+                coef_info = {
+                    "coef_l2_norm": float(np.linalg.norm(coef)),
+                    "coef_max_abs": float(np.max(np.abs(coef))) if coef.size else 0.0,
+                    "intercept_max_abs": float(np.max(np.abs(intercept))) if intercept.size else 0.0,
+                }
+
         return {
             "training_time": self.training_time,
             "train_accuracy": train_accuracy,
@@ -240,6 +281,8 @@ class RiskClassificationModel:
             "n_features": X_train.shape[1],
             "n_samples": len(X_train),
             "tuning_info": self.tuning_info,
+            "coef_info": coef_info,
+            "class_priors": self._class_priors.tolist() if self._class_priors is not None else None,
         }
 
     def predict(self, X_test: pd.DataFrame, pyfhel_context: Pyfhel | None = None) -> Tuple[np.ndarray, Dict[str, Any]]:
@@ -247,8 +290,20 @@ class RiskClassificationModel:
         start_time = time.time()
 
         X_test_processed = self.prepare_features(X_test, pyfhel_context)
-        predictions = self.model.predict(X_test_processed)
         probabilities = self.model.predict_proba(X_test_processed)
+
+        predictions: np.ndarray
+        if self.config.decision_rule == "prior_adjusted" and self.config.prior_adjustment_alpha > 0.0:
+            priors = self._class_priors
+            if priors is not None and len(priors) == probabilities.shape[1]:
+                adjust = np.power(priors, self.config.prior_adjustment_alpha)
+                adjust = np.clip(adjust, 1e-12, None)
+                adjusted_scores = probabilities / adjust.reshape(1, -1)
+                predictions = np.argmax(adjusted_scores, axis=1)
+            else:
+                predictions = np.argmax(probabilities, axis=1)
+        else:
+            predictions = np.argmax(probabilities, axis=1)
 
         self.prediction_time = time.time() - start_time
 
@@ -271,16 +326,26 @@ class RiskClassificationModel:
             y_test_encoded = y_test.values
 
         accuracy = accuracy_score(y_test_encoded, predictions)
+        macro_f1 = float(f1_score(y_test_encoded, predictions, average="macro", zero_division=0))
+        weighted_f1 = float(f1_score(y_test_encoded, predictions, average="weighted", zero_division=0))
         report = classification_report(y_test_encoded, predictions, output_dict=True)
         cm = confusion_matrix(y_test_encoded, predictions)
+        unique_pred = np.unique(predictions)
+        unique_true = np.unique(y_test_encoded)
+        missing_predicted = [int(x) for x in unique_true if x not in set(unique_pred.tolist())]
 
         results = {
             "accuracy": accuracy,
+            "macro_f1": macro_f1,
+            "weighted_f1": weighted_f1,
             "classification_report": report,
             "confusion_matrix": cm.tolist(),
             "prediction_info": pred_info,
             "model_type": self.config.model_type,
             "test_samples": len(y_test),
+            "n_predicted_classes": int(len(unique_pred)),
+            "missing_predicted_class_indices": missing_predicted,
+            "label_classes": [str(x) for x in getattr(self.label_encoder, "classes_", [])],
         }
 
         logger.info(f"Model evaluation completed. Accuracy: {accuracy:.4f}")
@@ -547,6 +612,9 @@ def run_multimodal_core_model(
     random_state: int = 42,
     logistic_c: float | None = None,
     tune_logistic_c: bool = False,
+    logistic_class_weight: str | None = None,
+    decision_rule: str = "argmax",
+    prior_adjustment_alpha: float = 0.0,
     encoding_mode: str = "target_encoding",
     target_encoding_smoothing: float = 20.0,
 ) -> Dict[str, Any]:
@@ -567,6 +635,9 @@ def run_multimodal_core_model(
     if logistic_c is not None:
         config.logistic_c = float(logistic_c)
     config.tune_logistic_c = bool(tune_logistic_c)
+    config.logistic_class_weight = logistic_class_weight
+    config.decision_rule = decision_rule
+    config.prior_adjustment_alpha = float(prior_adjustment_alpha)
     pipeline = MLPipeline(config)
     results = pipeline.run_complete_pipeline(datasets, pyfhel_context=None)
     return results
