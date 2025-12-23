@@ -23,11 +23,20 @@ try:
 except Exception:
     Pyfhel = Any
 
+try:
+    from concrete.ml.sklearn import LogisticRegression as ConcreteLogisticRegression
+    HAS_CONCRETE_ML = True
+except Exception:
+    ConcreteLogisticRegression = None
+    HAS_CONCRETE_ML = False
+
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
-from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.base import clone
+from sklearn.model_selection import cross_val_score, train_test_split, StratifiedKFold
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 
 
@@ -42,6 +51,11 @@ class ModelConfig:
     encryption_threshold: float = 0.1
     cv_folds: int = 5
     random_state: int = 42
+    logistic_c: float = 100.0
+    logistic_max_iter: int = 5000
+    logistic_solver: str = "lbfgs"
+    logistic_class_weight: str | None = None
+    tune_logistic_c: bool = False
 
 
 class EncryptedFeatureProcessor:
@@ -79,6 +93,69 @@ class RiskClassificationModel:
         self.label_encoder = LabelEncoder()
         self.training_time = 0.0
         self.prediction_time = 0.0
+        self.tuning_info: Dict[str, Any] = {}
+
+    def _build_sklearn_logistic_regression(self) -> LogisticRegression:
+        return LogisticRegression(
+            random_state=self.config.random_state,
+            max_iter=self.config.logistic_max_iter,
+            C=self.config.logistic_c,
+            solver=self.config.logistic_solver,
+            class_weight=self.config.logistic_class_weight,
+        )
+
+    def tune_logistic_regression_c(
+        self,
+        X_train: pd.DataFrame,
+        y_train: pd.Series,
+        candidate_cs: list[float] | None = None,
+    ) -> Dict[str, Any]:
+        if self.config.model_type != "logistic_regression":
+            raise ValueError("Tuning is only supported for logistic_regression model type.")
+
+        if HAS_CONCRETE_ML:
+            raise ValueError("C tuning is not supported when concrete-ml LogisticRegression is enabled.")
+
+        if candidate_cs is None:
+            candidate_cs = [0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0, 30.0, 100.0]
+
+        X_raw = self.prepare_features(X_train, pyfhel_context=None, scale=False)
+        if y_train.dtype == "object":
+            y_encoded = self.label_encoder.fit_transform(y_train)
+        else:
+            y_encoded = y_train.values
+
+        cv = StratifiedKFold(
+            n_splits=self.config.cv_folds,
+            shuffle=True,
+            random_state=self.config.random_state,
+        )
+
+        best_c = None
+        best_mean = None
+        all_scores: Dict[float, float] = {}
+        for c in candidate_cs:
+            lr = self._build_sklearn_logistic_regression()
+            lr.set_params(C=c)
+            pipe = Pipeline([("scaler", StandardScaler()), ("model", lr)])
+            scores = cross_val_score(pipe, X_raw, y_encoded, cv=cv, scoring="accuracy")
+            mean_score = float(scores.mean())
+            all_scores[c] = mean_score
+            if best_mean is None or mean_score > best_mean:
+                best_mean = mean_score
+                best_c = c
+
+        if best_c is None:
+            raise RuntimeError("Failed to tune logistic regression C.")
+
+        self.config.logistic_c = float(best_c)
+        self.tuning_info = {
+            "tuned": True,
+            "best_c": float(best_c),
+            "best_mean_cv_accuracy": float(best_mean),
+            "candidate_scores": {str(k): float(v) for k, v in all_scores.items()},
+        }
+        return self.tuning_info
 
     def initialize_model(self) -> None:
         logger.info(f"Initializing {self.config.model_type} model for risk classification")
@@ -91,14 +168,10 @@ class RiskClassificationModel:
                 n_jobs=-1,
             )
         elif self.config.model_type == "logistic_regression":
-            self.model = LogisticRegression(
-                random_state=self.config.random_state,
-                max_iter=2000,
-                C=2.0,
-                class_weight="balanced",
-                multi_class="multinomial",
-                solver="lbfgs",
-            )
+            if HAS_CONCRETE_ML:
+                self.model = ConcreteLogisticRegression(n_bits=8)
+            else:
+                self.model = self._build_sklearn_logistic_regression()
         elif self.config.model_type == "gradient_boosting":
             self.model = GradientBoostingClassifier(
                 n_estimators=100,
@@ -115,7 +188,12 @@ class RiskClassificationModel:
         else:
             raise ValueError(f"Unknown model type: {self.config.model_type}")
 
-    def prepare_features(self, X: pd.DataFrame, pyfhel_context: Pyfhel | None = None) -> np.ndarray:
+    def prepare_features(
+        self,
+        X: pd.DataFrame,
+        pyfhel_context: Pyfhel | None = None,
+        scale: bool = True,
+    ) -> np.ndarray:
         logger.info("Preparing features for model")
 
         if pyfhel_context:
@@ -124,19 +202,22 @@ class RiskClassificationModel:
         else:
             X_processed = X.values
 
-        if hasattr(self.scaler, "mean_"):
-            X_scaled = self.scaler.transform(X_processed)
-        else:
-            X_scaled = self.scaler.fit_transform(X_processed)
+        if not scale:
+            return X_processed
 
-        return X_scaled
+        if hasattr(self.scaler, "mean_"):
+            return self.scaler.transform(X_processed)
+        return self.scaler.fit_transform(X_processed)
 
     def train(self, X_train: pd.DataFrame, y_train: pd.Series, pyfhel_context: Pyfhel | None = None) -> Dict[str, Any]:
         logger.info("Training risk classification model")
         start_time = time.time()
 
+        if self.config.model_type == "logistic_regression" and self.config.tune_logistic_c and not HAS_CONCRETE_ML:
+            self.tune_logistic_regression_c(X_train=X_train, y_train=y_train)
+
         self.initialize_model()
-        X_train_processed = self.prepare_features(X_train, pyfhel_context)
+        X_train_processed = self.prepare_features(X_train, pyfhel_context, scale=True)
 
         if y_train.dtype == "object":
             y_train_encoded = self.label_encoder.fit_transform(y_train)
@@ -158,6 +239,7 @@ class RiskClassificationModel:
             "model_type": self.config.model_type,
             "n_features": X_train.shape[1],
             "n_samples": len(X_train),
+            "tuning_info": self.tuning_info,
         }
 
     def predict(self, X_test: pd.DataFrame, pyfhel_context: Pyfhel | None = None) -> Tuple[np.ndarray, Dict[str, Any]]:
@@ -207,20 +289,33 @@ class RiskClassificationModel:
     def cross_validate(self, X: pd.DataFrame, y: pd.Series, pyfhel_context: Pyfhel | None = None) -> Dict[str, Any]:
         logger.info(f"Performing {self.config.cv_folds}-fold cross-validation")
 
-        X_processed = self.prepare_features(X, pyfhel_context)
-
         if y.dtype == "object":
             y_encoded = self.label_encoder.fit_transform(y)
         else:
             y_encoded = y.values
 
-        cv_scores = cross_val_score(
-            self.model,
-            X_processed,
-            y_encoded,
-            cv=self.config.cv_folds,
-            scoring="accuracy",
+        cv = StratifiedKFold(
+            n_splits=self.config.cv_folds,
+            shuffle=True,
+            random_state=self.config.random_state,
         )
+
+        if pyfhel_context:
+            X_processed = self.prepare_features(X, pyfhel_context, scale=False)
+            cv_scores = []
+            for train_idx, test_idx in cv.split(X_processed, y_encoded):
+                scaler = StandardScaler()
+                X_train = scaler.fit_transform(X_processed[train_idx])
+                X_test = scaler.transform(X_processed[test_idx])
+                model = clone(self.model)
+                model.fit(X_train, y_encoded[train_idx])
+                preds = model.predict(X_test)
+                cv_scores.append(float(accuracy_score(y_encoded[test_idx], preds)))
+            cv_scores = np.array(cv_scores, dtype=float)
+        else:
+            X_raw = self.prepare_features(X, pyfhel_context=None, scale=False)
+            pipe = Pipeline([("scaler", StandardScaler()), ("model", clone(self.model))])
+            cv_scores = cross_val_score(pipe, X_raw, y_encoded, cv=cv, scoring="accuracy")
 
         results = {
             "cv_scores": cv_scores.tolist(),
@@ -314,31 +409,107 @@ def load_multimodal_datasets_from_csv(
     df = pd.read_csv(csv_path)
     df = df[df["Stay"].notna()].copy()
 
+    def map_age_to_numeric(age_value: Any) -> float:
+        if isinstance(age_value, str) and "-" in age_value:
+            try:
+                low, high = age_value.split("-")
+                return (float(low) + float(high)) / 2.0
+            except Exception:
+                return 0.0
+        return 0.0
+
+    df["age_numeric"] = df["Age"].apply(map_age_to_numeric)
+
+    severity_mapping = {"Minor": 1, "Moderate": 2, "Extreme": 3}
+    df["severity_numeric"] = df["Severity of Illness"].map(severity_mapping).fillna(2).astype(float)
+
+    df["Admission_Deposit"] = df["Admission_Deposit"].fillna(0.0)
+    df["age_deposit_interaction"] = df["age_numeric"] * np.log1p(df["Admission_Deposit"].astype(float))
+
+    df["disease_risk"] = df["disease_risk"].astype(float)
+    df["risk_severity_synergy"] = df["disease_risk"] * df["severity_numeric"]
+
+    df["risk_high"] = (df["risk_score"].astype(float) > 0.9).astype(int)
+    df["risk_medium"] = (
+        (df["risk_score"].astype(float) > 0.5) & (df["risk_score"].astype(float) <= 0.9)
+    ).astype(int)
+    df["disease_risk_boost"] = df["disease_risk"] * 10.0
+    df["age_money_ratio"] = df["age_numeric"] / (df["Admission_Deposit"].astype(float) + 1.0)
+
+    stay_order = [
+        "0-10",
+        "11-20",
+        "21-30",
+        "31-40",
+        "41-50",
+        "51-60",
+        "61-70",
+        "71-80",
+        "81-90",
+        "91-100",
+        "More than 100 Days",
+    ]
+    stay_mapping = {cat: idx for idx, cat in enumerate(stay_order)}
+    df["stay_index"] = df["Stay"].map(stay_mapping).fillna(-1).astype(int)
+
     y = df["Stay"]
-    feature_df = df.drop(columns=["Stay", "image_path"])
 
-    categorical_cols = feature_df.select_dtypes(include=["object"]).columns.tolist()
-    numeric_cols = [c for c in feature_df.columns if c not in categorical_cols]
-
-    X_numeric = feature_df[numeric_cols].fillna(0.0)
-    X_categorical = feature_df[categorical_cols].fillna("missing")
-
-    if len(categorical_cols) > 0:
-        X_categorical_encoded = pd.get_dummies(X_categorical, drop_first=True)
-        X = pd.concat(
-            [X_numeric.reset_index(drop=True), X_categorical_encoded.reset_index(drop=True)],
-            axis=1,
-        )
-    else:
-        X = X_numeric
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
+    train_idx, test_idx = train_test_split(
+        df.index,
         test_size=test_size,
         random_state=random_state,
         stratify=y,
     )
+
+    train_df = df.loc[train_idx].copy()
+    stay_index_train = train_df["stay_index"]
+
+    for col in ["Department", "Ward_Type"]:
+        if col in train_df.columns:
+            te_name = f"{col}_te"
+            means = train_df.groupby(col)["stay_index"].mean()
+            global_mean = stay_index_train.mean()
+            df[te_name] = df[col].map(means).fillna(global_mean)
+
+    df = df.drop(columns=["stay_index"])
+
+    train_full = df.loc[train_idx].copy()
+    test_full = df.loc[test_idx].copy()
+
+    y_train = train_full["Stay"]
+    y_test = test_full["Stay"]
+
+    feature_df_train = train_full.drop(columns=["Stay", "image_path"])
+    feature_df_test = test_full.drop(columns=["Stay", "image_path"])
+
+    categorical_cols = feature_df_train.select_dtypes(include=["object"]).columns.tolist()
+    numeric_cols = [c for c in feature_df_train.columns if c not in categorical_cols]
+
+    X_train_numeric = feature_df_train[numeric_cols].fillna(0.0)
+    X_test_numeric = feature_df_test[numeric_cols].fillna(0.0)
+
+    if len(categorical_cols) > 0:
+        X_train_categorical = feature_df_train[categorical_cols].fillna("missing")
+        X_test_categorical = feature_df_test[categorical_cols].fillna("missing")
+
+        X_train_cat_enc = pd.get_dummies(X_train_categorical, drop_first=True)
+        X_test_cat_enc = pd.get_dummies(X_test_categorical, drop_first=True)
+
+        X_train_cat_enc, X_test_cat_enc = X_train_cat_enc.align(
+            X_test_cat_enc, join="left", axis=1, fill_value=0
+        )
+
+        X_train = pd.concat(
+            [X_train_numeric.reset_index(drop=True), X_train_cat_enc.reset_index(drop=True)],
+            axis=1,
+        )
+        X_test = pd.concat(
+            [X_test_numeric.reset_index(drop=True), X_test_cat_enc.reset_index(drop=True)],
+            axis=1,
+        )
+    else:
+        X_train = X_train_numeric
+        X_test = X_test_numeric
 
     datasets = {
         "X_train": X_train,
@@ -354,6 +525,8 @@ def run_multimodal_core_model(
     model_type: str = "logistic_regression",
     test_size: float = 0.2,
     random_state: int = 42,
+    logistic_c: float | None = None,
+    tune_logistic_c: bool = False,
 ) -> Dict[str, Any]:
     datasets = load_multimodal_datasets_from_csv(
         csv_path=csv_path,
@@ -367,6 +540,9 @@ def run_multimodal_core_model(
         cv_folds=5,
         random_state=random_state,
     )
+    if logistic_c is not None:
+        config.logistic_c = float(logistic_c)
+    config.tune_logistic_c = bool(tune_logistic_c)
     pipeline = MLPipeline(config)
     results = pipeline.run_complete_pipeline(datasets, pyfhel_context=None)
     return results
