@@ -1,0 +1,1 @@
+python .\ml_project_pipeline.py --predict --artifacts-dir .\Sunum\final_artifacts_rf_f1

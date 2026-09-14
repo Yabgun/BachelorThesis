@@ -1,0 +1,53 @@
+{
+  "task": "stroke_classification",
+  "target": "stroke",
+  "model": "random_forest",
+  "feature_engineering": "basic",
+  "resample": "bootstrap",
+  "target_pos_ratio": 0.1,
+  "threshold_strategy": "f1",
+  "target_recall": null,
+  "threshold_grid_size": 401,
+  "selected_threshold": 0.13,
+  "val_precision": 0.17037037037037037,
+  "val_recall": 0.575,
+  "val_f1": 0.26285714285714284,
+  "confusion_matrix": {
+    "tn": 851,
+    "fp": 121,
+    "fn": 20,
+    "tp": 30
+  },
+  "rows": 5110,
+  "train_rows": 4088,
+  "test_rows": 1022,
+  "stroke_rate": 0.0487279843444227,
+  "numeric_features": [
+    "age",
+    "hypertension",
+    "heart_disease",
+    "avg_glucose_level",
+    "bmi",
+    "age_squared",
+    "glucose_log1p",
+    "bmi_squared",
+    "age_x_glucose",
+    "age_x_hypertension",
+    "age_x_heart_disease",
+    "hypertension_x_heart_disease"
+  ],
+  "categorical_features": [
+    "gender",
+    "ever_married",
+    "work_type",
+    "Residence_type",
+    "smoking_status"
+  ],
+  "accuracy": 0.8620352250489237,
+  "balanced_accuracy": 0.7377572016460905,
+  "precision": 0.1986754966887417,
+  "recall": 0.6,
+  "f1": 0.29850746268656714,
+  "roc_auc": 0.8064300411522634,
+  "pr_auc": 0.15931387128748586
+}

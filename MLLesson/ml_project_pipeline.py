@@ -15,7 +15,9 @@ from sklearn.metrics import (
     confusion_matrix,
     f1_score,
     precision_score,
+    precision_recall_curve,
     recall_score,
+    roc_curve,
     roc_auc_score,
 )
 from sklearn.model_selection import train_test_split
@@ -41,12 +43,25 @@ def _choose_threshold(
         return best
 
     target_recall = float(np.clip(target_recall, 0.0, 1.0))
+    best_balanced_acc = -1.0
+    best_fp = None
 
     for t in thresholds:
-        y_pred = (proba >= t).astype(int)
-        p = float(precision_score(y_true, y_pred, zero_division=0))
-        r = float(recall_score(y_true, y_pred, zero_division=0))
-        f1 = float(f1_score(y_true, y_pred, zero_division=0))
+        pred = proba >= t
+        y_pos = y_true == 1
+        y_neg = ~y_pos
+
+        tp = int(np.sum(pred & y_pos))
+        fp = int(np.sum(pred & y_neg))
+        fn = int(np.sum((~pred) & y_pos))
+        tn = int(np.sum((~pred) & y_neg))
+
+        p = float(tp / (tp + fp)) if (tp + fp) > 0 else 0.0
+        r = float(tp / (tp + fn)) if (tp + fn) > 0 else 0.0
+        f1 = float((2.0 * p * r) / (p + r)) if (p + r) > 0 else 0.0
+
+        tnr = float(tn / (tn + fp)) if (tn + fp) > 0 else 0.0
+        balanced_acc = 0.5 * (r + tnr)
 
         if strategy == "f1":
             if f1 > best["f1"] or (f1 == best["f1"] and p > best["precision"]):
@@ -55,15 +70,36 @@ def _choose_threshold(
             if r >= target_recall:
                 if p > best["precision"] or (p == best["precision"] and f1 > best["f1"]):
                     best = {"threshold": float(t), "precision": p, "recall": r, "f1": f1}
+        elif strategy == "min_fp_at_recall":
+            if r >= target_recall:
+                if best_fp is None or fp < best_fp or (
+                    fp == best_fp and (p > best["precision"] or (p == best["precision"] and f1 > best["f1"]))
+                ):
+                    best = {"threshold": float(t), "precision": p, "recall": r, "f1": f1}
+                    best_fp = int(fp)
+        elif strategy == "balanced_accuracy":
+            if balanced_acc > best_balanced_acc or (
+                balanced_acc == best_balanced_acc and (f1 > best["f1"] or (f1 == best["f1"] and p > best["precision"]))
+            ):
+                best = {"threshold": float(t), "precision": p, "recall": r, "f1": f1}
+                best_balanced_acc = float(balanced_acc)
         else:
             raise ValueError(f"Unsupported threshold strategy: {strategy}")
 
-    if strategy == "precision_at_recall" and best["precision"] == 0.0 and best["recall"] == 0.0:
+    if strategy in {"precision_at_recall", "min_fp_at_recall"} and best["precision"] == 0.0 and best["recall"] == 0.0:
         for t in thresholds:
-            y_pred = (proba >= t).astype(int)
-            p = float(precision_score(y_true, y_pred, zero_division=0))
-            r = float(recall_score(y_true, y_pred, zero_division=0))
-            f1 = float(f1_score(y_true, y_pred, zero_division=0))
+            pred = proba >= t
+            y_pos = y_true == 1
+            y_neg = ~y_pos
+
+            tp = int(np.sum(pred & y_pos))
+            fp = int(np.sum(pred & y_neg))
+            fn = int(np.sum((~pred) & y_pos))
+            tn = int(np.sum((~pred) & y_neg))
+
+            p = float(tp / (tp + fp)) if (tp + fp) > 0 else 0.0
+            r = float(tp / (tp + fn)) if (tp + fn) > 0 else 0.0
+            f1 = float((2.0 * p * r) / (p + r)) if (p + r) > 0 else 0.0
             if r > best["recall"] or (r == best["recall"] and p > best["precision"]):
                 best = {"threshold": float(t), "precision": p, "recall": r, "f1": f1}
 
@@ -296,7 +332,9 @@ def train_stroke_classifier_with_model(
         "resample": resample,
         "target_pos_ratio": float(target_pos_ratio) if resample == "bootstrap" else None,
         "threshold_strategy": threshold_strategy,
-        "target_recall": float(target_recall) if threshold_strategy == "precision_at_recall" else None,
+        "target_recall": float(target_recall)
+        if threshold_strategy in {"precision_at_recall", "min_fp_at_recall"}
+        else None,
         "threshold_grid_size": int(threshold_grid_size),
         "selected_threshold": float(threshold),
         "val_precision": float(threshold_result["precision"]),
@@ -390,6 +428,134 @@ def predict_stroke(
     return out, eval_metrics
 
 
+def generate_slide_figures(
+    pipeline: object,
+    metrics: dict,
+    df: pd.DataFrame,
+    out_dir: Path,
+    threshold: float | None = None,
+    shap_max_samples: int = 1000,
+    shap_max_display: int = 25,
+    random_state: int = 42,
+) -> dict:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    target = str(metrics.get("target", "stroke"))
+    feature_engineering = str(metrics.get("feature_engineering", "none"))
+
+    df_eval = df.dropna(subset=[target]).copy() if target in df.columns else df.copy()
+    if target not in df_eval.columns:
+        raise ValueError("Figures require a dataset that includes the target column.")
+
+    df_eval[target] = pd.to_numeric(df_eval[target], errors="coerce").astype(int)
+    X_all = df_eval.drop(columns=[target, "id"], errors="ignore")
+    y_all = df_eval[target].to_numpy(dtype=int)
+    X_all = engineer_features(X_all, mode=feature_engineering)
+
+    _, X_test, _, y_test = train_test_split(
+        X_all, y_all, test_size=0.2, random_state=int(random_state), stratify=y_all
+    )
+    df_test = X_test.copy()
+    df_test[target] = y_test
+
+    preds, eval_metrics = predict_stroke(pipeline=pipeline, metrics=metrics, df=df_test, threshold=threshold)
+
+    if eval_metrics is None:
+        raise ValueError("Unable to compute evaluation metrics for figures.")
+
+    cm = eval_metrics["confusion_matrix"]
+    tn, fp, fn, tp = int(cm["tn"]), int(cm["fp"]), int(cm["fn"]), int(cm["tp"])
+    threshold_value = float(eval_metrics["threshold"])
+
+    cm_fig_path = out_dir / "confusion_matrix.png"
+    cm_mat = np.array([[tn, fp], [fn, tp]], dtype=int)
+    plt.figure(figsize=(6, 5))
+    plt.imshow(cm_mat, cmap="Blues")
+    plt.title(f"Confusion Matrix (threshold={threshold_value:.4f})")
+    plt.xticks([0, 1], ["Pred 0", "Pred 1"])
+    plt.yticks([0, 1], ["True 0", "True 1"])
+    for (i, j), v in np.ndenumerate(cm_mat):
+        plt.text(j, i, str(int(v)), ha="center", va="center", color="black")
+    plt.tight_layout()
+    plt.savefig(cm_fig_path, dpi=200, bbox_inches="tight")
+    plt.close()
+
+    y_true = preds["stroke_true"].to_numpy(dtype=int)
+    proba = preds["stroke_proba"].to_numpy(dtype=float)
+
+    roc_path = out_dir / "roc_curve.png"
+    fpr, tpr, _ = roc_curve(y_true, proba)
+    plt.figure(figsize=(6, 5))
+    plt.plot(fpr, tpr, linewidth=2)
+    plt.plot([0, 1], [0, 1], linestyle="--", linewidth=1)
+    plt.title(f"ROC Curve (AUC={eval_metrics['roc_auc']:.3f})")
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.tight_layout()
+    plt.savefig(roc_path, dpi=200, bbox_inches="tight")
+    plt.close()
+
+    pr_path = out_dir / "pr_curve.png"
+    precisions, recalls, _ = precision_recall_curve(y_true, proba)
+    plt.figure(figsize=(6, 5))
+    plt.plot(recalls, precisions, linewidth=2)
+    plt.title(f"Precision-Recall Curve (AP={eval_metrics['pr_auc']:.3f})")
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.tight_layout()
+    plt.savefig(pr_path, dpi=200, bbox_inches="tight")
+    plt.close()
+
+    hist_path = out_dir / "proba_histogram.png"
+    proba_0 = proba[y_true == 0]
+    proba_1 = proba[y_true == 1]
+    bins = np.linspace(0.0, 1.0, 26)
+    plt.figure(figsize=(7, 5))
+    plt.hist(proba_0, bins=bins, alpha=0.7, label="True 0", density=True)
+    plt.hist(proba_1, bins=bins, alpha=0.7, label="True 1", density=True)
+    plt.axvline(threshold_value, linestyle="--", linewidth=2)
+    plt.title("Predicted Probability Distribution")
+    plt.xlabel("stroke_proba")
+    plt.ylabel("Density")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(hist_path, dpi=200, bbox_inches="tight")
+    plt.close()
+
+    saved_shap = None
+    try:
+        shap_path = out_dir / "shap_summary.png"
+        saved_shap = generate_shap_summary_plot(
+            pipeline=pipeline,
+            metrics=metrics,
+            df=df,
+            out_path=shap_path,
+            max_samples=shap_max_samples,
+            max_display=shap_max_display,
+            random_state=random_state,
+        )
+    except ModuleNotFoundError:
+        saved_shap = None
+
+    return {
+        "figures_dir": str(out_dir),
+        "threshold": float(threshold_value),
+        "paths": {
+            "confusion_matrix": str(cm_fig_path),
+            "roc_curve": str(roc_path),
+            "pr_curve": str(pr_path),
+            "proba_histogram": str(hist_path),
+            "shap_summary": str(saved_shap) if saved_shap is not None else None,
+        },
+        "eval": eval_metrics,
+    }
+
+
 def generate_shap_summary_plot(
     pipeline: object,
     metrics: dict,
@@ -466,7 +632,11 @@ def main():
     parser.add_argument("--dataset", default=str(DATASET_PATH))
     parser.add_argument("--save", action="store_true")
     parser.add_argument("--random-state", type=int, default=42)
-    parser.add_argument("--threshold-strategy", choices=["precision_at_recall", "f1"], default="precision_at_recall")
+    parser.add_argument(
+        "--threshold-strategy",
+        choices=["precision_at_recall", "min_fp_at_recall", "f1", "balanced_accuracy"],
+        default="precision_at_recall",
+    )
     parser.add_argument("--target-recall", type=float, default=0.8)
     parser.add_argument("--threshold-grid-size", type=int, default=401)
     parser.add_argument("--model", choices=["logreg", "random_forest", "extra_trees"], default="logreg")
@@ -477,6 +647,11 @@ def main():
     parser.add_argument("--predict-input", default=None)
     parser.add_argument("--predict-output", default=None)
     parser.add_argument("--predict-threshold", type=float, default=None)
+    parser.add_argument("--predict-eval", choices=["holdout", "all", "none"], default="holdout")
+    parser.add_argument("--figures", action="store_true")
+    parser.add_argument("--figures-input", default=None)
+    parser.add_argument("--figures-dir", default=None)
+    parser.add_argument("--figures-threshold", type=float, default=None)
     parser.add_argument("--shap", action="store_true")
     parser.add_argument("--shap-input", default=None)
     parser.add_argument("--shap-output", default=None)
@@ -512,14 +687,50 @@ def main():
         pipeline, metrics = load_artifacts(task="stroke_classification", artifacts_dir=artifacts_dir)
         predict_input = Path(args.predict_input) if args.predict_input else Path(args.dataset)
         predict_df = load_stroke_dataset(predict_input)
+        target = str(metrics.get("target", "stroke"))
+        df_for_pred = predict_df
+        if args.predict_eval == "none" and target in df_for_pred.columns:
+            df_for_pred = df_for_pred.drop(columns=[target])
+        elif args.predict_eval == "holdout" and target in df_for_pred.columns:
+            df_eval = df_for_pred.dropna(subset=[target]).copy()
+            df_eval[target] = pd.to_numeric(df_eval[target], errors="coerce").astype(int)
+            y_eval = df_eval[target]
+            _, df_for_pred = train_test_split(
+                df_eval, test_size=0.2, random_state=int(args.random_state), stratify=y_eval
+            )
+
         preds, eval_metrics = predict_stroke(
-            pipeline=pipeline, metrics=metrics, df=predict_df, threshold=args.predict_threshold
+            pipeline=pipeline, metrics=metrics, df=df_for_pred, threshold=args.predict_threshold
         )
         if args.predict_output:
             out_path = Path(args.predict_output)
             out_path.write_text(preds.to_csv(index=False), encoding="utf-8")
             print(f"Saved: {out_path}")
-        result = {"task": "stroke_prediction", "rows": int(len(preds)), "eval": eval_metrics}
+        result = {
+            "task": "stroke_prediction",
+            "rows": int(len(preds)),
+            "eval_mode": str(args.predict_eval),
+            "eval": eval_metrics,
+        }
+        print(json.dumps(result, indent=2))
+        return
+
+    if args.figures:
+        artifacts_dir = Path(args.artifacts_dir)
+        pipeline, metrics = load_artifacts(task="stroke_classification", artifacts_dir=artifacts_dir)
+        figures_input = Path(args.figures_input) if args.figures_input else Path(args.dataset)
+        figures_df = load_stroke_dataset(figures_input)
+        out_dir = Path(args.figures_dir) if args.figures_dir else (artifacts_dir / "slide_figures")
+        result = generate_slide_figures(
+            pipeline=pipeline,
+            metrics=metrics,
+            df=figures_df,
+            out_dir=out_dir,
+            threshold=args.figures_threshold,
+            shap_max_samples=args.shap_max_samples,
+            shap_max_display=args.shap_max_display,
+            random_state=args.random_state,
+        )
         print(json.dumps(result, indent=2))
         return
 
