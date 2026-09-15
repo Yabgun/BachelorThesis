@@ -1,0 +1,71 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{TEMEL KAVRAMLAR}\label{CH2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Bu bölümde tezin dayandığı kavramlar özetlenmektedir: homomorfik şifreleme ve CKKS şeması, seçici homomorfik şifreleme ve bu tezde yeniden üretilen $\Pi_{\mathrm{ROI}}$ protokolü, kanıtlanabilir güvenlikteki ``izin verilen sızıntı'' kavramı ve bu sızıntının istismarı, tıbbi görüntülerdeki kısayol öğrenme olgusu ve kullanılan makine öğrenmesi modelleri ile değerlendirme ölçütleri.
+
+\section{Homomorfik Şifreleme}\label{sec:he}
+
+Homomorfik şifreleme (HE), şifreli veriler üzerinde çözme işlemi yapılmadan hesaplama yapılmasına izin veren şifreleme sistemlerinin genel adıdır. Bir HE şemasında $c_1,\ldots,c_n$ şifreli metinleri ve bir $f$ fonksiyonu için değerlendirme algoritması $c_{\mathrm{out}}$ şifreli sonucunu üretir ve bu sonuç çözüldüğünde $f(m_1,\ldots,m_n)$ elde edilir. İlk tam homomorfik şifreleme yapısı ideal kafesler üzerinde önerilmiştir \cite{gentry2009fhe}. Sonraki çalışmalar, özyükleme (bootstrapping) gerektirmeden belirli bir çarpma derinliğine kadar hesaplama yapan seviyeli şemaları geliştirmiştir \cite{brakerski2012leveled}. Bu tezde, gerçek sayılar üzerinde yaklaşık aritmetik sunan CKKS şeması kullanılmaktadır.
+
+\subsection{CKKS şeması}\label{sec:ckks}
+
+CKKS şeması \cite{cheon2017ckks} gerçek veya karmaşık sayı vektörlerini $R = \mathbb{Z}[X]/(X^N+1)$ polinom halkasının elemanlarına kodlar. $N$ polinom derecesi olmak üzere bir şifreli metin en fazla $N/2$ değer (slot) taşır; bu nedenle bir vektörün tüm elemanları tek bir şifreli metinde paketlenebilir ve eleman bazında paralel (SIMD) işlenebilir. Kodlama sırasında değerler $\Delta$ ölçek çarpanıyla büyütülüp tam sayıya yuvarlanır. Her çarpma işleminden sonra ölçek $\Delta^2$ düzeyine çıktığından, sonuç modül zincirindeki bir asal sayıya bölünerek yeniden ölçeklenir (rescaling) ve bir seviye tüketilir. Çözme işlemi mesajı küçük bir hata ile geri verir; bu nedenle CKKS sonuçları yaklaşık doğrudur.
+
+Bu tezde $\Pi_{\mathrm{ROI}}$ çalışmasıyla aynı parametreler kullanılmıştır: $N = 16384$ (dolayısıyla şifreli metin başına $8192$ slot), modül zinciri bit uzunlukları $[60, 40, 40, 40, 60]$ ve $\Delta = 2^{40}$. Bu yapı iki ardışık düz metin çarpımına yetecek seviye sağlar. Şifreli bir vektör ile açık bir ağırlık vektörünün iç çarpımı, eleman bazında düz metin çarpımı ve ardından slotların toplanmasıyla hesaplanır; toplama işlemi Galois anahtarlarıyla yapılan döndürmeler (rotations) gerektirir.
+
+\subsection{TenSEAL kütüphanesi}\label{sec:tenseal}
+
+TenSEAL \cite{benaissa2021tenseal}, Microsoft SEAL üzerine kurulu, CKKS şifreli vektör ve tensörler için Python arayüzü sunan açık kaynaklı bir kütüphanedir. $\Pi_{\mathrm{ROI}}$ protokolü deneylerinde TenSEAL kullanıldığı için, bu tezdeki yeniden üretim ve maliyet ölçümleri de aynı kütüphaneyle yapılmıştır.
+
+\section{Seçici Homomorfik Şifreleme}\label{sec:selective}
+
+Tam homomorfik şifrelemenin hesaplama ve iletişim maliyeti, verinin yalnızca bir bölümünü şifreleme fikrini doğurmuştur. Federatif öğrenmede bu fikir model güncellemelerinin bir alt kümesini şifreleme biçiminde uygulanmıştır. MaskCrypt, gradyan güdümlü bir maske ile şifrelenecek ağırlıkları seçer \cite{hu2025maskcrypt}. FAS, ağırlıkların bir yüzdesini şifreleyip geri kalanını diferansiyel mahremiyet ve bit karıştırma ile korur \cite{korkmaz2025fas}. SenseCrypt ise parametre duyarlılığına göre istemci bazında seçim yapar \cite{li2025sensecrypt}. Bu çalışmalar şifrelenmeyen güncellemelere yönelik saldırıları da değerlendirmektedir.
+
+Çıkarım aşamasında ise seçicilik, görüntünün yalnızca ilgi bölgesinin (region of interest, ROI) şifrelenmesi biçiminde önerilmiştir. 2026 yılında yayımlanan iki çalışma bu yaklaşımı temsil etmektedir. Birincisi bu tezde yeniden üretilen $\Pi_{\mathrm{ROI}}$ protokolüdür \cite{bakas2026roi}. İkincisi, ROI şifreli evrişimli ağ çıkarımında hız kazancının ağ mimarisinin yerelliğine bağlı olduğunu gösteren ``Encrypt What Matters'' çalışmasıdır \cite{backour2026encrypt}. Bu çalışmada ROI dışındaki değerler ve ROI'nin konumu açıkça ``bilerek açık bırakılan'' bilgi olarak tanımlanmıştır.
+
+\subsection{$\Pi_{\mathrm{ROI}}$ protokolü}\label{sec:piroi}
+
+$\Pi_{\mathrm{ROI}}$ protokolünde dört taraf bulunur: hesaplama parametrelerini sağlayan fonksiyon sahibi, hesaplamayı yürüten bulut hizmet sağlayıcı (sunucu), görüntüden ROI koordinatlarını, boyutunu ve şeklini çıkaran meta veri otoritesi ve veriyi gönderen analist (istemci). İstemci yalnızca ROI piksellerini FHE ile şifreler, geri kalan pikselleri açık gönderir. Sunucu ağırlık matrisini ROI ve ROI dışı sütunlara ayırarak
+
+\be
+c_{\mathrm{out}} = W_{\mathrm{ROI}} \cdot \mathrm{Enc}(\mathrm{ROI}) + W_{\mathrm{nonROI}} \cdot X_{\mathrm{nonROI}}
+\label{eq:piroi}
+\ee
+
+\noindent değerini hesaplar ve şifreli sonucu istemciye döndürür. Makaledeki deneylerde bu hesaplama $20 \times n$ ve $10 \times 20$ boyutlu iki lineer tur olarak uygulanmış, rastgele üretilmiş sentetik görüntülerle ROI oranı $\rho = 0.01$ iken $512 \times 512$ görüntüde 84 kata varan hızlanma bildirilmiştir.
+
+Protokolün güvenliği, benzetim tabanlı bir tanımla ve bir sızıntı fonksiyonuyla kanıtlanmıştır:
+
+\be
+\mathcal{L}(W, X_{\mathrm{nonROI}}, \mathrm{ROI}, \mathrm{mtd}) = \left(W,\; X_{\mathrm{nonROI}},\; f(\mathrm{mtd})\right)
+\label{eq:leakage}
+\ee
+
+\noindent Burada $f(\mathrm{mtd})$ ROI koordinatları, boyutu veya şekli gibi meta veriyi temsil eder; ayrıca sunucunun girdinin boyutunu öğrendiği belirtilmiştir. Kanıt, yarı dürüst bir sunucunun bu sızıntıdan \emph{fazlasını} öğrenemeyeceğini gösterir. Ancak bu sızıntının kendisinin, tıbbi görüntülerde ROI içeriği hakkında ne kadar bilgi taşıdığı değerlendirilmemiştir. Bu tezin çıkış noktası bu boşluktur.
+
+\section{İzin Verilen Sızıntı ve Sızıntı İstismarı Saldırıları}\label{sec:leakageabuse}
+
+Pratik şifreli sistemlerin çoğu, verimlilik için bazı bilgilerin sunucuya açık kalmasına izin verir ve güvenliklerini bu ``izin verilen sızıntı''ya göre kanıtlar. 2015 yılında şifreli veritabanları üzerinde yapılan çalışmalar, kanıtlanabilir güvenli sistemlerin izin verdiği sızıntının pratikte hassas verileri geri kazanmaya yettiğini göstermiştir. Sıra koruyan ve deterministik şifrelemeyle korunan sütunların yalnızca şifreli sütun ve kamuya açık yardımcı bilgi kullanılarak çözülebildiği gösterilmiştir \cite{naveed2015inference}. Aranabilir şifreleme ürünlerinin sızıntı profilleri sınıflandırılmış ve bu profillere dayanan sorgu ve düz metin kurtarma saldırıları geliştirilmiştir \cite{cash2015leakage}. Bu tür ``sızıntı istismarı'' (leakage-abuse) saldırıları, bir güvenlik kanıtının doğru olmasının, izin verilen sızıntının zararsız olduğu anlamına gelmediğini ortaya koymuştur. Bu tez, aynı soruyu ROI tabanlı seçici homomorfik şifreleme için sormaktadır.
+
+\section{Açık Bilgiden Gizli Bilgi Çıkarımı}\label{sec:inference}
+
+Bir sistemin açık bıraktığı özniteliklerden gizli özniteliklerin tahmin edilmesi farklı bağlamlarda incelenmiştir. Dikey federatif öğrenmede, model çıktısı ve saldırganın kendi öznitelikleri kullanılarak diğer tarafın özniteliklerinin çıkarılabildiği gösterilmiştir \cite{luo2021feature}. Öznitelik çıkarım saldırılarının önemli bir kısmının veri dağılımı biliniyorsa imputasyondan öteye geçmediği de tartışılmıştır \cite{jayaraman2022imputation}. Bu tezde saldırgan tam da bu biçimde çalışır: sunucunun gördüğü açık bölgeden ROI içeriğine dair klinik etiketi tahmin eder.
+
+Tıbbi görüntü sınıflandırmasında modellerin tanıyla ilgisiz ipuçlarını, yani ``kısayolları'' öğrenebildiği bilinmektedir. COVID-19 tespit eden derin öğrenme modellerinin hastalık bulguları yerine veri kaynağına özgü karıştırıcı etkenlere dayandığı gösterilmiştir \cite{degrave2021shortcuts}. Göğüs röntgenlerinde akciğerleri içeren merkez bölge karartıldığında bile benzer sınıflandırma başarısı elde edilebildiği raporlanmıştır \cite{maguolo2021critic}. Göğüs röntgenlerinin hastayı yeniden tanımlamaya yetecek biyometrik bilgi taşıdığı da gösterilmiştir \cite{packhauser2022reid}. Bu çalışmalar olguyu genelleme ve mahremiyet açısından ele almış, ancak seçici homomorfik şifrelemenin güvenliği bağlamında değerlendirmemiştir.
+
+\section{Kullanılan Modeller ve Ölçütler}\label{sec:models}
+
+\textbf{ResNet-18.} Artık bağlantılı evrişimli sinir ağı ailesinin 18 katmanlı üyesidir \cite{he2016resnet}. Bağlam saldırısında ImageNet üzerinde ön eğitilmiş ağırlıklarla başlatılıp ince ayar yapılmıştır.
+
+\textbf{U-Net.} Biyomedikal görüntü bölütleme için önerilen kodlayıcı-kod çözücü mimarisidir \cite{ronneberger2015unet}. Akciğer maskesi olmayan göğüs röntgenlerine maske üretmek için küçük bir U-Net eğitilmiştir.
+
+\textbf{Grad-CAM.} Bir sınıf skorunun son evrişim katmanı aktivasyonlarına göre gradyanlarını kullanarak modelin görüntünün hangi bölgelerine dayandığını gösteren ısı haritaları üretir \cite{selvaraju2017gradcam}.
+
+\textbf{Gradyan artırmalı karar ağaçları.} Meta veri saldırısında sayısal öznitelikler üzerinde histogram tabanlı gradyan artırma sınıflandırıcısı kullanılmıştır.
+
+\textbf{AUC ve güven aralıkları.} Saldırı başarısı alıcı işletim karakteristiği eğrisi altındaki alan (AUC) ile ölçülmüştür. AUC $0.5$ şans düzeyini, $1.0$ tam ayrımı gösterir. Çok sınıflı durumda makro ortalamalı bire karşı hepsi AUC kullanılmıştır. Güven aralıkları önyükleme (bootstrap) ile hesaplanmış; beyin MR verisinde aynı hastanın kesitleri birbirinden bağımsız olmadığı için yeniden örnekleme hasta düzeyinde yapılmıştır.
+
+\section{Çözülmüş Sonucun Paylaşılması ve CKKS Güvenliği}\label{sec:indcpad}
+
+CKKS şemasının standart IND-CPA güvenliği, çözülmüş sonuçların saldırgana verilmediği varsayımına dayanır. Çözülmüş yaklaşık sonucun sunucuyla paylaşıldığı senaryolarda gizli anahtarın kurtarılabildiği gösterilmiş ve bu durum IND-CPA-D güvenlik tanımıyla ifade edilmiştir \cite{limicciancio2021}. Ortalama durum tahminine dayanan gürültü taşırma (noise flooding) önlemlerinin de yetersiz kalabildiği gösterilmiştir \cite{guo2024keyrecovery}. Bu nedenle seçici şifreleme kullanan bir sağlık sisteminde çözülmüş sonuçların sunucuya geri gönderilmemesi ayrı bir tasarım kuralı olarak ele alınmalıdır.

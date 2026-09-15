@@ -1,0 +1,69 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{TARTIŞMA}\label{CH5}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Araştırma Sorularının Yanıtları}\label{sec:yanitlar}
+
+\textbf{AS1: Meta veri.} ROI'nin konumu, boyutu ve şekli tek başına teşhisi büyük ölçüde ele vermektedir: beyin MR verisinde tümör tipi AUC $0.83$, göğüs röntgeninde teşhis AUC $0.83$--$0.90$. Görüntülerin orijinal çözünürlükte gönderildiği bir sistemde girdi boyutu da teşhisi ele verebilmektedir (AUC $0.93$). Kesit yönü kontrolü, beyin MR verisindeki sızıntının yönden kaynaklanmadığını göstermiştir. $\Pi_{\mathrm{ROI}}$ protokolünün sızıntı fonksiyonu bu bilgilerin tamamını sunucuya serbest bırakmaktadır \cite{bakas2026roi}.
+
+\textbf{AS2: Açık bağlam.} ROI dışındaki bağlam teşhisi neredeyse ROI'nin kendisi kadar iyi ele vermektedir. Beyin MR verisinde tümör gizliyken AUC $0.976$, göğüs röntgeninde akciğerler gizliyken $0.993$ bulunmuştur. Başka bir kaynaktan veriyle eğitilen saldırgan da pnömoniyi AUC $0.94$--$0.997$ ile tahmin etmiştir. Bu nedenle tehdit, eğitim ve testin aynı kümeden gelmesinin bir yan etkisi değildir.
+
+\textbf{AS3: Sızıntının kaynağı.} Saldırgan akciğerin dışındaki geniş bir bağlamı kullanmaktadır: görüntü kenarı, kalp ve mediasten, göğüs duvarı ve ROI'nin şekli. Beyin MR görüntüsünde beynin geri kalanı ve kafa dışı arka plan öne çıkmıştır. Histogram eşitleme ve kenar gizleme gibi basit önişleme adımları sızıntıyı gidermemiştir. Bu bulgu, sızıntının yalnızca görüntü kenarındaki yazı ve işaret gibi yüzeysel izlerden kaynaklanmadığını göstermektedir.
+
+\textbf{AS4: Bedel.} Saldırgan AUC'sini $0.8$'in altına indirmek için göğüs röntgeninin \%98'inin, beyin MR görüntüsünün ise tamamının şifrelenmesi gerekmiştir. Bu noktalarda protokolün hız kazancı $512 \times 512$ görüntülerde sırasıyla 1.02 ve 1.00 kattır. Başka bir deyişle, gizlilik şartı konduğu anda seçici şifrelemenin verimlilik avantajı ortadan kalkmaktadır.
+
+\section{Seçici Şifreleme Literatürü İçin Anlamı}\label{sec:anlam}
+
+$\Pi_{\mathrm{ROI}}$ protokolünün güvenlik kanıtı doğrudur: sunucu, sızıntı fonksiyonunun izin verdiğinden fazlasını öğrenmez. Sorun, izin verilen sızıntının tıbbi görüntüler için fazla cömert olmasıdır. Bu durum, şifreli veritabanlarında izin verilen sızıntının istismarını gösteren çalışmalarla aynı yapıdadır \cite{naveed2015inference,cash2015leakage}. Tıbbi görüntülerde ROI dışındaki bölge ile ROI geometrisi, şifreli bölgenin klinik içeriğiyle güçlü biçimde ilişkilidir ve bu nedenle ``hassas olmayan'' kabul edilemez.
+
+``Encrypt What Matters'' çalışması, ROI şifreli çıkarımda hız kazancının ROI boyutu küçüldükçe ve mimarinin yerelliği arttıkça büyüdüğünü göstermiştir \cite{backour2026encrypt}. Bu tezin bulguları, gizlilik şartı konduğunda şifrelenmesi gereken alanın görüntünün neredeyse tamamına ulaştığını göstermektedir. Bu nedenle o çalışmadaki yerellik avantajının da benzer biçimde azalması beklenir. Ancak evrişimli ağlar için şifreli çıkarım maliyeti bu tezde ölçülmemiştir.
+
+Tıbbi görüntülerdeki kısayol öğrenme olgusu \cite{degrave2021shortcuts,maguolo2021critic}, tanı modelleri açısından bir genelleme sorunu olarak ele alınmıştır. Bu tez aynı olgunun seçici şifreleme açısından bir gizlilik açığı olduğunu göstermektedir. Sunucu açısından, teşhisi ele veren ipucunun klinik bir bulgu mu yoksa çekim koşullarına bağlı bir iz mi olduğu fark etmez; her iki durumda da şifreli bölgenin içeriği sızmaktadır.
+
+\section{Tasarım Kuralları}\label{sec:kurallar}
+
+Bulgulara dayanarak seçici homomorfik şifreleme kullanacak sağlık sistemleri için aşağıdaki kurallar önerilmektedir:
+
+\begin{enumerate}
+\item \textbf{ROI geometrisi görüntüye bağlı olmamalıdır.} Görüntüye göre değişen ROI, konumu ve şekliyle teşhisi ele verir. ROI tüm görüntülerde aynı olmalı, görüntüler sabit bir boyuta getirilmelidir.
+\item \textbf{Şifrelenecek alan sızıntı ölçülerek belirlenmelidir.} ROI seçimi, temsil edici veri üzerinde savunmaya uyum sağlayan bir saldırganla ölçülen sızıntıya dayanmalıdır. Bu tezde geliştirilen değerlendirme boru hattı bu amaçla kullanılabilir.
+\item \textbf{Katı gizlilik gereksiniminde tam şifreleme varsayılan olmalıdır.} Tıbbi görüntülerde teşhisin gizlenmesi isteniyorsa, bulgular görüntünün neredeyse tamamının şifrelenmesi gerektiğini göstermektedir. Seçici şifreleme ancak ölçülen sızıntının kabul edilebilir olduğu durumlarda tercih edilmelidir.
+\item \textbf{Çözülmüş sonuç sunucuya geri gönderilmemelidir.} Çözülmüş CKKS sonuçlarının paylaşılması gizli anahtarın kurtarılmasına yol açabilir \cite{limicciancio2021,guo2024keyrecovery}. Bu tez kapsamında yapılan kavram kanıtı denemesinde, TenSEAL ile ($N = 8192$) toplu işlenen iki şifreli sonucun tam hassasiyetli çözülmüş değerleri paylaşıldığında gizli anahtar 0.15 saniyede kurtarılmıştır. Değerlerin 4 ondalığa yuvarlanması bu basit saldırıyı durdurmuş, ancak bu durum güvenliğin kanıtı sayılmamalıdır.
+\item \textbf{Değerlendirme hijyeni sağlanmalıdır.} Şans düzeyine yakın sonuçlar ölçülürken 16 bit hassasiyet ve sınıfa göre sıralı test verisi sahte AUC değerleri üretebilmektedir; bu tezde özdeş girdilerde $0.421$ gözlenmiştir. Tahminler 32 bit hassasiyetle ve karışık sırada hesaplanmalı, tamamen gizli bir kontrol görüşü her deneye eklenmelidir.
+\end{enumerate}
+
+\section{Tablo Verisinde Seçici Şifreleme Üzerine Not}\label{sec:tablo}
+
+TÜBİTAK önerisi aşamasında öznitelik düzeyinde seçici CKKS şifrelemesi, Kaggle'da yayımlanmış bir inme veri kümesi üzerinde lojistik regresyonla ön çalışma olarak denenmiştir. Bu ön çalışmada üç gözlem yapılmıştır.
+
+\begin{itemize}
+\item Tam şifreli lojistik regresyon çıkarımı zaten ucuzdur: tek hasta için yaklaşık 15 ms, 1.022 hastanın toplu işlenmesi için yaklaşık 96 ms. Bu nedenle seçici şifrelemenin maliyet avantajı ihmal edilebilir düzeydedir.
+\item Açık bırakılan yarı tanımlayıcılar şifreli öznitelikleri sızdırmaktadır: hipertansiyon AUC $0.79$, kalp hastalığı $0.85$, sigara kullanımı $0.57$--$0.59$.
+\item Model skorunun sunucuya açılması, şifreli özniteliklerin doğrusal denklemlerle kurtarılmasına izin verir; bu, dikey federatif öğrenmede gösterilmiş bilinen bir saldırıdır \cite{luo2021feature}.
+\end{itemize}
+
+Açık özniteliklerden gizli özniteliğin tahmini ise büyük ölçüde imputasyon niteliğindedir \cite{jayaraman2022imputation}. Tablo verisinde bu olgular literatürde bilindiği ve homomorfik şifrelemenin maliyeti küçük olduğu için, tez özgün katkısını şifreleme maliyetinin gerçekten yüksek olduğu tıbbi görüntüler üzerine kurmuştur.
+
+\section{TÜBİTAK 2209-A Başarı Ölçütlerinin Değerlendirilmesi}\label{sec:tubitakolcut}
+
+Öneride iki başarı ölçütü tanımlanmıştı: şifresiz duruma göre saldırı başarısında en az \%20 düşüş ve tam homomorfik şifrelemeye göre işlem süresinde en az \%30 azalma.
+
+\begin{itemize}
+\item \textbf{Süre ölçütü.} $\Pi_{\mathrm{ROI}}$'nin varsayılan kullanımında karşılanmaktadır: $512 \times 512$ görüntüde göğüs röntgeni için yaklaşık 4 kat, beyin MR görüntüsü için 24 kat hızlanma elde edilmiştir.
+\item \textbf{Saldırı ölçütü.} Aynı varsayılan kullanımda karşılanmamıştır: saldırgan AUC değeri göğüs röntgeninde $0.997$'den $0.993$'e, beyin MR verisinde $0.985$'ten $0.976$'ya inmiştir. Göğüs röntgeninde \%20'lik düşüş ancak görüntünün \%98'i şifrelendiğinde sağlanmış (AUC $0.776$), beyin MR verisinde ise yalnızca tam şifrelemeyle mümkün olmuştur.
+\item \textbf{İkisi birlikte.} Bu deneylerde iki ölçüt aynı anda karşılanamamıştır; saldırı ölçütünün sağlandığı noktada hız kazancı \%2'nin altındadır.
+\end{itemize}
+
+Bu sonuç önerinin hipotezini doğrulamamakla birlikte, önerinin temel sorusuna nicel ve bilimsel olarak anlamlı bir yanıt vermektedir: tıbbi görüntülerde ROI tabanlı seçici homomorfik şifreleme, saldırıları anlamlı düzeyde azaltırken maliyeti düşük tutamamaktadır.
+
+\section{Sınırlılıklar}\label{sec:sinirliliklar}
+
+\begin{itemize}
+\item \textbf{Veri kümeleri.} COVID-QU-Ex birden fazla kaynaktan derlenmiştir. Kaggle kümesinin büyük bölümü COVID-QU-Ex içinde yer almaktadır ve iki küme aynı çocuk hastalar kaynağını paylaşmaktadır. Beyin MR kümesi iki hastaneden gelmektedir. Çekim koşullarına bağlı karıştırıcı etkenler mutlak AUC değerlerini yükseltmiş olabilir. Ancak bu tür etkenler gerçek sistemlerde de bulunduğu için bulgunun güvenlik açısından önemini azaltmaz.
+\item \textbf{Tohum sayısı.} Meta veri saldırısı ve bağlam saldırısının ana görüşleri 5 tohumla tekrarlanmıştır. Diğer görüşler, gerçekçilik testi, kök neden analizi ve savunma deneyleri tek tohumla yapılmıştır.
+\item \textbf{Savunma saldırganları.} Savunma saldırganları daha az veriyle eğitildiği için raporlanan sızıntı alt sınır niteliğindedir.
+\item \textbf{Açıklanabilirlik analizi.} Grad-CAM haritaları $7 \times 7$ çözünürlükten büyütüldüğü için bölge payları yön göstericidir. Kesit yönü tahmini sagital kesitlerde güvenilir, aksiyel ve koronal kesitlerde kısmen doğrudur.
+\item \textbf{Savunma ayrıntısı.} Sızıntı-güdümlü seçim $8 \times 8$ yama ızgarasıyla sınırlıdır; daha ince bir ızgara biraz daha verimli seçimler bulabilir.
+\item \textbf{Maliyet ölçümü.} Maliyet $\Pi_{\mathrm{ROI}}$'deki lineer hesaplama yapısıyla ve tek bir bilgisayarda ölçülmüştür; evrişimli ağlar için şifreli çıkarım maliyeti ölçülmemiştir.
+\item \textbf{Tehdit modeli.} Yalnızca yarı dürüst sunucu incelenmiştir.
+\end{itemize}

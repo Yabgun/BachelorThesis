@@ -1,0 +1,58 @@
+# ============================================================
+# Kisisel calisma notlari ve planlar (repoya gitmez)
+# ============================================================
+/DEVAM_NOTU.md
+/COZUM_PLANI.md
+/COZUM_ARASTIRMASI.md
+/YENI_SOHBET_PROMPTU.md
+/TEZ_PLANI_v3.md
+
+# ============================================================
+# Kisisel belgeler ve eski arsiv
+# ============================================================
+/belgeler/
+/_arsiv/
+
+# ============================================================
+# LaTeX: yalnizca guncel tez (2ASILTEZ) gider.
+# tez-yazim kokundeki eski kopyalar, TUBITAK basvuru formu,
+# VS Code gecmisi (.history) ve YalinTez haric tutulur.
+# ============================================================
+/tez-yazim/*
+!/tez-yazim/2ASILTEZ/
+
+# ============================================================
+# LaTeX ara ve cikti dosyalari
+# ============================================================
+*.aux
+*.log
+*.bbl
+*.blg
+*.toc
+*.lof
+*.lot
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.bak
+*.backup
+tez.pdf
+
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.pyc
+.venv/
+
+# ============================================================
+# Isletim sistemi
+# ============================================================
+Thumbs.db
+desktop.ini
+.history/
+
+# Not: roi-leakage/.gitignore da gecerlidir; ham veri (data/),
+# sanal ortam, gunlukler, kontrol noktalari ve tahminler
+# (results/logs, results/checkpoints, results/preds) haric tutulur.
