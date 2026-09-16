@@ -2,7 +2,7 @@
 \chapter{TEMEL KAVRAMLAR}\label{CH2}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Bu bölümde tezin dayandığı kavramlar özetlenmektedir: homomorfik şifreleme ve CKKS şeması, seçici homomorfik şifreleme ve bu tezde yeniden üretilen $\Pi_{\mathrm{ROI}}$ protokolü, kanıtlanabilir güvenlikteki ``izin verilen sızıntı'' kavramı ve bu sızıntının istismarı, tıbbi görüntülerdeki kısayol öğrenme olgusu ve kullanılan makine öğrenmesi modelleri ile değerlendirme ölçütleri.
+Bu bölümde tezin dayandığı kavramlar özetlenmektedir: homomorfik şifreleme ve CKKS şeması, seçici homomorfik şifreleme ve bu tezde yeniden üretilen $\Pi_{\mathrm{ROI}}$ protokolü, kanıtlanabilir güvenlikteki ``izin verilen sızıntı'' kavramı ve bu sızıntının istismarı, tıbbi görüntülerdeki kısayol öğrenme olgusu, gizlilik ile fayda arasındaki kuramsal ilişki, şifreli çıkarıma uygun modeller, odaklı temsil ve kullanılan makine öğrenmesi modelleri ile değerlendirme ölçütleri.
 
 \section{Homomorfik Şifreleme}\label{sec:he}
 
@@ -12,17 +12,17 @@ Homomorfik şifreleme (HE), şifreli veriler üzerinde çözme işlemi yapılmad
 
 CKKS şeması \cite{cheon2017ckks} gerçek veya karmaşık sayı vektörlerini $R = \mathbb{Z}[X]/(X^N+1)$ polinom halkasının elemanlarına kodlar. $N$ polinom derecesi olmak üzere bir şifreli metin en fazla $N/2$ değer (slot) taşır; bu nedenle bir vektörün tüm elemanları tek bir şifreli metinde paketlenebilir ve eleman bazında paralel (SIMD) işlenebilir. Kodlama sırasında değerler $\Delta$ ölçek çarpanıyla büyütülüp tam sayıya yuvarlanır. Her çarpma işleminden sonra ölçek $\Delta^2$ düzeyine çıktığından, sonuç modül zincirindeki bir asal sayıya bölünerek yeniden ölçeklenir (rescaling) ve bir seviye tüketilir. Çözme işlemi mesajı küçük bir hata ile geri verir; bu nedenle CKKS sonuçları yaklaşık doğrudur.
 
-Bu tezde $\Pi_{\mathrm{ROI}}$ çalışmasıyla aynı parametreler kullanılmıştır: $N = 16384$ (dolayısıyla şifreli metin başına $8192$ slot), modül zinciri bit uzunlukları $[60, 40, 40, 40, 60]$ ve $\Delta = 2^{40}$. Bu yapı iki ardışık düz metin çarpımına yetecek seviye sağlar. Şifreli bir vektör ile açık bir ağırlık vektörünün iç çarpımı, eleman bazında düz metin çarpımı ve ardından slotların toplanmasıyla hesaplanır; toplama işlemi Galois anahtarlarıyla yapılan döndürmeler (rotations) gerektirir.
+Bu tezde $\Pi_{\mathrm{ROI}}$ çalışmasıyla aynı parametreler kullanılmıştır: $N = 16384$ (dolayısıyla şifreli metin başına $8192$ slot), modül zinciri bit uzunlukları $[60, 40, 40, 40, 60]$ ve $\Delta = 2^{40}$. Zincirdeki üç adet 40 bitlik asal, üç yeniden ölçeklemeye, örneğin iki düz metin çarpımı ile aralarındaki bir kare alma işlemine yeter. Şifreli bir vektör ile açık bir ağırlık vektörünün iç çarpımı, eleman bazında düz metin çarpımı ve ardından slotların toplanmasıyla hesaplanır; toplama işlemi Galois anahtarlarıyla yapılan döndürmeler (rotations) gerektirir.
 
 \subsection{TenSEAL kütüphanesi}\label{sec:tenseal}
 
-TenSEAL \cite{benaissa2021tenseal}, Microsoft SEAL üzerine kurulu, CKKS şifreli vektör ve tensörler için Python arayüzü sunan açık kaynaklı bir kütüphanedir. $\Pi_{\mathrm{ROI}}$ protokolü deneylerinde TenSEAL kullanıldığı için, bu tezdeki yeniden üretim ve maliyet ölçümleri de aynı kütüphaneyle yapılmıştır.
+TenSEAL \cite{benaissa2021tenseal}, Microsoft SEAL üzerine kurulu, CKKS şifreli vektör ve tensörler için Python arayüzü sunan açık kaynaklı bir kütüphanedir. $\Pi_{\mathrm{ROI}}$ protokolü deneylerinde TenSEAL kullanıldığı için, bu tezdeki yeniden üretim, önerilen yöntem ve maliyet ölçümleri de aynı kütüphaneyle yapılmıştır.
 
 \section{Seçici Homomorfik Şifreleme}\label{sec:selective}
 
 Tam homomorfik şifrelemenin hesaplama ve iletişim maliyeti, verinin yalnızca bir bölümünü şifreleme fikrini doğurmuştur. Federatif öğrenmede bu fikir model güncellemelerinin bir alt kümesini şifreleme biçiminde uygulanmıştır. MaskCrypt, gradyan güdümlü bir maske ile şifrelenecek ağırlıkları seçer \cite{hu2025maskcrypt}. FAS, ağırlıkların bir yüzdesini şifreleyip geri kalanını diferansiyel mahremiyet ve bit karıştırma ile korur \cite{korkmaz2025fas}. SenseCrypt ise parametre duyarlılığına göre istemci bazında seçim yapar \cite{li2025sensecrypt}. Bu çalışmalar şifrelenmeyen güncellemelere yönelik saldırıları da değerlendirmektedir.
 
-Çıkarım aşamasında ise seçicilik, görüntünün yalnızca ilgi bölgesinin (region of interest, ROI) şifrelenmesi biçiminde önerilmiştir. 2026 yılında yayımlanan iki çalışma bu yaklaşımı temsil etmektedir. Birincisi bu tezde yeniden üretilen $\Pi_{\mathrm{ROI}}$ protokolüdür \cite{bakas2026roi}. İkincisi, ROI şifreli evrişimli ağ çıkarımında hız kazancının ağ mimarisinin yerelliğine bağlı olduğunu gösteren ``Encrypt What Matters'' çalışmasıdır \cite{backour2026encrypt}. Bu çalışmada ROI dışındaki değerler ve ROI'nin konumu açıkça ``bilerek açık bırakılan'' bilgi olarak tanımlanmıştır.
+Çıkarım aşamasında ise seçicilik, görüntünün yalnızca ilgi bölgesinin (region of interest, ROI) şifrelenmesi biçiminde önerilmiştir. 2026 yılında yayımlanan iki çalışma bu yaklaşımı temsil etmektedir. Birincisi bu tezde yeniden üretilen $\Pi_{\mathrm{ROI}}$ protokolüdür \cite{bakas2026roi}. İkincisi, ROI şifreli evrişimli ağ çıkarımında hız kazancının ağ mimarisinin yerelliğine bağlı olduğunu gösteren ``Encrypt What Matters'' çalışmasıdır \cite{backour2026encrypt}. Bu çalışmada ROI dışındaki değerler ve ROI'nin konumu açıkça ``bilerek açık bırakılan'' bilgi olarak tanımlanmıştır. Bi-CryptoNets ise gizliliği bölgeye göre farklılaştırır: girdinin hassas parçası homomorfik olarak şifrelenir, geri kalanı gürültü eklenerek açık işlenir \cite{yuan2024bicryptonets}.
 
 \subsection{$\Pi_{\mathrm{ROI}}$ protokolü}\label{sec:piroi}
 
@@ -54,17 +54,45 @@ Bir sistemin açık bıraktığı özniteliklerden gizli özniteliklerin tahmin 
 
 Tıbbi görüntü sınıflandırmasında modellerin tanıyla ilgisiz ipuçlarını, yani ``kısayolları'' öğrenebildiği bilinmektedir. COVID-19 tespit eden derin öğrenme modellerinin hastalık bulguları yerine veri kaynağına özgü karıştırıcı etkenlere dayandığı gösterilmiştir \cite{degrave2021shortcuts}. Göğüs röntgenlerinde akciğerleri içeren merkez bölge karartıldığında bile benzer sınıflandırma başarısı elde edilebildiği raporlanmıştır \cite{maguolo2021critic}. Göğüs röntgenlerinin hastayı yeniden tanımlamaya yetecek biyometrik bilgi taşıdığı da gösterilmiştir \cite{packhauser2022reid}. Bu çalışmalar olguyu genelleme ve mahremiyet açısından ele almış, ancak seçici homomorfik şifrelemenin güvenliği bağlamında değerlendirmemiştir.
 
+\section{Gizlilik ile Fayda Arasındaki Kuramsal İlişki}\label{sec:privacyutility}
+
+Gizlilik hunisi çerçevesi, faydalı bir bilgiyi aktarırken gizli bir bilgiyi olabildiğince az sızdıran veri dönüşümlerini bilgi kuramı açısından tanımlar \cite{makhdoumi2014funnel}. Çekişmeli temsil öğrenmesi üzerine yapılan çalışmalar, gizlenmek istenen öznitelik görevle ilişkili olduğunda görev başarısı ile gizlilik arasında aşılamayan bir ödünleşim bulunduğunu göstermiştir \cite{zhao2020tradeoffs}.
+
+Seçici şifreleme bu çerçevenin uç bir örneğidir. Sunucunun teşhis hesaplamasında kullandığı açık bölge, teşhisle ilişkili olduğu ölçüde saldırgan için de bilgi taşır. Tıbbi görüntülerde hastalığın izleri ROI'nin dışına da yayıldığından (Bölüm \ref{sec:res:root}), açık bırakılan bölgenin hem modele yararlı hem saldırgana yararsız olması beklenemez. Aynı nedenle açık bölgenin gürültü veya bulanıklıkla bozulması da ancak faydayı bozduğu ölçüde gizlilik sağlayabilir; bulanıklaştırma ve pikselleştirmenin derin öğrenmeyle aşılabildiği bilinmektedir \cite{mcpherson2016obfuscation}. Bu tezde bu sonuçlar bir teorem olarak değil, deney bulgularının yorumlanmasına ve önerilen yöntemin tasarımına yol gösteren bir açıklama olarak kullanılmıştır: teşhis gizlenecekse açık bilgi bırakılmamalı, verimlilik başka bir yoldan elde edilmelidir.
+
+\section{Şifreli Çıkarıma Uygun Modeller}\label{sec:hemodels}
+
+CKKS ile şifreli veride toplama ve çarpma yapılabilir; ancak her çarpma bir seviye tüketir ve ReLU gibi karşılaştırmaya dayalı doğrusal olmayan işlemler doğrudan hesaplanamaz. Bu nedenle şifreli çıkarımda polinomlarla ifade edilebilen ve çarpma derinliği küçük modeller tercih edilir. CryptoNets, doğrusal olmayan aktivasyon olarak kare alma işlemini kullanarak bu kısıtın pratikte aşılabileceğini göstermiştir \cite{giladbachrach2016cryptonets}. Bu tezde üç model sınıfı kullanılmıştır:
+
+\begin{itemize}
+\item \textbf{Model D:} Aralarında aktivasyon olmayan iki tam bağlantılı katman ($20$ gizli birim). $\Pi_{\mathrm{ROI}}$ protokolündeki iki lineer turun eğitilmiş karşılığıdır. Aktivasyon olmadığı için 20 veya daha az sınıfta çok sınıflı doğrusal sınıflandırıcıya denktir.
+\item \textbf{Model D2:} Aynı yapının iki katmanı arasına kare aktivasyon eklenmiş hâli.
+\item \textbf{Model C:} Her girdi katmanı için adımı çekirdek boyutuna eşit tek bir evrişim, yığın normalizasyonu \cite{ioffe2015batchnorm}, kare aktivasyon ve tam bağlantılı çıkış katmanı. Çekirdekler örtüşmediğinden evrişim, pencerelerin satırlara dizildiği bir matris çarpımı olarak şifreli hesaplanabilir.
+\end{itemize}
+
+Eğitimde kullanılan standartlaştırma ve yığın normalizasyonu, eğitim bittikten sonra ilk doğrusal katmanın ağırlık ve sapmasına katlanır. Böylece şifreli hesaplamada yalnızca doğrusal işlemler ve en fazla bir kare alma kalır ve Bölüm \ref{sec:ckks}'deki parametreler yeterli olur.
+
+\textbf{Şifreli özet.} Başka bir yaklaşım, görüntünün önceden eğitilmiş bir ağla istemcide kısa bir öznitelik vektörüne (özete) dönüştürülmesi ve yalnızca bu özetin şifrelenmesidir. Sunucu özet üzerinde küçük bir sınıflandırıcıyı şifreli olarak çalıştırır. HETAL, önceden eğitilmiş modelin özniteliklerini şifreleyerek bu fikri verimli şifreli aktarım öğrenmesi için kullanmıştır \cite{lee2023hetal}. Bu yaklaşımda açık piksel kalmaz; ancak istemcide büyük bir ağın çalıştırılması gerekir.
+
+\section{Odaklı Temsil}\label{sec:foveated}
+
+İnsan gözü, bakılan noktayı retinadaki fovea bölgesiyle keskin, görüş alanının geri kalanını daha düşük çözünürlükle algılar. Bilgisayarlı görmede bu düzen, seçilen bir konumun çevresinde merkezden dışa doğru çözünürlüğü azalan çok ölçekli ``bakış'' temsilleriyle taklit edilmiştir \cite{mnih2014attention}. Göğüs röntgeni sınıflandırmasında da tüm görüntünün genel görünümü ile dikkat haritasından kesilen ayrıntılı bölgenin birlikte kullanılması başarıyı artırmıştır \cite{guan2018agcnn}.
+
+Bu tezde önerilen odaklı temsil üç parçadan oluşur: ROI'yi kapsayan kare pencerenin yüksek çözünürlüklü örneği (odak), tüm görüntünün düşük çözünürlüklü örneği (genel bakış) ve pencerenin konumu ile boyutunu veren üç sayı. Bu parçaların boyutları her görüntüde aynıdır. Temsilin tamamı şifrelendiğinde sunucu yalnızca herkese açık, sabit uzunlukları görür. Bu özellik, şifreli veri yapılarında yanıt hacminin gizlenmesine \cite{kamara2019volume} ve güvenilir donanımda nesne boyutlarının sabit boyuta getirilerek gizlenmesine \cite{poddar2020visor} benzer. Küçük resmi bilerek açık bırakan şifreleme yaklaşımından \cite{tajik2019tpe} farkı ise genel bakışın da şifrelenmesidir. Temsilin ayrıntılı tanımı Bölüm \ref{sec:foveahe}'da verilmiştir.
+
 \section{Kullanılan Modeller ve Ölçütler}\label{sec:models}
 
-\textbf{ResNet-18.} Artık bağlantılı evrişimli sinir ağı ailesinin 18 katmanlı üyesidir \cite{he2016resnet}. Bağlam saldırısında ImageNet üzerinde ön eğitilmiş ağırlıklarla başlatılıp ince ayar yapılmıştır.
+\textbf{ResNet-18.} Artık bağlantılı evrişimli sinir ağı ailesinin 18 katmanlı üyesidir \cite{he2016resnet}. Bağlam saldırısında ve odaklı temsilin bilgi üst sınırı deneyinde ImageNet \cite{deng2009imagenet} üzerinde ön eğitilmiş ağırlıklarla başlatılıp ince ayar yapılmış, şifreli özet yaklaşımında ise dondurulmuş öznitelik çıkarıcı olarak kullanılmıştır.
 
 \textbf{U-Net.} Biyomedikal görüntü bölütleme için önerilen kodlayıcı-kod çözücü mimarisidir \cite{ronneberger2015unet}. Akciğer maskesi olmayan göğüs röntgenlerine maske üretmek için küçük bir U-Net eğitilmiştir.
 
 \textbf{Grad-CAM.} Bir sınıf skorunun son evrişim katmanı aktivasyonlarına göre gradyanlarını kullanarak modelin görüntünün hangi bölgelerine dayandığını gösteren ısı haritaları üretir \cite{selvaraju2017gradcam}.
 
-\textbf{Gradyan artırmalı karar ağaçları.} Meta veri saldırısında sayısal öznitelikler üzerinde histogram tabanlı gradyan artırma sınıflandırıcısı kullanılmıştır.
+\textbf{Gradyan artırmalı karar ağaçları.} Meta veri saldırısında ve önerilen yöntemin sızıntı denetiminde sayısal öznitelikler üzerinde histogram tabanlı gradyan artırma sınıflandırıcısı kullanılmıştır.
 
-\textbf{AUC ve güven aralıkları.} Saldırı başarısı alıcı işletim karakteristiği eğrisi altındaki alan (AUC) ile ölçülmüştür. AUC $0.5$ şans düzeyini, $1.0$ tam ayrımı gösterir. Çok sınıflı durumda makro ortalamalı bire karşı hepsi AUC kullanılmıştır. Güven aralıkları önyükleme (bootstrap) ile hesaplanmış; beyin MR verisinde aynı hastanın kesitleri birbirinden bağımsız olmadığı için yeniden örnekleme hasta düzeyinde yapılmıştır.
+\textbf{AUC ve güven aralıkları.} Saldırı ve teşhis başarısı alıcı işletim karakteristiği eğrisi altındaki alan (AUC) ile ölçülmüştür. AUC $0.5$ şans düzeyini, $1.0$ tam ayrımı gösterir. Çok sınıflı durumda makro ortalamalı bire karşı hepsi AUC kullanılmıştır. Güven aralıkları önyükleme (bootstrap) ile hesaplanmış; beyin MR verisinde aynı hastanın kesitleri birbirinden bağımsız olmadığı için yeniden örnekleme hasta düzeyinde yapılmıştır.
+
+\textbf{Permütasyon testi.} Bir saldırganın başarısının şans düzeyinden ayırt edilip edilemeyeceği etiket permütasyon testiyle sınanmıştır: etiketler rastgele karıştırılarak aynı saldırı çok sayıda tekrarlanır ve gerçek AUC değerinin bu boş dağılımla karşılaştırılmasından bir $p$ değeri elde edilir \cite{ojala2010permutation}.
 
 \section{Çözülmüş Sonucun Paylaşılması ve CKKS Güvenliği}\label{sec:indcpad}
 

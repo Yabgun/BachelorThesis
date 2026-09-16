@@ -2,7 +2,7 @@
 \chapter{BULGULAR}\label{CH4}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Bu bölümde Bölüm \ref{CH3}'te açıklanan deneylerin sonuçları, araştırma sorularının sırasıyla sunulmaktadır. Aksi belirtilmedikçe CNN tabanlı saldırılarda AUC değerleri tek eğitim tohumuna, meta veri saldırısında ise 5 tohumun ortalamasına aittir.
+Bu bölümde Bölüm \ref{CH3}'te açıklanan deneylerin sonuçları, araştırma sorularının sırasıyla sunulmaktadır. Bölüm \ref{sec:res:piroi}--\ref{sec:res:defense} saldırı ve savunma deneylerini, Bölüm \ref{sec:res:fovinfo}--\ref{sec:res:generalization} önerilen FoveaHE yönteminin deneylerini kapsar. Meta veri saldırısında AUC değerleri 5 tohumun ortalamasıdır. Bağlam saldırısının ana görüşlerinde ve çözüm deneylerinin ana yapılandırmalarında 5 tohumun ortalaması ve standart sapması, diğer CNN tabanlı deneylerde tek tohum değerleri verilmiştir.
 
 \section{$\Pi_{\mathrm{ROI}}$ Yeniden Üretiminin Doğruluğu ve Maliyeti}\label{sec:res:piroi}
 
@@ -11,7 +11,7 @@ Bu bölümde Bölüm \ref{CH3}'te açıklanan deneylerin sonuçları, araştırm
 \textbf{Maliyet.} Çizelge \ref{tbl:maliyet} ve Şekil \ref{fig:piroi}, şifreli alan oranına göre maliyeti göstermektedir. Hız kazancını belirleyen temel etken şifreli metin sayısıdır. $64 \times 64$ görüntünün tamamı tek bir şifreli metne sığdığı için bu çözünürlükte seçici şifreleme en fazla 1.60 kat hızlanma sağlamıştır. $512 \times 512$ görüntülerde hız kazancı \%1 ROI'de 27.3 kata ulaşmış, \%25 ROI'de 3.95 kata inmiştir. Bu ikinci değer, $\Pi_{\mathrm{ROI}}$ makalesinde aynı oran için bildirilen yaklaşık 4 katlık kazançla uyumludur \cite{bakas2026roi}. Makalede \%1 ROI için bildirilen 84 katlık kazancın bizim ölçümümüzden yüksek olması, bizim tam şifreleme uygulamamızın tek şifreli metne paketleme ve 2'nin kuvvetine tamamlama sayesinde daha verimli olmasından kaynaklanmaktadır. Şifreli alan büyüdükçe kazanç hızla erimektedir: \%75 ROI'de 1.35, \%90 ROI'de 1.09 kat.
 
 \begin{table*}[h!]
-{\setlength{\tabcolsep}{7pt}
+{\setlength{\tabcolsep}{5pt}
 \caption{Şifreli alan oranına göre $\Pi_{\mathrm{ROI}}$ yeniden üretiminin maliyeti.}
 \begin{center}
 \vspace{-6mm}
@@ -51,6 +51,7 @@ $\rho$ & Hız kazancı & Şifreli metin & Toplam süre (s) & Hız kazancı & Yü
 \caption{Yalnızca ROI meta verisi ve girdi boyutuyla teşhis tahmini (AUC).}
 \begin{center}
 \vspace{-6mm}
+{\small
 \begin{tabular}{lllccc}
 \hline\hline
 Veri & Hedef & ROI & Öznitelikler & AUC & \%95 GA \\
@@ -73,7 +74,7 @@ COVID-QU-Ex & Teşhis (3 sınıf) & Akciğer & Konum & 0.729 & 0.720--0.739 \\
 Kaggle & Normal / pnömoni & -- & Girdi boyutu & 0.934 & -- \\
  & Normal / COVID-19 & -- & Girdi boyutu & 0.920 & -- \\
 \hline
-\end{tabular}
+\end{tabular}}
 \vspace{-6mm}
 \end{center}
 \label{tbl:saldiriA}}
@@ -109,7 +110,7 @@ Meta veri, yalnızca sagital kesitler & 969 & 0.891 \\
 
 \begin{figure}[h!]
  \centering
- \includegraphics[width=15cm,keepaspectratio=true]{./fig/beyin_kesit_yonu_tahmini}
+ \includegraphics[width=\textwidth,keepaspectratio=true]{./fig/beyin_kesit_yonu_tahmini}
  \caption{Tahmin edilen kesit yönlerinden rastgele örnekler (satırlar: aksiyel, koronal, sagital). Görsel denetimde sagital grubun 12 örneğin 12'si, aksiyel grubun yaklaşık 9--10'u, koronal grubun yaklaşık 8'i doğru bulunmuştur.}
  \label{fig:yon}
 \end{figure}
@@ -119,89 +120,92 @@ Meta veri, yalnızca sagital kesitler & 969 & 0.891 \\
 Çizelge \ref{tbl:saldiriB}, sunucunun gördüğü görüntüyle eğitilen CNN saldırganının sonuçlarını göstermektedir.
 
 \begin{table*}[h!]
-{\setlength{\tabcolsep}{6pt}
-\caption{Bağlam saldırısında görüşe göre gizli alan oranı ve saldırgan AUC değeri.}
+{\setlength{\tabcolsep}{4pt}
+\caption{Bağlam saldırısında görüşe göre gizli alan oranı ve saldırgan AUC değeri ($\pm$ olan satırlar 5 tohumun ortalaması ve standart sapması, diğerleri tek tohumdur).}
 \begin{center}
 \vspace{-6mm}
+{\small
 \begin{tabular}{lcccc}
 \hline\hline
 & \multicolumn{2}{c}{Beyin MR (tümör tipi)} & \multicolumn{2}{c}{COVID-QU-Ex (teşhis)} \\
 Görüş & Gizli alan & AUC & Gizli alan & AUC \\
 \hline
-Tam (şifresiz) & 0.000 & 0.985 & 0.000 & 0.997 \\ % TOHUM: 5 tohum ortalamasiyla guncellenecek
-Yalnız ROI & 0.983 & 0.979 & 0.765 & 0.990 \\
-Bağlam ($\Pi_{\mathrm{ROI}}$ görüşü) & 0.017 & 0.976 & 0.235 & 0.993 \\ % TOHUM: guncellenecek
-Bağlam + 10 piksel & 0.051 & 0.973 & 0.425 & 0.992 \\
-Bağlam + 20 piksel & 0.101 & 0.968 & 0.609 & 0.989 \\
-Bağlam + 40 piksel & 0.248 & 0.966 & 0.874 & 0.958 \\ % TOHUM: guncellenecek
-ROI sınırlayıcı kutusu & 0.025 & 0.974 & 0.513 & 0.984 \\
+Tam (şifresiz) & 0.000 & $0.9852 \pm 0.0006$ & 0.000 & $0.9966 \pm 0.0002$ \\
+Yalnız ROI & 0.983 & 0.9781 & 0.765 & 0.9905 \\
+Bağlam ($\Pi_{\mathrm{ROI}}$ görüşü) & 0.017 & $0.9765 \pm 0.0009$ & 0.235 & $0.9932 \pm 0.0001$ \\
+Bağlam + 10 piksel & 0.051 & 0.9717 & 0.425 & 0.9915 \\
+Bağlam + 20 piksel & 0.101 & 0.9671 & 0.609 & 0.9890 \\
+Bağlam + 40 piksel & 0.248 & $0.9671 \pm 0.0021$ & 0.874 & $0.9556 \pm 0.0012$ \\
+ROI sınırlayıcı kutusu & 0.025 & 0.9732 & 0.513 & 0.9839 \\
 \hline
-\end{tabular}
+\end{tabular}}
 \vspace{-6mm}
 \end{center}
 \label{tbl:saldiriB}}
 \end{table*}
 
-Her iki veri kümesinde de ROI'nin gizlenmesi saldırıyı neredeyse hiç zayıflatmamıştır. Beyin MR verisinde AUC $0.985$'ten $0.976$'ya, göğüs röntgeninde $0.997$'den $0.993$'e inmiştir. Göğüs röntgeninde akciğerler 40 piksel genişletilerek görüntünün \%87'si gizlendiğinde bile AUC $0.958$ kalmış, normal ile pnömoni ayrımı $0.951$ olmuştur. Yalnızca ROI'nin görüldüğü referans görüşte AUC değerlerinin ($0.979$ ve $0.990$) bağlam görüşüyle aynı düzeyde olması, ROI dışındaki bağlamın teşhis için ROI'nin kendisi kadar bilgi taşıdığını göstermektedir.
+Her iki veri kümesinde de ROI'nin gizlenmesi saldırıyı neredeyse hiç zayıflatmamıştır. Beyin MR verisinde AUC $0.985$'ten $0.977$'ye, göğüs röntgeninde $0.997$'den $0.993$'e inmiştir; 5 tohumda standart sapma $0.001$'in altındadır. Göğüs röntgeninde akciğerler 40 piksel genişletilerek görüntünün \%87'si gizlendiğinde bile AUC $0.956$ kalmış, normal ile pnömoni ayrımı $0.950$ olmuştur. Yalnızca ROI'nin görüldüğü referans görüşte AUC değerlerinin ($0.978$ ve $0.990$) bağlam görüşüyle aynı düzeyde olması, ROI dışındaki bağlamın teşhis için ROI'nin kendisi kadar bilgi taşıdığını göstermektedir.
 
 \section{Gerçekçilik Testi}\label{sec:res:transfer}
 
 Kaggle görüntülerine akciğer maskesi üretmek için eğitilen U-Net, COVID-QU-Ex doğrulama bölmesinde Dice benzerliği $0.978$'e ulaşmıştır. Üretilen 6.432 maskenin hiçbirinde akciğer alanı görüntünün \%5'inden küçük çıkmamış, maskeler görsel denetimde de doğru bulunmuştur (Şekil \ref{fig:maske}). Tekrar eden görüntüler çıkarıldıktan sonra Kaggle kümesinde 340 normal ve 1.157 pnömoni görüntüsü kalmıştır. Çizelge \ref{tbl:transfer} kümeler arası sonuçları vermektedir.
 
 \begin{table*}[h!]
-{\setlength{\tabcolsep}{5pt}
+{\setlength{\tabcolsep}{3pt}
 \caption{Saldırganın farklı bir kaynaktan veriyle eğitildiği gerçekçilik testi (normal / pnömoni, AUC ve \%95 GA).}
 \begin{center}
 \vspace{-6mm}
+{\footnotesize
 \begin{tabular}{lcccc}
 \hline\hline
 Eğitim $\rightarrow$ test & Eğitim & Test & Tam görüntü & Akciğer gizli \\
 \hline
-COVID-QU-Ex $\rightarrow$ Kaggle & 17.571 & 1.497 & 0.999 (0.998--1.000) & 0.997 (0.995--0.999) \\
-Kaggle $\rightarrow$ COVID-QU-Ex & 1.215 & 4.393 & 0.924 (0.916--0.932) & 0.938 (0.931--0.945) \\
-COVID-QU-Ex $\rightarrow$ COVID-QU-Ex & 17.571 & 4.393 & 0.992 & 0.983 \\
+COVID-QU-Ex $\rightarrow$ Kaggle & 17.571 & 1.497 & 0.999 (0.998--1.000) & 0.998 (0.996--0.999) \\
+Kaggle $\rightarrow$ COVID-QU-Ex & 1.215 & 4.393 & 0.928 (0.921--0.936) & 0.934 (0.928--0.941) \\
+COVID-QU-Ex $\rightarrow$ COVID-QU-Ex & 17.571 & 4.393 & 0.992 & 0.984 \\
 \hline
-\end{tabular}
+\end{tabular}}
 \vspace{-6mm}
 \end{center}
 \label{tbl:transfer}}
 \end{table*}
 
-Hastanenin verisine hiç erişmeden, başka bir kaynaktan eğitilen saldırgan akciğerlerin şifreli olduğu görüntülerde pnömoniyi AUC $0.938$--$0.997$ ile bulmuştur. Küçük Kaggle kümesiyle eğitilen saldırganın akciğerler gizliyken daha iyi genellemesi ($0.924$'e karşı $0.938$), kaynaklar arasında taşınan bilginin önemli bölümünün akciğer dışında olduğuna işaret etmektedir. Kaggle kümesindeki normal ve pnömoni görüntüleri ile COVID-QU-Ex'in bir bölümü aynı çocuk hastalar kaynağından derlendiği için, bu test tamamen bağımsız bir hastane testi değildir (Bölüm \ref{sec:sinirliliklar}).
+Hastanenin verisine hiç erişmeden, başka bir kaynaktan eğitilen saldırgan akciğerlerin şifreli olduğu görüntülerde pnömoniyi AUC $0.934$--$0.998$ ile bulmuştur. Küçük Kaggle kümesiyle eğitilen saldırganın akciğerler gizliyken daha iyi genellemesi ($0.928$'e karşı $0.934$), kaynaklar arasında taşınan bilginin önemli bölümünün akciğer dışında olduğuna işaret etmektedir. Kaggle kümesindeki normal ve pnömoni görüntüleri ile COVID-QU-Ex'in bir bölümü aynı çocuk hastalar kaynağından derlendiği için, bu test tamamen bağımsız bir hastane testi değildir (Bölüm \ref{sec:sinirliliklar}).
 
 \begin{figure}[h!]
  \centering
- \includegraphics[width=15cm,keepaspectratio=true]{./fig/kaggle_akciger_maskeleri_kontrol}
+ \includegraphics[width=\textwidth,keepaspectratio=true]{./fig/kaggle_akciger_maskeleri_kontrol}
  \caption{Kaggle göğüs röntgenlerine U-Net ile üretilen akciğer maskelerinden rastgele örnekler (satırlar: normal, pnömoni, COVID-19; sayı akciğer alanı oranıdır).}
  \label{fig:maske}
 \end{figure}
 
 \section{Sızıntının Kaynağı}\label{sec:res:root}
 
-Çizelge \ref{tbl:gradcamcxr} ve Çizelge \ref{tbl:gradcambeyin}, bağlam görüşüyle eğitilen saldırganın Grad-CAM dikkat kütlesinin bölgelere dağılımını göstermektedir. Ortalama haritalar Şekil \ref{fig:camcxr} ve Şekil \ref{fig:cambeyin}'de verilmiştir.
+Çizelge \ref{tbl:gradcamcxr} ve Çizelge \ref{tbl:gradcambeyin}, bağlam görüşüyle eğitilen saldırganın Grad-CAM dikkat kütlesinin bölgelere dağılımını göstermektedir. Ortalama haritalar Şekil \ref{fig:camcxr} ve Şekil \ref{fig:cambeyin}'te verilmiştir.
 
 \begin{table*}[h!]
-{\setlength{\tabcolsep}{4pt}
+{\setlength{\tabcolsep}{3pt}
 \caption{Göğüs röntgeninde Grad-CAM dikkat kütlesinin bölgelere dağılımı.}
 \begin{center}
 \vspace{-6mm}
+{\footnotesize
 \begin{tabular}{lcccccc}
 \hline\hline
 Sınıf & Akciğer (gizli) & Kenar çerçeve & Akciğer üstü & Akciğer altı & Akciğerler arası & Yanlar \\
 \hline
-COVID-19 & 0.290 & 0.264 & 0.022 & 0.074 & 0.175 & 0.174 \\
-Pnömoni & 0.255 & 0.270 & 0.032 & 0.057 & 0.186 & 0.198 \\
-Normal & 0.280 & 0.262 & 0.042 & 0.049 & 0.222 & 0.144 \\
-Tümü & 0.275 & 0.265 & 0.032 & 0.060 & 0.194 & 0.173 \\
+COVID-19 & 0.287 & 0.263 & 0.022 & 0.075 & 0.176 & 0.177 \\
+Pnömoni & 0.259 & 0.257 & 0.030 & 0.060 & 0.191 & 0.201 \\
+Normal & 0.283 & 0.269 & 0.040 & 0.048 & 0.213 & 0.147 \\
+Tümü & 0.276 & 0.263 & 0.030 & 0.061 & 0.193 & 0.175 \\
 \hline
-\end{tabular}
+\end{tabular}}
 \vspace{-6mm}
 \end{center}
 \label{tbl:gradcamcxr}}
 \end{table*}
 
 \begin{table*}[h!]
-{\setlength{\tabcolsep}{10pt}
+{\setlength{\tabcolsep}{7pt}
 \caption{Beyin MR görüntüsünde Grad-CAM dikkat kütlesinin bölgelere dağılımı.}
 \begin{center}
 \vspace{-6mm}
@@ -209,10 +213,10 @@ Tümü & 0.275 & 0.265 & 0.032 & 0.060 & 0.194 & 0.173 \\
 \hline\hline
 Sınıf & Tümör (gizli) & Tümör çevresi & Beynin geri kalanı & Arka plan \\
 \hline
-Meningiom & 0.030 & 0.092 & 0.456 & 0.374 \\
-Gliom & 0.033 & 0.103 & 0.433 & 0.431 \\
-Hipofiz & 0.026 & 0.133 & 0.725 & 0.115 \\
-Tümü & 0.030 & 0.109 & 0.525 & 0.323 \\
+Meningiom & 0.032 & 0.099 & 0.485 & 0.300 \\
+Gliom & 0.033 & 0.104 & 0.440 & 0.423 \\
+Hipofiz & 0.024 & 0.124 & 0.720 & 0.132 \\
+Tümü & 0.030 & 0.109 & 0.534 & 0.305 \\
 \hline
 \end{tabular}
 \vspace{-6mm}
@@ -220,18 +224,18 @@ Tümü & 0.030 & 0.109 & 0.525 & 0.323 \\
 \label{tbl:gradcambeyin}}
 \end{table*}
 
-Göğüs röntgeninde saldırganın dikkati akciğerin dışında geniş bir bağlama yayılmıştır: kenar çerçeve (\%27), kalp ve mediasteni içeren akciğerler arası bölge (\%19) ve göğüs yanları (\%17). Normal sınıfında akciğerler arası bölgenin payı daha yüksektir (\%22). Gizli akciğer bölgesinin de \%28 pay alması iki nedene bağlanmaktadır. Birincisi, son evrişim bloğundaki $7 \times 7$ çözünürlüklü haritanın büyütülürken sınırlardan taşmasıdır. İkincisi, saldırganın gösterge kanalı üzerinden akciğerin şeklini kullanabilmesidir. Beyin MR görüntüsünde dikkatin yarısı beynin geri kalanında, üçte biri kafa dışı arka plandadır. Gliom ve meningiom sınıflarında arka planın payının yüksek olması (\%37--43), görüntüleme alanına veya cihaza özgü izlerin de sızıntıya katkı sağladığına işaret etmektedir. Bu yorum Bölüm \ref{sec:res:defense}'daki savunma bulgusuyla da tutarlıdır: kafa dışında açık kalan 8 piksel bile tümör tipini ele vermektedir.
+Göğüs röntgeninde saldırganın dikkati akciğerin dışında geniş bir bağlama yayılmıştır: kenar çerçeve (\%26), kalp ve mediasteni içeren akciğerler arası bölge (\%19) ve göğüs yanları (\%18). Normal sınıfında akciğerler arası bölgenin payı daha yüksektir (\%21). Gizli akciğer bölgesinin de \%28 pay alması iki nedene bağlanmaktadır. Birincisi, son evrişim bloğundaki $7 \times 7$ çözünürlüklü haritanın büyütülürken sınırlardan taşmasıdır. İkincisi, saldırganın gösterge kanalı üzerinden akciğerin şeklini kullanabilmesidir. Beyin MR görüntüsünde dikkatin yarısından fazlası beynin geri kalanında (\%53), yaklaşık üçte biri kafa dışı arka plandadır (\%31). Gliom ve meningiom sınıflarında arka planın payının yüksek olması (\%30--42), görüntüleme alanına veya cihaza özgü izlerin de sızıntıya katkı sağladığına işaret etmektedir. Bu yorum Bölüm \ref{sec:res:defense}'daki savunma bulgusuyla da tutarlıdır: kafa dışında açık kalan 8 piksel bile tümör tipini ele vermektedir.
 
 \begin{figure}[h!]
  \centering
- \includegraphics[width=15cm,keepaspectratio=true]{./fig/kok_neden_gradcam_covidqu}
+ \includegraphics[width=\textwidth,keepaspectratio=true]{./fig/kok_neden_gradcam_covidqu}
  \caption{COVID-QU-Ex verisinde akciğerler gizliyken saldırganın sınıf bazında ortalama Grad-CAM haritaları (camgöbeği çizgi ortalama akciğer sınırıdır).}
  \label{fig:camcxr}
 \end{figure}
 
 \begin{figure}[h!]
  \centering
- \includegraphics[width=15cm,keepaspectratio=true]{./fig/kok_neden_gradcam_brain}
+ \includegraphics[width=\textwidth,keepaspectratio=true]{./fig/kok_neden_gradcam_brain}
  \caption{Beyin MR verisinde tümör gizliyken saldırganın sınıf bazında ortalama Grad-CAM haritaları.}
  \label{fig:cambeyin}
 \end{figure}
@@ -250,7 +254,7 @@ Göğüs röntgeninde saldırganın dikkati akciğerin dışında geniş bir ba�
 Yok & 0.993 \\
 Histogram eşitleme & 0.993 \\
 Dış kenarın \%5'inin gizlenmesi & 0.993 \\
-Dış kenarın \%10'unun gizlenmesi & 0.991 \\
+Dış kenarın \%10'unun gizlenmesi & 0.990 \\
 Histogram eşitleme ve \%10 kenar gizleme & 0.988 \\
 \hline
 \end{tabular}
@@ -264,13 +268,14 @@ Histogram eşitleme ve \%10 kenar gizleme & 0.988 \\
 Çizelge \ref{tbl:savunma}, savunma politikalarının seçilmiş noktalarını; Şekil \ref{fig:savcxr} ve Şekil \ref{fig:savbeyin} ise tüm eğrileri göstermektedir. Tamamen gizli kontrol görüşünde her iki veri kümesinde de AUC $0.500$ bulunmuş ve değerlendirme boru hattının doğru çalıştığı doğrulanmıştır.
 
 \begin{table*}[h!]
-{\setlength{\tabcolsep}{5pt}
-\caption{Savunma politikalarında şifreli alan oranı, saldırgan AUC değeri ve protokol maliyetine göre hız kazancı.}
+{\setlength{\tabcolsep}{4pt}
+\caption{Savunma politikalarında şifreli alan oranı, saldırgan AUC değeri ve protokol maliyetine göre hız kazancı (kat).}
 \begin{center}
 \vspace{-6mm}
+{\small
 \begin{tabular}{llcccc}
 \hline\hline
-Veri & Politika & $\rho$ & AUC & Hız kazancı ($256^2$) & Hız kazancı ($512^2$) \\
+Veri & Politika & $\rho$ & AUC & Hız ($256^2$) & Hız ($512^2$) \\
 \hline
 COVID-QU-Ex & Varsayılan ROI (akciğer) & 0.234 & 0.990 & 4.04 & 4.17 \\
  & Kanonik ROI & 0.633 & 0.974 & 1.49 & 1.57 \\
@@ -288,7 +293,7 @@ Beyin MR & Varsayılan ROI (tümör) & 0.016 & 0.941 & 8.65 & 24.24 \\
  & Kanonik ROI + 64 piksel & 0.9998 & 0.619 & 1.00 & 1.00 \\
  & Tamamen gizli (kontrol) & 1.000 & 0.500 & 1.00 & 1.00 \\
 \hline
-\end{tabular}
+\end{tabular}}
 \vspace{-6mm}
 \end{center}
 \label{tbl:savunma}}
@@ -312,4 +317,345 @@ Sızıntı-güdümlü seçim, göğüs röntgeninde aynı şifreli alanda rastge
  \includegraphics[width=12cm,keepaspectratio=true]{./fig/savunma_brain}
  \caption{Beyin MR verisinde savunma politikalarının şifreli alan oranına göre saldırgan AUC eğrileri.}
  \label{fig:savbeyin}
+\end{figure}
+
+\section{Odaklı Temsilde Teşhis Bilgisinin Korunması}\label{sec:res:fovinfo}
+
+Çizelge \ref{tbl:fovbilgi}, odaklı temsillerin ve referansların ResNet-18 ile ölçülen teşhis başarısını göstermektedir. Seçilen iki yapılandırma da bilgi kaybı ölçütünü ($\leq 0.02$) her iki veri kümesinde tek bir şifreli metne sığarak karşılamıştır. Beyin MR verisinde odaklı temsiller tam görüntünün üstüne çıkmıştır: tam görüntü $0.9841$, F32\_G16 $0.9919$, F64\_G32 $0.9936$. Göğüs röntgeninde kayıp en fazla $0.0027$'dir.
+
+\begin{table*}[h!]
+{\setlength{\tabcolsep}{3pt}
+\caption{Odaklı temsil ve referansların ResNet-18 ile ölçülen teşhis başarısı (makro AUC, 5 tohumun ortalaması ve standart sapması). Kayıp, aynı tohumdaki tam görüntüye göre farktır; negatif değer kazanç demektir.}
+\begin{center}
+\vspace{-6mm}
+{\footnotesize
+\begin{tabular}{lccccc}
+\hline\hline
+& & \multicolumn{2}{c}{Beyin MR (tümör tipi)} & \multicolumn{2}{c}{COVID-QU-Ex (teşhis)} \\
+Temsil & Değer & AUC & Kayıp & AUC & Kayıp \\
+\hline
+Tam görüntü (224 piksel) & 50.176 & $0.9841 \pm 0.0011$ & -- & $0.9964 \pm 0.0001$ & -- \\
+Tam görüntü + ROI penceresi & 50.179 & $0.9909 \pm 0.0011$ & $-0.0068$ & -- & -- \\
+F32\_G16 & 1.283 & $0.9919 \pm 0.0009$ & $-0.0078$ & $0.9937 \pm 0.0001$ & $0.0027$ \\
+F64\_G32 & 5.123 & $0.9936 \pm 0.0006$ & $-0.0095$ & $0.9951 \pm 0.0003$ & $0.0013$ \\
+U32 & 1.024 & $0.9793 \pm 0.0015$ & $0.0048$ & $0.9940 \pm 0.0002$ & $0.0024$ \\
+U32 + ROI penceresi & 1.027 & $0.9880 \pm 0.0011$ & $-0.0039$ & -- & -- \\
+U64 & 4.096 & $0.9844 \pm 0.0009$ & $-0.0003$ & $0.9950 \pm 0.0002$ & $0.0014$ \\
+U64 + ROI penceresi & 4.099 & $0.9893 \pm 0.0011$ & $-0.0052$ & -- & -- \\
+U90 & 8.100 & $0.9866 \pm 0.0017$ & $-0.0025$ & -- & -- \\
+U90 + ROI penceresi & 8.103 & $0.9910 \pm 0.0014$ & $-0.0069$ & -- & -- \\
+\hline
+\end{tabular}}
+\vspace{-6mm}
+\end{center}
+\label{tbl:fovbilgi}}
+\end{table*}
+
+Beyin MR verisindeki kazancın kaynağı ROI penceresi referanslarıyla ayrıştırılmıştır. Tam görüntüye yalnızca pencerenin konumunu gösteren kanal eklendiğinde AUC $0.9909$'a çıkmış ve artış 5 tohumun 5'inde görülmüştür; yani kazancın büyük bölümü ROI'nin konum ve boyut bilgisinden gelmektedir. Buna karşın aynı konum bilgisi verildiğinde de odaklı temsil eş bütçeli küçültmenin önünde kalmıştır. F32\_G16, U32 + ROI penceresinden $0.0039$; F64\_G32, U64 + ROI penceresinden $0.0043$ ve tam görüntü + ROI penceresinden $0.0027$ daha yüksektir ve fark her üç karşılaştırmada 5 tohumun 5'inde aynı yöndedir. Çözünürlüğün odağa verilmesinin katkısı küçük ama tutarlıdır ve tam görüntünün yaklaşık 10 ile 40 katı daha az değerle elde edilmektedir.
+
+Göğüs röntgeninde akciğer penceresi görüntünün neredeyse tamamını kapsadığından odaklı temsil eş bütçeli küçültmeyle aynı sonucu vermiştir: F32\_G16 ile U32 arasındaki fark $-0.0003$, F64\_G32 ile U64 arasındaki fark $0.0001$'dir. Şekil \ref{fig:fovbilgi}, tek tohumla taranan tüm yapılandırmaları şifrelenen değer sayısına göre göstermektedir.
+
+\begin{figure}[h!]
+ \centering
+ \includegraphics[width=13cm,keepaspectratio=true]{./fig/cozum_bilgi_egrisi_tez}
+ \caption{Şifrelenen değer sayısına göre ResNet-18 ile ölçülen teşhis AUC değeri (üstte beyin MR, altta COVID-QU-Ex). Mavi noktalar odaklı temsilleri, turuncu çizgi eş örnekli küçültmeyi, içi boş turuncu işaretler ROI penceresi referanslarını, yeşil noktalar yalnız odak temsillerini gösterir. Yatay çizgiler tam görüntü ve tam görüntü + ROI penceresi değerleri, dikey çizgi tek şifreli metnin kapasitesidir. Hata çubukları 5 tohumun standart sapmasıdır; hata çubuğu olmayan noktalar tek tohumludur.}
+ \label{fig:fovbilgi}
+\end{figure}
+
+\section{Şifreli Çalışabilen Modellerin Teşhis Başarısı}\label{sec:res:fovmodel}
+
+Çizelge \ref{tbl:fovmodel}, şifreli çalışabilen modellerin 5 tohumlu teşhis başarısını göstermektedir. Seçici şifreleme model çıktısını değiştirmediği için tam görüntü sütunundaki Model D değeri $\Pi_{\mathrm{ROI}}$ protokolünün teşhis başarısıdır. Model kaybı ölçütü ($\leq 0.03$) iki veri kümesinde, üç model sınıfında ve iki yapılandırmada karşılanmış; odaklı temsil her durumda tam görüntünün üstüne çıkmıştır.
+
+\begin{table*}[h!]
+{\setlength{\tabcolsep}{5pt}
+\caption{Şifreli çalışabilen modellerin temsile göre teşhis başarısı (makro AUC, 5 tohumun ortalaması ve standart sapması). Tam görüntü, beyin MR verisinde $512 \times 512$, göğüs röntgeninde $256 \times 256$ piksel özgün çözünürlüktür.}
+\begin{center}
+\vspace{-6mm}
+{\small
+\begin{tabular}{llcccc}
+\hline\hline
+Veri & Model & Tam görüntü & F32\_G16 & F64\_G32 & U64 \\
+\hline
+Beyin MR & D & $0.881 \pm 0.004$ & $0.948 \pm 0.001$ & $0.945 \pm 0.002$ & $0.882 \pm 0.002$ \\
+ & D2 & $0.872 \pm 0.006$ & $0.909 \pm 0.006$ & $0.910 \pm 0.005$ & $0.864 \pm 0.005$ \\
+ & C & $0.852 \pm 0.008$ & $0.944 \pm 0.006$ & $0.927 \pm 0.014$ & $0.848 \pm 0.008$ \\
+\hline
+COVID-QU-Ex & D & $0.895 \pm 0.006$ & $0.915 \pm 0.002$ & $0.915 \pm 0.002$ & $0.865 \pm 0.002$ \\
+ & D2 & $0.946 \pm 0.001$ & $0.954 \pm 0.002$ & $0.952 \pm 0.001$ & $0.938 \pm 0.002$ \\
+ & C & $0.925 \pm 0.009$ & $0.930 \pm 0.002$ & $0.935 \pm 0.002$ & $0.917 \pm 0.004$ \\
+\hline
+\end{tabular}}
+\vspace{-6mm}
+\end{center}
+\label{tbl:fovmodel}}
+\end{table*}
+
+Kazanç beyin MR verisinde büyüktür: Model D'de $0.881$'den $0.948$'e, Model C'de $0.852$'den $0.944$'e yükselmiştir. Göğüs röntgeninde en başarılı model sınıfı olan D2'de başarı $0.946$'dan $0.954$'e çıkmıştır. Eş bütçeli küçültme (U64) ise tam görüntünün önüne geçememiş, göğüs röntgeninde Model D'de tam görüntünün $0.030$ gerisinde kalmıştır. Bu durum, sığ modellerin ROI'yi kendi başına bulamamasıyla açıklanabilir: odaklı temsil ROI'yi modele merkezlenmiş ve yüksek çözünürlüklü olarak sunmaktadır. Ayar aramasında hiçbir seçim arama sınırına dayanmamış, aktarılan ağırlıklar ile eğitilmiş model arasındaki en büyük fark $10^{-4}$'ün altında kalmıştır.
+
+\section{Şifreli Çıkarımın Doğruluğu ve Maliyeti}\label{sec:res:fovcost}
+
+Şifreli çıkarım şifresiz çıkarımla aynı sonucu vermiştir. İki veri kümesinde, üç model sınıfında ve üç yapılandırmada test bölmesinden seçilen 120 görüntüde en büyük logit farkı $1.6 \times 10^{-4}$, tahmin uyumu \%100 ve AUC farkı $0$ bulunmuş; şifreli doğruluk ölçütü ($\leq 0.005$) karşılanmıştır.
+
+Çizelge \ref{tbl:fovcost} maliyet dökümünü vermektedir. FoveaHE temsili Model D ve D2'de tek bir şifreli metne, Model C'de katman başına bir şifreli metne sığdığı için sunucu süresi görüntü boyutundan bağımsızdır: Model D ve D2'de yaklaşık 1.2--1.5 saniye, Model C'de yaklaşık 0.5 saniye. Tam şifrelemeye göre hız kazancı Model D ve D2'de beyin MR görüntüsünde 29--37 kat, göğüs röntgeninde 7--9 kattır. Model C'de tam şifreleme zaten daha ucuz olduğundan kazanç beyin MR görüntüsünde 18--21 kat, göğüs röntgeninde 4.4--5.3 kattır. Hız ölçütü ($\geq 5$) göğüs röntgeninde Model C'nin F64\_G32 yapılandırması (4.4 kat) dışında tüm satırlarda karşılanmıştır. İstemciden sunucuya giden veri 27.4 MB ve 6.8 MB'tan 0.9--1.7 MB'a inmiş, istemci tarafında temsilin çıkarılması görüntü başına 3--12 milisaniye sürmüştür. Göğüs röntgeninde gizlilik şartlı $\Pi_{\mathrm{ROI}}$ (\%98 şifreli alan) tam şifrelemeyle aynı süreyi vermiştir. Tam şifreleme süreleri Çizelge \ref{tbl:maliyet}'deki yeniden üretim ölçümünden farklı bir ölçüm oturumuna aittir; hız kazançları her zaman aynı oturumda ölçülen tam şifreleme süresine göre hesaplanmıştır.
+
+\begin{table*}[h!]
+{\setlength{\tabcolsep}{4pt}
+\caption{Şifreli çıkarımın maliyet dökümü (3 tekrarın ortalaması, bilgisayarda başka iş yokken). Süreler saniye, yükleme boyutu MB cinsindendir; hız kazancı aynı model sınıfında tam şifrelemeye göredir.}
+\begin{center}
+\vspace{-6mm}
+{\footnotesize
+\begin{tabular}{llcccccc}
+\hline\hline
+Yöntem & Model & Değer & Şifreli metin & Sunucu & Toplam & Yükleme & Hız \\
+\hline
+\multicolumn{8}{l}{\emph{Beyin MR}} \\
+Tam şifreleme & D & 262.144 & 32 & 44.10 & 44.46 & 27.38 & 1.0 \\
+FoveaHE F32\_G16 & D & 1.283 & 1 & 1.20 & 1.21 & 0.86 & 36.6 \\
+FoveaHE F64\_G32 & D & 5.123 & 1 & 1.38 & 1.40 & 0.86 & 31.8 \\
+FoveaHE F32\_G16 & D2 & 1.283 & 1 & 1.27 & 1.28 & 0.86 & 34.8 \\
+FoveaHE F64\_G32 & D2 & 5.123 & 1 & 1.52 & 1.53 & 0.86 & 29.0 \\
+Tam şifreleme & C & 262.144 & 32 & 9.76 & 10.16 & 27.39 & 1.0 \\
+FoveaHE F32\_G16 & C & 1.280 & 2 & 0.46 & 0.48 & 1.71 & 21.3 \\
+FoveaHE F64\_G32 & C & 5.120 & 2 & 0.55 & 0.58 & 1.71 & 17.6 \\
+\hline
+\multicolumn{8}{l}{\emph{COVID-QU-Ex}} \\
+Tam şifreleme & D & 65.536 & 8 & 10.27 & 10.36 & 6.85 & 1.0 \\
+$\Pi_{\mathrm{ROI}}$, \%98 şifreli & D & 64.009 & 8 & 10.22 & 10.30 & 6.85 & 1.0 \\
+FoveaHE F32\_G16 & D & 1.283 & 1 & 1.17 & 1.19 & 0.86 & 8.7 \\
+FoveaHE F64\_G32 & D & 5.123 & 1 & 1.42 & 1.44 & 0.86 & 7.2 \\
+FoveaHE F32\_G16 & D2 & 1.283 & 1 & 1.28 & 1.30 & 0.86 & 8.0 \\
+FoveaHE F64\_G32 & D2 & 5.123 & 1 & 1.47 & 1.49 & 0.86 & 7.0 \\
+Tam şifreleme & C & 65.536 & 8 & 2.41 & 2.51 & 6.85 & 1.0 \\
+FoveaHE F32\_G16 & C & 1.280 & 2 & 0.45 & 0.47 & 1.71 & 5.3 \\
+FoveaHE F64\_G32 & C & 5.120 & 2 & 0.54 & 0.57 & 1.71 & 4.4 \\
+\hline
+\end{tabular}}
+\vspace{-6mm}
+\end{center}
+\label{tbl:fovcost}}
+\end{table*}
+
+\section{FoveaHE Sızıntı Denetimi}\label{sec:res:fovleak}
+
+Çizelge \ref{tbl:fovleak}, sunucunun gördüğü bilgilerle kurulan saldırganların sonuçlarını göstermektedir. FoveaHE'de paket meta verisi ve yan kanal saldırganlarının kat ortalamalı AUC değeri $0.448$--$0.526$ aralığında kalmış, hiçbiri etiket permütasyonlarıyla elde edilen boş dağılımın \%95'lik sınırını aşmamıştır ($p \geq 0.20$). Sızıntı ölçütü ($\leq 0.55$) iki veri kümesinde de karşılanmıştır.
+
+Aynı örneklemde ve aynı yöntemle değerlendirilen $\Pi_{\mathrm{ROI}}$ paket meta verisi ise yalnızca şifreli metin sayısı ve yükleme boyutuyla bile şans düzeyinden anlamlı olarak ayrılmıştır ($0.557$--$0.589$, $p < 0.01$). Bu pozitif kontrol, denetimin sızıntıyı yakalayabildiğini göstermektedir. $\Pi_{\mathrm{ROI}}$ değerlerinin Saldırı A'dan ($0.83$) düşük olmasının nedeni, burada ROI geometrisi yerine yalnızca paket düzeyinde gözlenebilen kaba bilgilerin kullanılmasıdır. FoveaHE'de açık piksel olmadığından bağlam saldırısı uygulanamaz.
+
+\begin{table*}[h!]
+{\setlength{\tabcolsep}{3pt}
+\caption{Sunucunun gördüğü bilgilerle sızıntı denetimi (5 tohum, sınıf dengeli katlar, kat ortalamalı AUC, 100 etiket permütasyonuyla boş dağılımın \%95'lik sınırı ve $p$ değeri).}
+\begin{center}
+\vspace{-6mm}
+{\footnotesize
+\begin{tabular}{lllp{3.6cm}cccc}
+\hline\hline
+Veri & Yöntem & Tür & Öznitelikler & $n$ & AUC & Boş \%95 & $p$ \\
+\hline
+Beyin MR & $\Pi_{\mathrm{ROI}}$ & Paket & Şifreli metin sayısı, yükleme boyutu & 3.064 & 0.561 & 0.509 & $<0.01$ \\
+ & FoveaHE & Paket & Şifreli metin ve slot sayısı, yükleme boyutu & 3.064 & 0.491 & 0.520 & 0.85 \\
+ & $\Pi_{\mathrm{ROI}}$ & Yan kanal & Şifreli metin sayısı, yükleme boyutu & 450 & 0.557 & 0.520 & $<0.01$ \\
+ & FoveaHE & Yan kanal & Sunucu süresi, yanıt boyutu & 450 & 0.526 & 0.546 & 0.20 \\
+ & FoveaHE & Yan kanal & Yalnızca sunucu süresi & 450 & 0.484 & 0.540 & 0.73 \\
+\hline
+COVID-QU-Ex & $\Pi_{\mathrm{ROI}}$ & Paket & Şifreli metin sayısı, yükleme boyutu & 3.000 & 0.573 & 0.514 & $<0.01$ \\
+ & FoveaHE & Paket & Şifreli metin ve slot sayısı, yükleme boyutu & 3.000 & 0.503 & 0.518 & 0.43 \\
+ & $\Pi_{\mathrm{ROI}}$ & Yan kanal & Şifreli metin sayısı, yükleme boyutu & 450 & 0.589 & 0.533 & $<0.01$ \\
+ & FoveaHE & Yan kanal & Sunucu süresi, yanıt boyutu & 450 & 0.468 & 0.535 & 0.84 \\
+ & FoveaHE & Yan kanal & Yalnızca sunucu süresi & 450 & 0.448 & 0.533 & 0.98 \\
+\hline
+\end{tabular}}
+\vspace{-6mm}
+\end{center}
+\label{tbl:fovleak}}
+\end{table*}
+
+\section{Rakip Yaklaşımlar}\label{sec:res:rivals}
+
+\textbf{Şifreli özet.} Çizelge \ref{tbl:rakipler}, şifreli özet yaklaşımını FoveaHE ile karşılaştırmaktadır. Şifreli özet de açık piksel ve değişken meta veri içermez ve sunucu süresi FoveaHE ile aynı düzeydedir (yaklaşık 1 saniye). Doğrulukta ise iki veri kümesinde de FoveaHE'nin önündedir: beyin MR verisinde $0.955$'e karşı $0.948$ (eşleştirilmiş fark $0.007 \pm 0.002$), göğüs röntgeninde $0.982$'ye karşı $0.954$ (fark $0.027 \pm 0.002$). Fark her iki veri kümesinde 5 tohumun 5'inde aynı yöndedir. Buna karşılık şifreli özet, istemcide 11.2 milyon parametreli bir ağın çalıştırılmasını gerektirir: işlemcide görüntü başına tüm çekirdeklerle 23, tek çekirdekle 51--55 milisaniye. FoveaHE'nin istemci işlemi ise yalnızca yeniden örneklemedir (4--10 milisaniye).
+
+\begin{table*}[h!]
+{\setlength{\tabcolsep}{4pt}
+\caption{Şifreli özet ile FoveaHE'nin karşılaştırılması (AUC 5 tohumun ortalaması ve standart sapması; süreler tohum 0 ölçümüdür). İstemci süresinde parantez içindeki değer tek çekirdek süresidir.}
+\begin{center}
+\vspace{-6mm}
+{\footnotesize
+\begin{tabular}{lllcccc}
+\hline\hline
+Veri & Yöntem & Model & Değer & AUC & Süre (s) & İstemci (ms) \\
+\hline
+Beyin MR & FoveaHE F32\_G16 & D & 1.283 & $0.948 \pm 0.001$ & 1.21 & 10 \\
+ & Şifreli özet & D & 512 & $0.955 \pm 0.001$ & 1.01 & 23 (55) \\
+ & Şifreli özet & D2 & 512 & $0.946 \pm 0.004$ & 1.08 & 23 (55) \\
+\hline
+COVID-QU-Ex & FoveaHE F32\_G16 & D2 & 1.283 & $0.954 \pm 0.002$ & 1.30 & 4 \\
+ & Şifreli özet & D & 512 & $0.968 \pm 0.001$ & 0.96 & 23 (51) \\
+ & Şifreli özet & D2 & 512 & $0.982 \pm 0.001$ & 1.06 & 23 (51) \\
+\hline
+\end{tabular}}
+\vspace{-6mm}
+\end{center}
+\label{tbl:rakipler}}
+\end{table*}
+
+\textbf{Bozuk bağlam.} Çizelge \ref{tbl:gurultu}, açık bağlamın gürültü veya bulanıklıkla bozulduğu durumu göstermektedir. Bozulma sızıntıyı durdurmamıştır. En güçlü gürültüde ($\sigma = 0.4$) saldırgan AUC değeri beyin MR verisinde $0.969$, göğüs röntgeninde $0.983$ olmuş; bozulmasız bağlam saldırısına göre ($0.977$ ve $0.993$) düşüş en fazla $0.01$ kalmıştır. Aynı bozulmada ROI'nin temiz olduğu görüşte fayda da korunmuştur ($0.986$ ve $0.993$). Saldırgan bozulmaya uyum sağladığında bağlamdaki teşhis izi kaybolmamaktadır.
+
+\begin{table*}[h!]
+{\setlength{\tabcolsep}{6pt}
+\caption{Bozuk bağlam deneyi (tek tohum): saldırgan AUC (ROI gizli, bağlam bozuk) ve fayda AUC (ROI temiz, bağlam bozuk).}
+\begin{center}
+\vspace{-6mm}
+\begin{tabular}{lcccc}
+\hline\hline
+& \multicolumn{2}{c}{Beyin MR} & \multicolumn{2}{c}{COVID-QU-Ex} \\
+Bozulma & Saldırgan & Fayda & Saldırgan & Fayda \\
+\hline
+Yok (5 tohum, Çizelge \ref{tbl:saldiriB}) & 0.977 & 0.985 & 0.993 & 0.997 \\
+Gauss gürültüsü, $\sigma = 0.05$ & 0.971 & 0.991 & 0.992 & 0.996 \\
+Gauss gürültüsü, $\sigma = 0.10$ & 0.971 & 0.987 & 0.989 & 0.995 \\
+Gauss gürültüsü, $\sigma = 0.20$ & 0.973 & 0.988 & 0.986 & 0.995 \\
+Gauss gürültüsü, $\sigma = 0.40$ & 0.969 & 0.986 & 0.983 & 0.993 \\
+Gauss bulanıklığı, $\sigma = 2$ piksel & 0.979 & 0.994 & 0.992 & 0.996 \\
+Gauss bulanıklığı, $\sigma = 4$ piksel & 0.978 & 0.993 & 0.991 & 0.996 \\
+Gauss bulanıklığı, $\sigma = 8$ piksel & 0.974 & 0.994 & 0.988 & 0.994 \\
+\hline
+\end{tabular}
+\vspace{-6mm}
+\end{center}
+\label{tbl:gurultu}}
+\end{table*}
+
+\section{Beş Yaklaşımın Karşılaştırması}\label{sec:res:compare}
+
+Çizelge \ref{tbl:karsilastirma}, Şekil \ref{fig:paretobeyin} ve Şekil \ref{fig:paretocxr}, beş yaklaşımı teşhis başarısı, hız ve saldırgan başarısı açısından birlikte göstermektedir. Her satırda o temsil için 5 tohumda en başarılı model sınıfının değeri verilmiştir (beyin MR verisinde Model D, göğüs röntgeninde Model D2). Hız, aynı model sınıfının tam şifreleme süresine göredir. Tamamen şifreli yöntemlerde sunucunun gördüğü veri boyutu sabit olduğundan, saldırgan değeri olarak FoveaHE denetimindeki en yüksek AUC verilmiştir. $\Pi_{\mathrm{ROI}}$ satırlarında saldırgan değeri bağlam saldırısından, gizlilik şartlı satırda ise tanım gereği $0.8$ sınırından gelmektedir. Bu satırların hızları savunma deneyindeki şifreli alan oranlarından, göğüs röntgeninde gizlilik şartlı satır için ise doğrudan ölçümden hesaplanmıştır. Bozuk bağlam satırında doğruluk ve hız $\Pi_{\mathrm{ROI}}$ varsayılanıyla aynı kabul edilmiştir.
+
+\begin{table*}[h!]
+{\setlength{\tabcolsep}{4pt}
+\caption{Beş yaklaşımın karşılaştırılması: teşhis AUC (5 tohum ortalaması), tam şifrelemeye göre hız kazancı (kat) ve sunucunun gördüğü bilgilerle saldırgan AUC.}
+\begin{center}
+\vspace{-6mm}
+{\small
+\begin{tabular}{lcccccc}
+\hline\hline
+& \multicolumn{3}{c}{Beyin MR} & \multicolumn{3}{c}{COVID-QU-Ex} \\
+Yöntem & AUC & Hız & Saldırgan & AUC & Hız & Saldırgan \\
+\hline
+Tam şifreleme & 0.881 & 1.0 & 0.53 & 0.946 & 1.0 & 0.50 \\
+$\Pi_{\mathrm{ROI}}$, varsayılan ROI & 0.881 & 24.2 & 0.98 & 0.946 & 4.0 & 0.99 \\
+$\Pi_{\mathrm{ROI}}$, gizlilik şartlı & 0.881 & 1.0 & 0.80 & 0.946 & 1.0 & 0.80 \\
+Bozuk bağlam ($\sigma = 0.4$) & 0.881 & 24.2 & 0.97 & 0.946 & 4.0 & 0.98 \\
+FoveaHE F32\_G16 & 0.948 & 36.6 & 0.53 & 0.954 & 8.0 & 0.50 \\
+FoveaHE F64\_G32 & 0.945 & 31.8 & 0.53 & 0.952 & 7.0 & 0.50 \\
+Şifreli özet & 0.955 & 44.0 & 0.53 & 0.982 & 9.8 & 0.50 \\
+\hline
+\end{tabular}}
+\vspace{-6mm}
+\end{center}
+\label{tbl:karsilastirma}}
+\end{table*}
+
+Karşılaştırma üç sonucu bir arada göstermektedir. Birincisi, $\Pi_{\mathrm{ROI}}$'nin hızı gizlilikle birlikte var olamamaktadır: saldırgan $0.8$'in altına indirildiğinde hız kazancı beyin MR görüntüsünde 24.2 kattan 1.0 kata, göğüs röntgeninde 4.0 kattan 1.0 kata inmektedir. İkincisi, bağlamı bozmak hızı korusa da sızıntıyı gidermemektedir. Üçüncüsü, tamamen şifreli iki yaklaşım olan FoveaHE ve şifreli özet, saldırganı şans düzeyinde tutarken tam şifrelemeden hem çok daha hızlı hem daha doğrudur. FoveaHE beyin MR görüntüsünde 36.6 kat hızla $0.948$, göğüs röntgeninde 8.0 kat hızla $0.954$ AUC'ye ulaşmıştır; şifreli özet her iki veri kümesinde de daha doğrudur.
+
+\begin{figure}[h!]
+ \centering
+ \includegraphics[width=12.5cm,keepaspectratio=true]{./fig/cozum_pareto_brain}
+ \caption{Beyin MR verisinde beş yaklaşımın teşhis AUC değeri, tam şifrelemeye göre hız kazancı (logaritmik ölçek) ve saldırgan AUC değeri (renk; koyu renk yüksek sızıntı demektir). Aynı doğruluktaki çakışan noktalar yalnızca çizimde dikey olarak hafifçe kaydırılmıştır.}
+ \label{fig:paretobeyin}
+\end{figure}
+
+\begin{figure}[h!]
+ \centering
+ \includegraphics[width=12.5cm,keepaspectratio=true]{./fig/cozum_pareto_covidqu}
+ \caption{COVID-QU-Ex verisinde beş yaklaşımın teşhis AUC değeri, hız kazancı ve saldırgan AUC değeri (Şekil \ref{fig:paretobeyin} ile aynı gösterim).}
+ \label{fig:paretocxr}
+\end{figure}
+
+\section{Bütçe Duyarlı Odak}\label{sec:res:budget}
+
+Çizelge \ref{tbl:butce} ve Şekil \ref{fig:butce}, sabit şifreli değer bütçesinde odak payının etkisini göstermektedir. Her bütçede, iki veri kümesinde ve iki model sınıfında odak ile genel bakışın birlikte kullanıldığı en iyi paylaşım, hem yalnız genel bakıştan (eş örnekli küçültme) hem yalnız odaktan daha başarılı olmuştur. Eş örnekli küçültmeye göre kazanç beyin MR verisinde Model C'de $0.090$--$0.109$, Model D'de $0.066$--$0.077$; göğüs röntgeninde Model D'de $0.046$--$0.061$, Model C'de $0.013$--$0.021$'dir. Yalnız odağa göre kazanç $0.014$--$0.081$ aralığındadır. En iyi odak payları $0.25$ ile $0.75$ arasındadır.
+
+Beyin MR verisinde bütçeyi büyütmek başarıyı artırmamış, en iyi sonuçlar $1.024$ ve $2.048$ değerle elde edilmiştir. Göğüs röntgeninde ise bütçe arttıkça küçük bir iyileşme görülmüştür. Bu deney tek tohumla yapıldığından, aynı bütçedeki komşu paylar arasındaki küçük farklar yorumlanmamalıdır.
+
+\begin{table*}[h!]
+{\setlength{\tabcolsep}{4pt}
+\caption{Bütçe duyarlı odak (tek tohum, makro AUC): eş örnekli küçültme (odak payı 0), en iyi karışım, bu karışımın yapılandırması ve odak payı, yalnız odak (odak payı 1).}
+\begin{center}
+\vspace{-6mm}
+{\footnotesize
+\begin{tabular}{llcccccc}
+\hline\hline
+Veri & Model & Bütçe & Eş örnekli & En iyi karışım & Yapılandırma & Pay & Yalnız odak \\
+\hline
+Beyin MR & C & 1.024 & 0.855 & 0.952 & F27\_G17 & 0.71 & 0.915 \\
+ &  & 2.048 & 0.847 & 0.955 & F39\_G22 & 0.76 & 0.892 \\
+ &  & 4.096 & 0.849 & 0.939 & F45\_G45 & 0.50 & 0.876 \\
+ &  & 8.192 & 0.847 & 0.939 & F78\_G45 & 0.75 & 0.892 \\
+ & D & 1.024 & 0.879 & 0.956 & F16\_G27 & 0.26 & 0.881 \\
+ &  & 2.048 & 0.884 & 0.950 & F32\_G31 & 0.52 & 0.871 \\
+ &  & 4.096 & 0.879 & 0.949 & F45\_G45 & 0.50 & 0.869 \\
+ &  & 8.192 & 0.881 & 0.951 & F45\_G78 & 0.25 & 0.870 \\
+\hline
+COVID-QU-Ex & C & 1.024 & 0.919 & 0.932 & F22\_G23 & 0.48 & 0.916 \\
+ &  & 2.048 & 0.921 & 0.940 & F22\_G39 & 0.24 & 0.919 \\
+ &  & 4.096 & 0.916 & 0.937 & F55\_G32 & 0.75 & 0.923 \\
+ &  & 8.192 & 0.921 & 0.942 & F45\_G78 & 0.25 & 0.927 \\
+ & D & 1.024 & 0.854 & 0.915 & F27\_G17 & 0.71 & 0.900 \\
+ &  & 2.048 & 0.866 & 0.917 & F39\_G22 & 0.76 & 0.902 \\
+ &  & 4.096 & 0.868 & 0.919 & F45\_G45 & 0.50 & 0.901 \\
+ &  & 8.192 & 0.875 & 0.921 & F45\_G78 & 0.25 & 0.897 \\
+\hline
+\end{tabular}}
+\vspace{-6mm}
+\end{center}
+\label{tbl:butce}}
+\end{table*}
+
+\begin{figure}[h!]
+ \centering
+ \includegraphics[width=14cm,keepaspectratio=true]{./fig/cozum_butce_tez}
+ \caption{Bütçe duyarlı odak: her panelde bütçe başına (açıktan koyuya 1.024--8.192 değer) odak payına göre teşhis AUC değeri.}
+ \label{fig:butce}
+\end{figure}
+
+\section{Harici Derlemede Genelleme}\label{sec:res:generalization}
+
+Çizelge \ref{tbl:genelleme} ve Şekil \ref{fig:genelleme}, COVID-QU-Ex ile eğitilen modellerin yeniden eğitilmeden Kaggle kümesinde değerlendirilmesini göstermektedir. Temsiller arasındaki sıralama harici derlemede de korunmuştur. FoveaHE her model sınıfında tam görüntünün önündedir: eşleştirilmiş fark Model D'de $0.033$--$0.036$, Model C'de $0.015$--$0.017$, Model D2'de $0.005$--$0.006$'dır ve fark 30 karşılaştırmanın 29'unda aynı yöndedir. Eş bütçeli küçültme ise tam görüntünün gerisinde kalmıştır. Şifreli özet harici derlemede de en yüksek başarıyı vermiştir ($0.985$).
+
+Piksel tabanlı temsillerin tamamında harici AUC iç AUC'den $0.02$--$0.04$ yüksektir. Bu durum, büyük ölçüde çocuk hastalara ait pnömoni görüntülerinden oluşan harici kümenin daha kolay ayrıştırıldığını göstermektedir. Bu nedenle sonuç mutlak bir genelleme kazancı olarak değil, temsiller arasındaki sıralamanın farklı bir derlemede korunması olarak yorumlanmalıdır.
+
+\begin{table*}[h!]
+{\setlength{\tabcolsep}{5pt}
+\caption{COVID-QU-Ex ile eğitilen modellerin Kaggle kümesinde (tekrar etmeyen 1.767 görüntü) yeniden eğitilmeden değerlendirilmesi (makro AUC, 5 tohum). Son sütun aynı model ve tohumda tam görüntüye göre eşleştirilmiş farktır; parantez içinde farkın pozitif olduğu tohum sayısı verilmiştir.}
+\begin{center}
+\vspace{-6mm}
+{\small
+\begin{tabular}{lllccc}
+\hline\hline
+Temsil & Yapılandırma & Model & İç AUC & Harici AUC & Tam görüntüye göre fark \\
+\hline
+Tam görüntü & U256 & D & 0.895 & $0.914 \pm 0.011$ & -- \\
+Tam görüntü & U256 & D2 & 0.946 & $0.973 \pm 0.002$ & -- \\
+Tam görüntü & U256 & C & 0.925 & $0.945 \pm 0.005$ & -- \\
+Eş örnekli & U64 & D & 0.865 & $0.892 \pm 0.019$ & $-0.022$ (0/5) \\
+Eş örnekli & U64 & D2 & 0.938 & $0.971 \pm 0.003$ & $-0.002$ (2/5) \\
+Eş örnekli & U64 & C & 0.917 & $0.942 \pm 0.004$ & $-0.003$ (2/5) \\
+FoveaHE & F32\_G16 & D & 0.915 & $0.950 \pm 0.008$ & $0.036$ (5/5) \\
+FoveaHE & F32\_G16 & D2 & 0.954 & $0.978 \pm 0.002$ & $0.005$ (5/5) \\
+FoveaHE & F32\_G16 & C & 0.930 & $0.960 \pm 0.003$ & $0.015$ (5/5) \\
+FoveaHE & F64\_G32 & D & 0.915 & $0.947 \pm 0.005$ & $0.033$ (5/5) \\
+FoveaHE & F64\_G32 & D2 & 0.952 & $0.979 \pm 0.004$ & $0.006$ (4/5) \\
+FoveaHE & F64\_G32 & C & 0.935 & $0.962 \pm 0.003$ & $0.017$ (5/5) \\
+Şifreli özet & -- & D & 0.968 & $0.971 \pm 0.002$ & -- \\
+Şifreli özet & -- & D2 & 0.982 & $0.985 \pm 0.002$ & -- \\
+\hline
+\end{tabular}}
+\vspace{-6mm}
+\end{center}
+\label{tbl:genelleme}}
+\end{table*}
+
+\begin{figure}[h!]
+ \centering
+ \includegraphics[width=12cm,keepaspectratio=true]{./fig/cozum_genelleme}
+ \caption{COVID-QU-Ex test bölmesindeki (iç, mavi) ve Kaggle kümesindeki (harici, turuncu) teşhis AUC değerleri (5 tohum ortalaması; etiketler harici değerdir).}
+ \label{fig:genelleme}
 \end{figure}

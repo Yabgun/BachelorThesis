@@ -1,0 +1,15 @@
+Seçici homomorfik şifreleme, verinin yalnızca hassas kısmını şifreleyerek tam homomorfik şifrelemenin yüksek maliyetini azaltmayı amaçlar. 2026 yılında önerilen ROI tabanlı yaklaşımlar, tıbbi görüntünün yalnızca ilgi bölgesini (ROI) şifreleyip geri kalanını açık işlemektedir. Bu yaklaşımlar güvenliklerini, şifrelenmeyen bölgeyi ve ROI'nin konum, boyut ve şeklini sunucuya serbest bırakan bir sızıntı fonksiyonuna göre kanıtlar. Bu tez, izin verilen bu sızıntının gerçek tıbbi görüntülerde şifreli bölgenin klinik içeriğini ne ölçüde ele verdiğini ve sızıntıyı gidermenin bedelini incelemektedir.
+
+$\Pi_{\mathrm{ROI}}$ protokolü TenSEAL CKKS ile aynı parametrelerle yeniden üretilmiştir. Göğüs röntgeni (COVID-QU-Ex, 33.920 görüntü) ve beyin MR (3.064 kesit, 233 hasta) verilerinde iki sızıntı istismarı saldırısı geliştirilmiştir.
+\begin{itemize}
+\item Yalnızca ROI meta verisini kullanan saldırı, tümör tipini makro AUC $0.83$, pnömoniyi AUC $0.90$ ile tahmin etmiştir.
+\item ROI'si gizlenmiş görüntüyü gören evrişimli sinir ağı saldırganı teşhisi AUC $0.97$--$0.99$ ile bulmuştur. Görüntünün \%87'si şifrelendiğinde bile AUC $0.96$ kalmıştır.
+\item Başka bir kaynaktan veriyle eğitilen saldırgan da benzer başarı göstermiştir.
+\item Basit önişleme adımları sızıntıyı gidermemiştir.
+\end{itemize}
+
+Adaptif saldırgana karşı değerlendirilen savunmalarda, saldırgan AUC'sini $0.8$'in altına indirmek için göğüs röntgeninin \%98'inin, beyin MR görüntüsünün ise tamamının şifrelenmesi gerekmiştir. Bu koşulda $512 \times 512$ görüntülerde varsayılan ROI ile göğüs röntgeninde 4.2, beyin MR görüntüsünde 24 kat olan hız kazancı sırasıyla 1.02 ve 1.00 kata inmiştir.
+
+Bulgular, ROI tabanlı seçici homomorfik şifrelemenin tıbbi görüntülerde gizlilik şartı konduğunda verimlilik avantajını kaybettiğini göstermektedir. Tez, bu sonuçlara dayanarak sızıntının ölçülmesini esas alan tasarım kuralları önermektedir.
+
+\textbf{Anahtar Kelimeler:} Homomorfik Şifreleme, CKKS, Seçici Şifreleme, Sızıntı İstismarı, Tıbbi Görüntü Gizliliği

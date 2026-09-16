@@ -1,15 +1,14 @@
-Seçici homomorfik şifreleme, verinin yalnızca hassas kısmını şifreleyerek tam homomorfik şifrelemenin yüksek maliyetini azaltmayı amaçlar. 2026 yılında önerilen ROI tabanlı yaklaşımlar, tıbbi görüntünün yalnızca ilgi bölgesini (ROI) şifreleyip geri kalanını açık işlemektedir. Bu yaklaşımlar güvenliklerini, şifrelenmeyen bölgeyi ve ROI'nin konum, boyut ve şeklini sunucuya serbest bırakan bir sızıntı fonksiyonuna göre kanıtlar. Bu tez, izin verilen bu sızıntının gerçek tıbbi görüntülerde şifreli bölgenin klinik içeriğini ne ölçüde ele verdiğini ve sızıntıyı gidermenin bedelini incelemektedir.
+Seçici homomorfik şifreleme, verinin yalnızca hassas kısmını şifreleyerek tam homomorfik şifrelemenin yüksek maliyetini azaltmayı amaçlar. 2026 yılında önerilen ROI tabanlı yaklaşımlar, tıbbi görüntünün yalnızca ilgi bölgesini (ROI) şifreleyip geri kalanını açık işlemekte ve güvenliklerini, şifrelenmeyen bölgeyi ve ROI'nin konum, boyut ve şeklini sunucuya serbest bırakan bir sızıntı fonksiyonuna göre kanıtlamaktadır. Bu tez, izin verilen bu sızıntının gerçek tıbbi görüntülerde şifreli bölgenin klinik içeriğini ne ölçüde ele verdiğini, sızıntıyı gidermenin bedelini ve sızıntısız ama verimli bir alternatifin mümkün olup olmadığını incelemektedir.
 
-$\Pi_{\mathrm{ROI}}$ protokolü TenSEAL CKKS ile aynı parametrelerle yeniden üretilmiştir. Göğüs röntgeni (COVID-QU-Ex, 33.920 görüntü) ve beyin MR (3.064 kesit, 233 hasta) verilerinde iki sızıntı istismarı saldırısı geliştirilmiştir.
+$\Pi_{\mathrm{ROI}}$ protokolü TenSEAL CKKS ile aynı parametrelerle yeniden üretilmiş, göğüs röntgeni (COVID-QU-Ex, 33.920 görüntü) ve beyin MR (3.064 kesit, 233 hasta) verilerinde iki sızıntı istismarı saldırısı geliştirilmiştir.
 \begin{itemize}
 \item Yalnızca ROI meta verisini kullanan saldırı, tümör tipini makro AUC $0.83$, pnömoniyi AUC $0.90$ ile tahmin etmiştir.
-\item ROI'si gizlenmiş görüntüyü gören evrişimli sinir ağı saldırganı teşhisi AUC $0.97$--$0.99$ ile bulmuştur. Görüntünün \%87'si şifrelendiğinde bile AUC $0.96$ kalmıştır.
-\item Başka bir kaynaktan veriyle eğitilen saldırgan da benzer başarı göstermiştir.
-\item Basit önişleme adımları sızıntıyı gidermemiştir.
+\item ROI'si gizlenmiş görüntüyü gören evrişimli sinir ağı saldırganı teşhisi AUC $0.98$--$0.99$ ile bulmuş, başka bir kaynaktan veriyle eğitildiğinde de benzer başarı göstermiştir.
+\item Saldırgan AUC'sini $0.8$'in altına indirmek için göğüs röntgeninin \%98'inin, beyin MR görüntüsünün ise tamamının şifrelenmesi gerekmiş; varsayılan ROI ile 4.2 ve 24 kat olan hız kazancı yaklaşık 1 kata inmiştir.
 \end{itemize}
 
-Adaptif saldırgana karşı değerlendirilen savunmalarda, saldırgan AUC'sini $0.8$'in altına indirmek için göğüs röntgeninin \%98'inin, beyin MR görüntüsünün ise tamamının şifrelenmesi gerekmiştir. Bu koşulda $512 \times 512$ görüntülerde varsayılan ROI ile göğüs röntgeninde 4.2, beyin MR görüntüsünde 24 kat olan hız kazancı sırasıyla 1.02 ve 1.00 kata inmiştir.
+Sızıntıyı gidermek için Odaklı Tam Şifreleme (FoveaHE) önerilmiştir: istemci ROI merkezli, sabit boyutlu ve çok çözünürlüklü bir temsil çıkarıp tamamını şifreler; sunucuya açık piksel ve görüntüye göre değişen meta veri gitmez. Şifreli çalışabilen üç model sınıfıyla ve 5 tohumla yapılan deneylerde sunucunun gördüğü bilgilerle kurulan saldırgan şans düzeyinde kalmış (AUC $0.45$--$0.53$), tam şifrelemeye göre beyin MR görüntüsünde 29--37, göğüs röntgeninde 7--9 kat hızlanma elde edilmiş ve teşhis başarısı tam görüntüyle eğitilen aynı model sınıfının üstüne çıkmıştır ($0.881$'e karşı $0.948$; $0.946$'ya karşı $0.954$). Açık bağlamı gürültüleyen yaklaşım sızdırmaya devam etmiş, önceden eğitilmiş bir ağın özetini şifreleyen yaklaşım ise daha doğru bulunmuştur.
 
-Bulgular, ROI tabanlı seçici homomorfik şifrelemenin tıbbi görüntülerde gizlilik şartı konduğunda verimlilik avantajını kaybettiğini göstermektedir. Tez, bu sonuçlara dayanarak sızıntının ölçülmesini esas alan tasarım kuralları önermektedir.
+Bulgular, tıbbi görüntülerde verimliliğin açık bırakılan alandan değil şifrelenen verinin çözünürlüğünden kazanılması gerektiğini göstermektedir. Tez bu sonuçlara dayanarak sızıntının ölçülmesini esas alan tasarım kuralları önermektedir.
 
-\textbf{Anahtar Kelimeler:} Homomorfik Şifreleme, CKKS, Seçici Şifreleme, Sızıntı İstismarı, Tıbbi Görüntü Gizliliği
+\textbf{Anahtar Kelimeler:} Homomorfik Şifreleme, CKKS, Seçici Şifreleme, Sızıntı İstismarı, Odaklı Temsil, Tıbbi Görüntü Gizliliği

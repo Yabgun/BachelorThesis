@@ -2,13 +2,13 @@
 \chapter{YÖNTEM}\label{CH3}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Bu bölümde tehdit modeli, $\Pi_{\mathrm{ROI}}$ protokolünün yeniden üretimi, kullanılan veri kümeleri, iki saldırı, gerçekçilik testi, kök neden analizi ve savunmalar ile değerlendirme protokolü açıklanmaktadır. Tüm deneyler tek komutla yeniden çalıştırılabilen bir kod deposunda toplanmıştır (Bölüm \ref{sec:repro}).
+Bu bölümde tehdit modeli, $\Pi_{\mathrm{ROI}}$ protokolünün yeniden üretimi, kullanılan veri kümeleri, iki saldırı, gerçekçilik testi, kök neden analizi ve savunmalar ile önerilen Odaklı Tam Şifreleme (FoveaHE) yöntemi ve değerlendirme protokolü açıklanmaktadır. Tüm deneyler tek komutla yeniden çalıştırılabilen bir kod deposunda toplanmıştır (Bölüm \ref{sec:repro}).
 
 \section{Tehdit Modeli ve Araştırma Soruları}\label{sec:threat}
 
-Sistem, Bölüm \ref{sec:piroi}'da açıklanan $\Pi_{\mathrm{ROI}}$ mimarisidir: hastane (istemci) tıbbi görüntünün ROI piksellerini CKKS ile şifreler, geri kalanını açık gönderir; bulut hizmet sağlayıcı (sunucu) Eşitlik \ref{eq:piroi}'deki hesaplamayı yapar ve şifreli sonucu döndürür.
+Sistem, Bölüm \ref{sec:piroi}'de açıklanan $\Pi_{\mathrm{ROI}}$ mimarisidir: hastane (istemci) tıbbi görüntünün ROI piksellerini CKKS ile şifreler, geri kalanını açık gönderir; bulut hizmet sağlayıcı (sunucu) Eşitlik \ref{eq:piroi}'deki hesaplamayı yapar ve şifreli sonucu döndürür.
 
-\textbf{Saldırgan.} Saldırgan, protokolü doğru uygulayan ancak gördüğü her bilgiden çıkarım yapmaya çalışan yarı dürüst sunucudur. Saldırganın gördüğü bilgi, protokolün sızıntı fonksiyonuyla (Eşitlik \ref{eq:leakage}) sınırlıdır: model ağırlıkları, ROI dışındaki açık pikseller, ROI'nin konumu, boyutu ve şekli ile girdinin boyutu. Saldırgan ayrıca kamuya açık etiketli tıbbi görüntü veri kümelerine erişebilir; bu, bir bulut sağlayıcı için gerçekçi bir varsayımdır.
+\textbf{Saldırgan.} Saldırgan, protokolü doğru uygulayan ancak gördüğü her bilgiden çıkarım yapmaya çalışan yarı dürüst sunucudur. Saldırganın gördüğü bilgi, protokolün sızıntı fonksiyonuyla (Eşitlik \ref{eq:leakage}) sınırlıdır: model ağırlıkları, ROI dışındaki açık pikseller, ROI'nin konumu, boyutu ve şekli ile girdinin boyutu. Saldırgan ayrıca kamuya açık etiketli tıbbi görüntü veri kümelerine erişebilir; bu, bir bulut sağlayıcı için gerçekçi bir varsayımdır. Önerilen yöntemin değerlendirmesinde aynı saldırgan, sunucunun gördüğü şifreli metinlerin sayısını ve boyutunu ile kendi hesaplama süresini de gözlemleyebilir.
 
 \textbf{Saldırganın hedefi.} Şifreli ROI'nin içeriğine dair klinik bilgiyi, yani göğüs röntgeninde teşhisi ve beyin MR görüntüsünde tümör tipini tahmin etmektir.
 
@@ -18,6 +18,7 @@ Sistem, Bölüm \ref{sec:piroi}'da açıklanan $\Pi_{\mathrm{ROI}}$ mimarisidir:
 \item[\textbf{AS2.}] ROI dışındaki açık bağlam teşhisi ne ölçüde ele verir? Saldırgan başka bir kaynaktan gelen veriyle eğitildiğinde de bu geçerli midir?
 \item[\textbf{AS3.}] Sızıntı görüntünün hangi bölgelerinden kaynaklanır ve basit önişleme adımları sızıntıyı giderir mi?
 \item[\textbf{AS4.}] Teşhisi gizlemek için görüntünün ne kadarı şifrelenmelidir ve bu durumda seçici şifrelemenin hız kazancından ne kalır?
+\item[\textbf{AS5.}] Sunucuya hiçbir açık piksel ve görüntüye göre değişen hiçbir meta veri gönderilmeden, tam şifrelemeye göre anlamlı bir hız kazancı ve tam görüntüyle eğitilen aynı model sınıfına yakın bir teşhis başarısı elde edilebilir mi?
 \end{enumerate}
 
 \section{$\Pi_{\mathrm{ROI}}$ Protokolünün Yeniden Üretimi}\label{sec:reproduction}
@@ -69,9 +70,9 @@ Bu saldırı AS2'yi yanıtlar. Sunucunun gördüğü görüntü şöyle oluştur
 \item \textbf{kutu:} ROI'nin sınırlayıcı kutusu gizli.
 \end{itemize}
 
-Saldırgan olarak ImageNet ön eğitimli ResNet-18 \cite{he2016resnet} kullanılmıştır. Eğitimde AdamW eniyileyicisi ($3 \times 10^{-4}$ tepe öğrenme oranı, tek döngü öğrenme oranı çizelgesi), 64 yığın boyutu, 16 bit karışık hassasiyet ve görüntü ile maskeye aynı küçük kaydırma ve ölçekleme artırımı uygulanmıştır. Beyin MR verisinde her katta 12, COVID-QU-Ex verisinde 5 dönem eğitim yapılmıştır.
+Saldırgan olarak ImageNet \cite{deng2009imagenet} üzerinde ön eğitilmiş ResNet-18 \cite{he2016resnet} kullanılmıştır. Eğitimde AdamW eniyileyicisi \cite{loshchilov2019adamw} ($3 \times 10^{-4}$ tepe öğrenme oranı, tek döngü öğrenme oranı çizelgesi), 64 yığın boyutu, 16 bit karışık hassasiyet ve görüntü ile maskeye aynı küçük kaydırma ve ölçekleme artırımı uygulanmıştır. Beyin MR verisinde her katta 12, COVID-QU-Ex verisinde 5 dönem eğitim yapılmıştır. Tam, bağlam ve bağlam + 40 piksel görüşleri 5 tohumla tekrarlanmıştır.
 
-\textbf{Değerlendirme hassasiyeti.} Geliştirme sırasında önemli bir yöntemsel hata tespit edilmiştir. Tüm girdilerin özdeş olduğu tamamen gizli görüşte AUC'nin tam $0.5$ olması gerekirken 16 bit hassasiyetle ve sınıflara göre sıralı test indeksleriyle yapılan değerlendirmede $0.421$ bulunmuştur. Bunun nedeni, yığın bileşimine bağlı çok küçük sayısal farkların sınıf sırasıyla hizalanmasıdır. Bu nedenle tüm tahminler 32 bit hassasiyetle ve karışık sırada hesaplanmış, düzeltilmiş boru hattında tamamen gizli görüşün AUC'si her iki veri kümesinde $0.500$ olarak doğrulanmıştır. Bu kontrol savunma deneylerine kalıcı bir akıl sağlığı testi olarak eklenmiştir.
+\textbf{Değerlendirme hassasiyeti.} Geliştirme sırasında önemli bir yöntemsel hata tespit edilmiştir. Tüm girdilerin özdeş olduğu tamamen gizli görüşte AUC'nin tam $0.5$ olması gerekirken 16 bit hassasiyetle ve sınıflara göre sıralı test indeksleriyle yapılan değerlendirmede $0.421$ bulunmuştur. Bunun nedeni, yığın bileşimine bağlı çok küçük sayısal farkların sınıf sırasıyla hizalanmasıdır. Bu nedenle tüm tahminler 32 bit hassasiyetle ve karışık sırada hesaplanmış, düzeltilmiş boru hattında tamamen gizli görüşün AUC'si her iki veri kümesinde $0.500$ olarak doğrulanmıştır. Bu kontrol savunma ve çözüm deneylerine kalıcı bir akıl sağlığı testi olarak eklenmiştir.
 
 \section{Gerçekçilik Testi}\label{sec:transfer}
 
@@ -96,6 +97,102 @@ Savunma deneylerinde hesaplama süresini sınırlamak için saldırgan COVID-QU-
 
 Her politika noktasının şifreli alan oranı $\rho$, protokol yeniden üretiminde ölçülen toplam süre ile doğrusal interpolasyon yapılarak tam şifrelemeye göre hız kazancına çevrilmiştir ($256 \times 256$ ve $512 \times 512$ görüntüler için). Böylece belirli bir gizlilik hedefinde (örneğin saldırgan AUC $\leq 0.8$) gereken en küçük şifreli alan ve bu alandaki gerçek hız kazancı elde edilmiştir.
 
+\section{Önerilen Yöntem: Odaklı Tam Şifreleme (FoveaHE)}\label{sec:foveahe}
+
+Bu bölüm AS5'i yanıtlamak için geliştirilen yöntemi açıklar. Yöntemin ilkesi, verimliliği pikselleri açık bırakarak değil, şifrelenen girdiyi küçülterek elde etmektir. Bölüm \ref{sec:privacyutility}'te açıklandığı gibi, teşhise yardım eden açık bilgi saldırgana da yardım ettiği için açık bırakılacak bilgi yoktur; seçicilik şifrelemede değil, çözünürlükte yapılmalıdır.
+
+\subsection{Protokol ve sızıntı fonksiyonu}\label{sec:fov:protocol}
+
+İstemci görüntüden odaklı temsili çıkarır, temsilin tamamını CKKS ile şifreler ve sunucuya gönderir. Sunucu şifreli çalışabilen modeli şifreli temsil üzerinde çalıştırır ve şifreli sınıf skorlarını döndürür; istemci skorları çözer. Çözülmüş skorlar sunucuyla paylaşılmaz (Bölüm \ref{sec:indcpad}). Temsilin boyutu her görüntüde aynı olduğundan, sunucunun gördüğü şifreli metin sayısı ve boyutu da sabittir. Böylece Eşitlik \ref{eq:leakage}'deki sızıntı fonksiyonu
+
+\be
+\mathcal{L}_{\mathrm{FoveaHE}} = \left(W,\; F,\; G,\; N\right)
+\label{eq:leakagefov}
+\ee
+
+\noindent biçimine iner: model ağırlıkları, herkese açık katman boyutları ve şifreleme parametresi. Açık piksel ile ROI'nin konumu, boyutu ve şekli sızıntı fonksiyonunda yer almaz. Sunucunun gözlemleyebileceği hesaplama süresi gibi yan kanallar Bölüm \ref{sec:fov:leakage}'da ayrıca ölçülmüştür.
+
+\subsection{Odaklı temsil}\label{sec:fov:rep}
+
+Temsil, özgün çözünürlükteki görüntüden (beyin MR $512 \times 512$, göğüs röntgeni $256 \times 256$) ROI maskesi kullanılarak çıkarılır:
+
+\begin{itemize}
+\item \textbf{Odak ($F \times F$):} ROI sınırlayıcı kutusunun merkezine yerleştirilmiş kare pencerenin örneği. Pencere kenarı kutunun büyük kenarının $1.25$ katıdır ve görüntü kenarının \%10'undan küçük olamaz. Görüntü dışına taşan kısım sıfırla doldurulur.
+\item \textbf{Genel bakış ($G \times G$):} Tüm görüntünün düşük çözünürlüklü örneği.
+\item \textbf{Geometri:} Pencere merkezinin iki koordinatı ve pencere kenarı; görüntü boyutuna göre normalize edilmiş üç sayı.
+\end{itemize}
+
+Katmanlar pencere içinde alan ortalamalı örneklemeyle (RoIAlign, uyarlanabilir örnek ızgarası) hesaplanır ve 8 bitlik tam sayılara nicelenir. Şifrelenen vektör $[\text{odak}, \text{genel bakış}, \text{geometri}]$ biçimindedir ve $F^2 + G^2 + 3$ değer içerir. Yapılandırmalar bu boyutlarla adlandırılmıştır: F32\_G16 $32^2 + 16^2 + 3 = 1.283$ değer, F64\_G32 ise $5.123$ değerdir. Her ikisi de $8.192$ slotluk tek bir şifreli metne sığar. Karşılaştırma için tam görüntü beyin MR verisinde $262.144$, göğüs röntgeninde $65.536$ değerdir. Odak ile genel bakış arasında isteğe bağlı bir ``yakın çevre'' katmanı da tanımlanmış, ancak ön denemelerde belirgin katkı vermediği için ana yapılandırmalarda kullanılmamıştır. Şekil \ref{fig:temsil} temsili örneklerle göstermektedir.
+
+\begin{figure}[h!]
+ \centering
+ \includegraphics[width=\textwidth,keepaspectratio=true]{./fig/cozum_temsil_ornek_brain}
+ \caption{Beyin MR verisinde odaklı temsil örnekleri (satırlar: meningiom, gliom, hipofiz). Sütunlar soldan sağa: pencerelerle tam görüntü (iç kare odak, dış kare yakın çevre penceresi), $64 \times 64$ odak, $32 \times 32$ yakın çevre, $32 \times 32$ genel bakış, bu katmanlardan geri çizilen $224 \times 224$ görüntü ve karşılaştırma için eş örnekli küçültme (U64). Örnekteki yakın çevre katmanı ana yapılandırmalarda kullanılmamıştır.}
+ \label{fig:temsil}
+\end{figure}
+
+\textbf{Referans temsiller.} Odaklamanın katkısını ayırmak için iki referans kullanılmıştır. \emph{Eş örnekli küçültme} (U$G$), tüm görüntünün yalnızca $G \times G$ örneğidir ve aynı değer bütçesinde odaksız şifrelemeyi temsil eder; örneğin U64 $4.096$ değerdir. \emph{ROI penceresi referansı} ise yalnızca bilgi üst sınırı deneyinde, görüntüye pencerenin konumunu gösteren ek bir kanal ekler. Böylece odaklı temsilin kazancının ROI konum bilgisinden mi, yoksa çözünürlüğün odağa verilmesinden mi geldiği ayrılabilir.
+
+\subsection{Bilgi üst sınırı deneyi}\label{sec:fov:info}
+
+Temsilin teşhis bilgisini koruyup korumadığı, şifreli çalıştırılamayacak kadar güçlü bir modelle ölçülmüştür. Odaklı temsil $224 \times 224$ boyutlu bir görüntüye geri çizilir: her piksel, onu kapsayan en ince katmandan bilineer olarak doldurulur. Bu görüntülerle Saldırı B'deki ResNet-18 eğitim düzeni aynen uygulanmış (beyin MR verisinde 5 kat ve katta 12 dönem, göğüs röntgeninde resmi bölmeler ve 5 dönem) ve sonuç tam görüntüyle eğitilen modelle karşılaştırılmıştır. Beyin MR verisinde 28, göğüs röntgeninde 31 yapılandırmadan oluşan bir ızgara tek tohumla taranmış; seçilen yapılandırmalar ve referanslar 5 tohumla tekrarlanmıştır.
+
+\subsection{Şifreli çalışabilen modellerin eğitimi}\label{sec:fov:models}
+
+Model D, D2 ve C (Bölüm \ref{sec:hemodels}), hem odaklı temsillerde hem de özgün çözünürlükteki tam görüntüde aynı düzenle eğitilmiştir. Tam görüntü üzerindeki Model D, $\Pi_{\mathrm{ROI}}$ protokolünün hesaplama yapısıyla aynıdır. Seçici şifreleme model çıktısını değiştirmediği için bu modelin başarısı $\Pi_{\mathrm{ROI}}$'nin teşhis başarısını temsil eder.
+
+Karşılaştırmanın adil olması için her temsil kendi en iyi ayarını almıştır. AdamW \cite{loshchilov2019adamw} ile ağırlık azaltma $\{10^{-4}, 10^{-2}, 1\}$ kümesinden doğrulama kaybına göre seçilmiştir. En iyi değer üst sınırdaysa arama 10'ar kat genişletilerek $100$'e kadar sürdürülmüş, $100$'e dayanıldığında öğrenme oranı 10 kat düşürülüp $\{100, 1000\}$ değerleri de denenmiştir. Eğitim en çok 200 dönem sürmüş ve doğrulama kaybı 10 dönem boyunca iyileşmediğinde durdurulmuştur. Beyin MR verisinde her test katı için bir sonraki kat doğrulama kümesi olarak, göğüs röntgeninde resmi doğrulama bölmesi kullanılmıştır. Ağırlıklar eğitimden sonra 64 bitlik kayan noktalı sayılara aktarılmış ve aktarılan ağırlıkların eğitilmiş modelle aynı çıktıyı verdiği doğrulanmıştır.
+
+\subsection{Şifreli çıkarım ve maliyet ölçümü}\label{sec:fov:cost}
+
+Şifreli çıkarım TenSEAL ile, $\Pi_{\mathrm{ROI}}$ yeniden üretimindeki CKKS parametreleriyle gerçekleştirilmiştir. Model D ve D2'de şifreli vektörün açık ağırlıklarla iç çarpımları hesaplanmış, Model C'de evrişim pencereleri şifreli metin başına en fazla $8.192$ değerlik parçalar hâlinde matris çarpımıyla işlenmiştir. Şifreli ve şifresiz çıkarımın aynı sonucu verdiği, iki veri kümesinde test bölmesinden sınıf dengeli seçilen 120 görüntüde en büyük logit farkı, tahmin uyumu ve AUC farkıyla ölçülmüştür.
+
+Maliyet, bilgisayarda başka iş çalışmıyorken istemci ön işleme, şifreleme, sunucu hesaplaması ve çözme süreleri ile istemciden sunucuya ve sunucudan istemciye giden veri boyutu olarak ayrı ayrı ölçülmüş ve 3 tekrarın ortalaması alınmıştır. Aynı kod ve aynı ölçüm düzeniyle her model sınıfı için tam görüntünün tam şifrelenmesi ve göğüs röntgeninde gizlilik şartlı $\Pi_{\mathrm{ROI}}$ (\%98 şifreli alan) da ölçülmüştür. Hız kazancı, aynı model sınıfında tam şifreleme toplam süresinin FoveaHE toplam süresine oranı olarak tanımlanmıştır.
+
+\subsection{Sızıntı denetimi}\label{sec:fov:leakage}
+
+FoveaHE'de sunucu açık piksel görmediği için bağlam saldırısı uygulanamaz. Bu nedenle sunucunun görebildiği her bilgi bir saldırganın öznitelikleri olarak kullanılmıştır: şifreli metin sayısı, slot sayısı ve yükleme boyutu (paket meta verisi) ile sunucu hesaplama süresi ve yanıt boyutu (yan kanal). Sınıflandırıcı Saldırı A'daki histogram tabanlı gradyan artırmadır ve 5 tohumla çalıştırılmıştır. Bilgisiz özniteliklerde havuzlanmış kat dışı AUC şans düzeyinden sapabildiğinden, değerlendirmede sınıf dengeli katlar (beyin MR verisinde hasta bazlı) ve kat ortalamalı AUC kullanılmıştır. Saldırganın şans düzeyinden ayırt edilip edilemeyeceği 100 etiket permütasyonuyla sınanmış; gerçek AUC boş dağılımın \%95'lik sınırıyla karşılaştırılmış ve $p$ değeri hesaplanmıştır \cite{ojala2010permutation}.
+
+Denetimin sızıntıyı yakalayabildiğini göstermek için aynı örneklemde $\Pi_{\mathrm{ROI}}$'nin paket meta verisi (ROI şifreli metin sayısı ve yükleme boyutu) pozitif kontrol olarak aynı yöntemle değerlendirilmiştir. Paket meta verisi beyin MR verisinin tamamında ve göğüs röntgeninde sınıf başına 1.000 görüntüde, yan kanal ise sınıf başına 150 görüntüde gerçek şifreli çalıştırmayla ölçülmüştür.
+
+\subsection{Rakip yaklaşımlar}\label{sec:fov:rivals}
+
+\textbf{Şifreli özet.} HETAL \cite{lee2023hetal} tarzında, istemci görüntünün $224 \times 224$ boyutlu kopyasını ImageNet \cite{deng2009imagenet} üzerinde eğitilmiş ve dondurulmuş ResNet-18 \cite{he2016resnet} ile 512 boyutlu bir özete dönüştürür ve özeti şifreler. Sunucu özet üzerinde Model D veya D2'yi şifreli çalıştırır. Eğitim, bölmeler, ayar protokolü, şifreli çıkarım kodu ve CKKS parametreleri FoveaHE ile aynıdır. Ana satırlar 5 tohumla tekrarlanmış, istemcideki ön işleme süresi (görüntü okuma, küçültme ve ResNet-18 ileri geçişi) işlemcide ölçülmüştür.
+
+\textbf{Bozuk bağlam.} Bi-CryptoNets \cite{yuan2024bicryptonets} tarzında, ROI şifreli kalırken açık bağlamın gürültü eklenerek veya bulanıklaştırılarak korunmasının sızıntıyı giderip gidermediği sınanmıştır. Bağlama her görüntü için sabit Gauss gürültüsü ($[0, 1]$ aralığındaki piksel değerleri için $\sigma \in \{0.05, 0.1, 0.2, 0.4\}$) eklenmiş veya ROI hesaba katılmadan normalize edilen Gauss bulanıklığı ($\sigma \in \{2, 4, 8\}$ piksel) uygulanmıştır. Saldırgan Saldırı B'deki gibi eğitilmiş ve aynı bozulmayı eğitimde görerek ona uyum sağlamıştır. Bozulmanın faydaya etkisi, ROI'nin temiz ve bağlamın bozuk olduğu görüşle ölçülmüştür.
+
+\subsection{Bütçe duyarlı odak ve harici derlemede genelleme}\label{sec:fov:bonus}
+
+\textbf{Bütçe duyarlı odak.} Sabit bir şifreli değer bütçesinde çözünürlüğün odak ile genel bakış arasında nasıl paylaştırılması gerektiği incelenmiştir. $B \in \{1.024, 2.048, 4.096, 8.192\}$ bütçeleri ve $s \in \{0, 0.25, 0.5, 0.75, 1\}$ odak payları için $F = \lfloor \sqrt{sB} \rfloor$ ve $G = \lfloor \sqrt{B - F^2 - 3} \rfloor$ alınmıştır; $s = 0$ eş örnekli küçültmeye, $s = 1$ yalnız odağa karşılık gelir. Her yapılandırma Model C ve D ile, Bölüm \ref{sec:fov:models}'teki düzenle ve tek tohumla değerlendirilmiştir.
+
+\textbf{Harici derlemede genelleme.} COVID-QU-Ex ile eğitilen modellerin başka bir derlemeden gelen görüntülerde başarısını koruyup korumadığı, Kaggle kümesinde COVID-QU-Ex içinde karşılığı bulunmayan 1.767 görüntüde (1.157 pnömoni, 340 normal ve 270 COVID-19) sınanmıştır. Görüntüler COVID-QU-Ex gibi $256 \times 256$ boyutuna indirilmiş, ROI olarak Bölüm \ref{sec:transfer}'daki U-Net akciğer maskeleri kullanılmış ve odaklı temsil aynı işlemle çıkarılmıştır. Kaggle sınıfları COVID-QU-Ex sınıflarına eşlenmiş (pnömoni, COVID dışı enfeksiyon sınıfına), modeller 5 tohumun kayıtlı ağırlıklarıyla ve yeniden eğitilmeden uygulanmıştır. Şifreli özet de aynı görüntülerde değerlendirilmiştir.
+
+\subsection{Başarı ölçütleri}\label{sec:fov:criteria}
+
+Sonuçlara göre hedef kaydırılmaması için FoveaHE'nin başarı ölçütleri deneylerden önce belirlenmiş ve sonradan değiştirilmemiştir (Çizelge \ref{tbl:olcutler}). Ana yapılandırmalarda doğruluk deneyleri 5 tohumla tekrarlanmış, güven aralıkları önyüklemeyle (beyin MR verisinde hasta düzeyinde) hesaplanmıştır.
+
+\begin{table*}[h!]
+{\setlength{\tabcolsep}{5pt}
+\caption{FoveaHE için deneylerden önce belirlenen başarı ölçütleri.}
+\begin{center}
+\vspace{-6mm}
+{\small
+\begin{tabular}{lp{9cm}c}
+\hline\hline
+Ölçüt & Tanım & Eşik \\
+\hline
+Bilgi kaybı & Tam görüntü ile odaklı temsilin ResNet-18 AUC farkı & $\leq 0.02$ \\
+Model kaybı & Aynı model sınıfında tam görüntü ile odaklı temsilin AUC farkı & $\leq 0.03$ \\
+Şifreli doğruluk & Şifreli ve şifresiz çıkarımın AUC farkı & $\leq 0.005$ \\
+Sızıntı & Sunucunun gördüğü bilgilerle saldırgan AUC değeri & $\leq 0.55$ \\
+Hız & Tam şifrelemeye göre toplam süre oranı & $\geq 5$ \\
+\hline
+\end{tabular}}
+\vspace{-6mm}
+\end{center}
+\label{tbl:olcutler}}
+\end{table*}
+
 \section{Yeniden Üretilebilirlik}\label{sec:repro}
 
-Tüm deneyler \texttt{roi-leakage} kod deposunda, proje kökünden tek komutla çalıştırılabilen betikler olarak düzenlenmiş ve git sürüm kontrolüyle kaydedilmiştir. Deneyler Intel Core i7-10870H işlemci, 16 GB bellek ve 8 GB belleğe sahip NVIDIA GeForce RTX 2070 dizüstü ekran kartından oluşan bir bilgisayarda yapılmıştır. Yazılım ortamı Python 3.13, PyTorch 2.14 (CUDA 12.6), TenSEAL 0.3.16 ve scikit-learn 1.9.1'dir. Rastgele tohumlar sabitlenmiş, ana saldırı görüşleri 5 farklı tohumla tekrarlanmıştır.
+Tüm deneyler \texttt{roi-leakage} kod deposunda, proje kökünden tek komutla çalıştırılabilen betikler olarak düzenlenmiş ve git sürüm kontrolüyle kaydedilmiştir. Önerilen yöntem aynı depoda ayrı bir paket olarak uygulanmıştır. Uzun süren çözüm deneyleri, ilerleme yüzdesini ve tahmini bitiş zamanını gösteren ve yarıda kesildiğinde tamamlanmış sonuçları atlayarak kaldığı yerden devam eden bir iş kuyruğuyla çalıştırılmıştır. Deneyler Intel Core i7-10870H işlemci, 16 GB bellek ve 8 GB belleğe sahip NVIDIA GeForce RTX 2070 dizüstü ekran kartından oluşan bir bilgisayarda yapılmıştır. Yazılım ortamı Python 3.13, PyTorch 2.14 (CUDA 12.6), TenSEAL 0.3.16 ve scikit-learn 1.9.1'dir. Rastgele tohumlar sabitlenmiş; ana saldırı görüşleri ve çözümün ana yapılandırmaları 5 farklı tohumla tekrarlanmıştır.

@@ -8,15 +8,17 @@ HE'nin en önemli engeli maliyettir. Tüm görüntünün şifreli işlenmesi, ö
 
 Bu yaklaşımlar güvenliklerini bir \emph{sızıntı fonksiyonuna} göre kanıtlar: sunucunun görmesine izin verilen bilgi, görüntünün şifrelenmemiş kısmı ile ROI'nin konumu, boyutu ve şeklidir. Kanıt, sunucunun bundan fazlasını öğrenemeyeceğini gösterir. Ancak bu serbest bırakılan bilginin, şifreli bölgenin klinik içeriği hakkında ne kadar bilgi taşıdığı sorusu yanıtsız kalmıştır. Her iki çalışma da deneylerini gerçek tıbbi içerik yerine rastgele sentetik görüntüler veya el yazısı rakamlar üzerinde yapmıştır. Şifreli veritabanları alanında benzer bir varsayım, 2015 yılında ``sızıntı istismarı'' saldırılarıyla çürütülmüş ve kanıtlanabilir güvenli sistemlerin izin verdiği sızıntının hassas veriyi geri kazanmaya yettiği gösterilmiştir \cite{naveed2015inference,cash2015leakage}. Bu tez, aynı soruyu seçici homomorfik şifreleme için sormaktadır.
 
+Tezin ikinci sorusu, bu sızıntının verimlilikten vazgeçmeden giderilip giderilemeyeceğidir. Sızıntının kaynağına ilişkin bulgular, açık bırakılan bölgenin teşhis için de saldırgan için de değerli olduğunu gösterdiğinden, çözüm şifrelenen alanı küçültmekte değil, şifrelenen veriyi küçültmekte aranmıştır. Bu amaçla \emph{Odaklı Tam Şifreleme} (FoveaHE) adı verilen bir tasarım önerilmiştir: istemci görüntüden ROI merkezli, sabit boyutlu ve çok çözünürlüklü bir temsil çıkarır ve bu temsilin tamamını şifreler. Sunucuya hiçbir açık piksel ve görüntüye göre değişen hiçbir meta veri gönderilmez. Tasarımın ilkesi kısaca şöyle özetlenebilir: \emph{seçicilik şifrelemede değil, çözünürlükte olmalıdır.}
+
 \section{Tezin Amacı}\label{tezinamaci}
 
 Tezin temel problemi şu şekilde ifade edilebilir:
 
 \begin{quote}
-\emph{ROI tabanlı seçici homomorfik şifrelemede sunucuya izin verilen sızıntı, tıbbi görüntülerde şifreli bölgenin klinik içeriğini ne ölçüde ele verir ve bu sızıntıyı gidermenin gerçek bedeli nedir?}
+\emph{ROI tabanlı seçici homomorfik şifrelemede sunucuya izin verilen sızıntı, tıbbi görüntülerde şifreli bölgenin klinik içeriğini ne ölçüde ele verir, bu sızıntıyı gidermenin gerçek bedeli nedir ve sızıntı, seçici şifrelemenin verimlilik avantajı korunarak ortadan kaldırılabilir mi?}
 \end{quote}
 
-Bu problem, iki farklı görüntüleme türünde incelenmiştir. Göğüs röntgeninde ROI akciğer bölgesi, beyin MR görüntüsünde tümör bölgesidir. Bölüm \ref{sec:threat}'de ayrıntılandırılan araştırma soruları dört başlık altında toplanmaktadır: yalnızca ROI meta verisinin sızıntısı, ROI dışındaki açık bağlamın sızıntısı, sızıntının kaynağı ve sızıntıyı gidermek için gereken şifreleme miktarı ile bunun maliyeti.
+Bu problem, iki farklı görüntüleme türünde incelenmiştir. Göğüs röntgeninde ROI akciğer bölgesi, beyin MR görüntüsünde tümör bölgesidir. Bölüm \ref{sec:threat}'de ayrıntılandırılan araştırma soruları beş başlık altında toplanmaktadır: yalnızca ROI meta verisinin sızıntısı, ROI dışındaki açık bağlamın sızıntısı, sızıntının kaynağı, sızıntıyı gidermek için gereken şifreleme miktarı ile bunun maliyeti ve açık bilgi bırakmayan ama verimli bir alternatifin mümkün olup olmadığı.
 
 \subsection{Katkılar}\label{katkilar}
 
@@ -24,9 +26,10 @@ Tezin literatüre katkıları şunlardır:
 
 \begin{enumerate}
 \item \textbf{Sızıntının ilk ampirik değerlendirmesi.} ROI tabanlı seçici homomorfik şifrelemenin sızıntı fonksiyonunun, gerçek tıbbi görüntülerde teşhisi ne ölçüde ele verdiği iki saldırıyla ölçülmüştür. İlki yalnızca ROI meta verisini, ikincisi ROI dışındaki açık bağlamı kullanır. Saldırılar göğüs röntgeni ve beyin MR verisinde, hasta bazlı bölmelerle ve farklı veri kaynakları arasında sınanmıştır.
-\item \textbf{Sızıntının kaynağının analizi.} Saldırganın dayandığı görüntü bölgeleri Grad-CAM ile incelenmiş, basit önişleme adımlarının sızıntıyı giderip gidermediği ölçülmüştür. Beyin MR verisinde kesit yönünün karıştırıcı etkisi ayrıca kontrol edilmiştir.
 \item \textbf{Gizlilik şartlı gerçek maliyet.} $\Pi_{\mathrm{ROI}}$ protokolü aynı kütüphane ve parametrelerle yeniden üretilmiştir. Sızıntıyı azaltan savunma politikaları, adaptif bir saldırgana karşı değerlendirilmiştir; bunlar arasında sabit ROI ve sızıntı-güdümlü genişletme bulunmaktadır. Belirli bir gizlilik hedefinde gereken en küçük şifreli alan ve bu alanda kalan gerçek hız kazancı raporlanmıştır.
-\item \textbf{Tasarım kuralları.} Seçici homomorfik şifreleme kullanacak sağlık sistemleri için bulgulara dayanan somut kurallar önerilmiştir. Bunlar ROI meta verisinin gizlenmesi, şifrelenecek alanın sızıntı ölçülerek belirlenmesi ve çözülmüş sonucun sunucuyla paylaşılmamasıdır.
+\item \textbf{Sızıntının kaynağı ve açıklaması.} Saldırganın dayandığı görüntü bölgeleri Grad-CAM ile incelenmiş, basit önişleme adımlarının sızıntıyı giderip gidermediği ölçülmüştür. Beyin MR verisinde kesit yönünün karıştırıcı etkisi ayrıca kontrol edilmiştir. Bulgular, gizlilik ile fayda arasındaki bilinen kuramsal sonuçlarla ilişkilendirilmiştir: sunucunun hesapladığı teşhise yardım eden açık bilgi saldırgana da yardım eder.
+\item \textbf{Sızıntısız bir alternatif: Odaklı Tam Şifreleme.} ROI merkezli, sabit boyutlu ve çok çözünürlüklü temsilin tamamının şifrelendiği FoveaHE tasarımı geliştirilmiş ve şifreli çalışabilen üç model sınıfıyla gerçekten şifreli olarak çalıştırılmıştır. Tasarım, deneylerden önce belirlenen beş başarı ölçütünü 5 tohumla karşılamıştır. Sunucunun gördüğü bilgilerle kurulan saldırgan şans düzeyinde kalmış, tam şifrelemeye göre beyin MR görüntüsünde 29--37 kat, göğüs röntgeninde 7--9 kat hızlanma elde edilmiş ve teşhis başarısı tam görüntüyle eğitilen aynı model sınıfının üstüne çıkmıştır.
+\item \textbf{Beş yaklaşımın ortak ölçütlerle karşılaştırılması ve tasarım kuralları.} Tam şifreleme, varsayılan ve gizlilik şartlı $\Pi_{\mathrm{ROI}}$, gürültü veya bulanıklıkla bozulmuş açık bağlam, şifreli özet ve FoveaHE; teşhis başarısı, hız ve saldırgan başarısı açısından aynı veri, aynı saldırılar ve aynı maliyet ölçümüyle karşılaştırılmıştır. Bulgulara dayanarak seçici homomorfik şifreleme kullanacak sağlık sistemleri için somut tasarım kuralları önerilmiş ve yeniden kullanılabilir bir sızıntı denetim hattı sunulmuştur.
 \end{enumerate}
 
 \subsection{Kapsam ve sınırlılıklar}\label{kapsam}
@@ -35,12 +38,14 @@ Tezin literatüre katkıları şunlardır:
 \item Çalışma, $\Pi_{\mathrm{ROI}}$ protokolünün sızıntı fonksiyonunu hedef alır. Protokolün güvenlik kanıtının hatalı olduğu iddia edilmemektedir; incelenen, kanıtın izin verdiği sızıntının pratikteki anlamıdır.
 \item Saldırgan yarı dürüst bir sunucudur; protokolden sapan etkin saldırılar kapsam dışıdır.
 \item Deneyler kamuya açık iki tıbbi görüntü veri kümesiyle ve yardımcı bir göğüs röntgeni kümesiyle yapılmıştır. Bu kümeler farklı kaynaklardan derlendiği için çekim koşullarına bağlı karıştırıcı etkenler içerebilir; bu durum Bölüm \ref{CH5}'te ayrıca tartışılmıştır.
-\item Maliyet ölçümleri tek bir bilgisayarda ve $\Pi_{\mathrm{ROI}}$ çalışmasındaki lineer hesaplama yapısıyla yapılmıştır.
+\item Maliyet ölçümleri tek bir bilgisayarda, $\Pi_{\mathrm{ROI}}$ çalışmasındaki lineer hesaplama yapısıyla ve FoveaHE için ayrıca küçük bir evrişimli modelle yapılmıştır.
+\item FoveaHE, $\Pi_{\mathrm{ROI}}$ ile aynı biçimde ROI'nin istemci tarafında bilindiğini varsayar; ROI tespiti kapsam dışıdır.
+\item FoveaHE yeni bir şifreleme şeması değildir. Güvenliği standart CKKS şifrelemesine ve sunucuya gönderilen verinin boyutunun sabit olmasına dayanır. Tezde yeni bir güvenlik kanıtı sunulmamış, sunucunun gördüğü bilgilerle kurulan saldırılarla ampirik bir sızıntı denetimi yapılmıştır.
 \end{itemize}
 
 \subsection{TÜBİTAK 2209-A önerisiyle ilişki}\label{tubitak}
 
-Bu tez, ``Sağlık Verilerinde Homomorfik Şifreleme ve Zafiyet Analizi'' başlıklı TÜBİTAK 2209-A önerisinin devamıdır. Önerideki CKKS tabanlı seçici homomorfik şifreleme, tam, seçici ve şifresiz durumların karşılaştırılması ile saldırı başarısı ve işlem maliyetinin birlikte ölçülmesi hedefleri korunmuştur. Tehdit modeli ise iki gerekçeyle yeniden tanımlanmıştır. Birincisi, model skorunun şifrelenmesi, skoru zaten açık gören dış bir sorgulayıcıya karşı koruma sağlamaz. İkincisi, sentetik veride sızıntının gerçek anlamı ölçülemez. Bu nedenle öneride ``skor-kâhin'' olarak adlandırılan saldırı yerine, gerçek tıbbi görüntülerde ölçülebilen sızıntı istismarı saldırıları incelenmiştir. Önerideki başarı ölçütlerinin değerlendirmesi Bölüm \ref{sec:tubitakolcut}'te verilmiştir.
+Bu tez, ``Sağlık Verilerinde Homomorfik Şifreleme ve Zafiyet Analizi'' başlıklı TÜBİTAK 2209-A önerisinin devamıdır. Önerideki CKKS tabanlı seçici homomorfik şifreleme, tam, seçici ve şifresiz durumların karşılaştırılması ile saldırı başarısı ve işlem maliyetinin birlikte ölçülmesi hedefleri korunmuştur. Tehdit modeli ise iki gerekçeyle yeniden tanımlanmıştır. Birincisi, model skorunun şifrelenmesi, skoru zaten açık gören dış bir sorgulayıcıya karşı koruma sağlamaz. İkincisi, sentetik veride sızıntının gerçek anlamı ölçülemez. Bu nedenle öneride ``skor-kâhin'' olarak adlandırılan saldırı yerine, gerçek tıbbi görüntülerde ölçülebilen sızıntı istismarı saldırıları incelenmiştir. Önerideki başarı ölçütlerinin $\Pi_{\mathrm{ROI}}$ ve FoveaHE için değerlendirmesi Bölüm \ref{sec:tubitakolcut}'da verilmiştir.
 
 \section{Literatür Araştırması}\label{literaturarastirmasi}
 
@@ -52,7 +57,7 @@ Gentry'nin ilk tam homomorfik şifreleme yapısından \cite{gentry2009fhe} sonra
 
 Seçici şifreleme ilk olarak federatif öğrenmede yaygınlaşmıştır. MaskCrypt, gradyan güdümlü bir maskeyle model güncellemelerinin küçük bir kısmını şifreleyerek iletişim maliyetini düşürmüş ve açık kalan güncellemelere üyelik çıkarımı ile yeniden yapılandırma saldırıları uygulamıştır \cite{hu2025maskcrypt}. FAS, ağırlıkların bir yüzdesini şifreleyip geri kalanını diferansiyel mahremiyet gürültüsü ve bit karıştırmayla korumuş ve tıbbi görüntüler üzerinde gradyan tersine çevirme saldırılarını değerlendirmiştir \cite{korkmaz2025fas}. SenseCrypt, parametre duyarlılığına göre istemci bazında şifreleme oranı seçmiştir \cite{li2025sensecrypt}. Bağlantılı otonom araçlarda gradyanların seçici CKKS şifrelemesi de önerilmiştir \cite{najjar2025cavs}. Türkiye'den HADES çalışması ise PCA ile seçilen en hassas öznitelikleri çok taraflı homomorfik şifrelemeyle koruyan hibrit bir federatif öğrenme sistemi sunmuştur \cite{kaynak2026hades}.
 
-Çıkarım aşamasında seçicilik görüntü bölgesi düzeyinde tanımlanmıştır. $\Pi_{\mathrm{ROI}}$ protokolü yalnızca ROI piksellerini CKKS ile şifreleyip geri kalan pikselleri açık işler ve güvenliğini benzetim tabanlı bir tanımla kanıtlar \cite{bakas2026roi}. ``Encrypt What Matters'' çalışması, ROI şifreli çıkarımın hız kazancının ağ mimarisinin yerelliğine bağlı olduğunu göstermiş; ROI dışındaki değerleri ve ROI konumunu bilerek açık bırakılan bilgi olarak tanımlamıştır \cite{backour2026encrypt}. Federatif öğrenmedeki çalışmaların aksine bu iki çalışma, açık bırakılan bilginin ne sızdırdığını ölçmemiştir.
+Çıkarım aşamasında seçicilik görüntü bölgesi düzeyinde tanımlanmıştır. $\Pi_{\mathrm{ROI}}$ protokolü yalnızca ROI piksellerini CKKS ile şifreleyip geri kalan pikselleri açık işler ve güvenliğini benzetim tabanlı bir tanımla kanıtlar \cite{bakas2026roi}. ``Encrypt What Matters'' çalışması, ROI şifreli çıkarımın hız kazancının ağ mimarisinin yerelliğine bağlı olduğunu göstermiş; ROI dışındaki değerleri ve ROI konumunu bilerek açık bırakılan bilgi olarak tanımlamıştır \cite{backour2026encrypt}. Bi-CryptoNets ise girdiyi hassas ve hassas olmayan parçalara ayırmış, hassas parçayı homomorfik olarak şifreleyip diğer parçayı gürültü ekleyerek açık işlemiştir \cite{yuan2024bicryptonets}. Federatif öğrenmedeki çalışmaların aksine $\Pi_{\mathrm{ROI}}$ ve ``Encrypt What Matters'' çalışmaları, açık bırakılan bilginin ne sızdırdığını ölçmemiştir.
 
 \subsection{İzin verilen sızıntı ve çıkarım saldırıları}\label{lit:leakage}
 
@@ -62,18 +67,27 @@ Kanıtlanabilir güvenliğe sahip pratik sistemlerin izin verdiği sızıntını
 
 Derin öğrenme tabanlı COVID-19 tespit modellerinin, hastalık bulguları yerine veri kaynağına özgü kısayollara dayanabildiği gösterilmiştir \cite{degrave2021shortcuts}. Göğüs röntgeninin merkezindeki akciğer bölgesi karartıldığında bile sınıflandırmanın başarılı olabildiği raporlanmıştır \cite{maguolo2021critic}. Göğüs röntgenlerinin hastayı yeniden tanımlamaya yetecek biyometrik bilgi taşıdığı da bilinmektedir \cite{packhauser2022reid}. Bu çalışmalar olguyu modelin genelleme kabiliyeti ve veri anonimliği açısından ele almıştır. Aynı olgunun, ROI dışını açık bırakan şifreleme sistemlerinin güvenliği açısından sonuçları incelenmemiştir.
 
+\subsection{Şifreli çıkarımda girdi temsili ve görüntü gizleme}\label{lit:representation}
+
+Şifreli çıkarımın maliyetini düşürmenin bir yolu, şifrelenecek girdiyi küçültmek veya dönüştürmektir. CryptoNets, kare aktivasyon kullanan sığ bir ağı şifreli görüntülere uygulayarak homomorfik şifreli sinir ağı çıkarımının ilk örneklerinden birini vermiştir \cite{giladbachrach2016cryptonets}. DCT-CryptoNets, görüntüyü frekans uzayında temsil ederek şifreli çıkarımın ölçeklenmesini sağlamıştır \cite{roy2025dctcryptonets}. HETAL, önceden eğitilmiş bir modelin istemcide çıkardığı öznitelikleri şifreleyerek verimli bir şifreli aktarım öğrenmesi yöntemi önermiştir \cite{lee2023hetal}. Bu çalışmaların amacı verimliliktir ve seçici şifrelemenin sızıntısına çözüm olarak tartışılmamıştır.
+
+Görüntünün yalnızca bir bölgesini yüksek, geri kalanını düşük çözünürlükte işleme fikri makine öğrenmesinde yaygındır. Görsel dikkat modelleri, seçilen bir konumun çevresinde merkezden dışa doğru çözünürlüğü azalan çok ölçekli ``bakış'' temsilleri kullanır \cite{mnih2014attention}. Göğüs röntgeni sınıflandırmasında tüm görüntü ile dikkat haritasından kesilen yerel bölgenin birlikte kullanılması başarıyı artırmıştır \cite{guan2018agcnn}. Bu çalışmalar amaçlarını doğruluk ve hesaplama verimliliği olarak tanımlamış, gizlilikle ilişkilendirmemiştir.
+
+Gizlilik literatüründe iki yakın fikir bulunmaktadır. Güvenilir donanım üzerinde çalışan Visor, görüntüden kesilen nesne bölgelerini sabit boyuta getirerek nesne boyutunun yan kanaldan sızmasını önlemiştir \cite{poddar2020visor}; şifreli veri yapılarında da yanıt hacminin gizlenmesi ayrı bir güvenlik hedefi olarak ele alınmaktadır \cite{kamara2019volume}. Küçük resmi koruyan şifreleme ise kullanılabilirlik için görüntünün küçük bir kopyasını bilerek açık bırakır \cite{tajik2019tpe}. Bulanıklaştırma ve pikselleştirme gibi görüntü gizleme yöntemlerinin derin öğrenmeyle aşılabildiği de gösterilmiştir \cite{mcpherson2016obfuscation}. Kuramsal tarafta, gizlilik hunisi \cite{makhdoumi2014funnel} ve çekişmeli temsil öğrenmesi üzerine çalışmalar \cite{zhao2020tradeoffs}, gizlenmek istenen bilgi görevle ilişkili olduğunda fayda ile gizlilik arasında kaçınılmaz bir ödünleşim bulunduğunu göstermiştir.
+
 \subsection{Literatürdeki boşluk ve tezin konumu}\label{lit:gap}
 
 Çizelge \ref{tbl:literatur}, seçici şifreleme çalışmalarını seçicilik birimi ve açık kısmın sızıntısının ölçülüp ölçülmediği açısından özetlemektedir.
 
 \begin{table*}[h!]
-{\setlength{\tabcolsep}{6pt}
-\caption{Seçici şifreleme çalışmalarının karşılaştırılması.}
+{\setlength{\tabcolsep}{5pt}
+\caption{Seçici şifreleme çalışmalarının karşılaştırılması (son sütun: açık bırakılan kısmın sızıntısı ölçüldü mü?).}
 \begin{center}
 \vspace{-6mm}
+{\small
 \begin{tabular}{llll}
 \hline\hline
-Çalışma & Aşama & Seçicilik birimi & Açık kısmın sızıntısı ölçüldü mü? \\
+Çalışma & Aşama & Seçicilik birimi & Sızıntı ölçümü \\
 \hline
 MaskCrypt \cite{hu2025maskcrypt} & Eğitim (FL) & Model güncellemesi & Evet \\
 FAS \cite{korkmaz2025fas} & Eğitim (FL) & Ağırlık yüzdesi & Evet \\
@@ -81,16 +95,17 @@ SenseCrypt \cite{li2025sensecrypt} & Eğitim (FL) & Parametre & Evet \\
 HADES \cite{kaynak2026hades} & Eğitim (FL) & Öznitelik & Kısmen \\
 $\Pi_{\mathrm{ROI}}$ \cite{bakas2026roi} & Çıkarım & Görüntü bölgesi & Hayır \\
 Encrypt What Matters \cite{backour2026encrypt} & Çıkarım & Görüntü bölgesi & Hayır \\
-Bu tez & Çıkarım & Görüntü bölgesi & Evet \\
+Bu tez: saldırı analizi & Çıkarım & Görüntü bölgesi & Evet \\
+Bu tez: FoveaHE & Çıkarım & Çözünürlük (açık kısım yok) & Evet \\
 \hline
-\end{tabular}
+\end{tabular}}
 \vspace{-6mm}
 \end{center}
 \label{tbl:literatur}}
 \end{table*}
 
-Bu tez, çıkarım aşamasındaki ROI tabanlı seçici homomorfik şifrelemenin izin verdiği sızıntıyı gerçek tıbbi görüntülerde ölçen ilk çalışmadır. Tez, şifreli veritabanlarındaki sızıntı istismarı yaklaşımını seçici homomorfik şifrelemeye taşımaktadır. Tıbbi görüntülerdeki kısayol öğrenme bulgularını da güvenlik bağlamına bağlamaktadır. Ayrıca sızıntıyı gidermenin gerçek maliyetini aynı protokol üzerinde sayısal olarak göstermektedir.
+Bu tez, çıkarım aşamasındaki ROI tabanlı seçici homomorfik şifrelemenin izin verdiği sızıntıyı gerçek tıbbi görüntülerde ölçen ilk çalışmadır. Tez, şifreli veritabanlarındaki sızıntı istismarı yaklaşımını seçici homomorfik şifrelemeye taşımaktadır. Tıbbi görüntülerdeki kısayol öğrenme bulgularını da güvenlik bağlamına bağlamaktadır. Ayrıca sızıntıyı gidermenin gerçek maliyetini aynı protokol üzerinde sayısal olarak göstermektedir. Odaklı temsilin ve girdiyi küçülterek tam şifrelemenin parçaları literatürde ayrı ayrı bulunsa da, ROI merkezli, sabit boyutlu ve çok çözünürlüklü bir temsilin tamamının şifrelenmesinin seçici şifrelemenin sızıntısına çözüm olarak önerildiği ve aynı saldırılar ile aynı maliyet ölçütüyle diğer yaklaşımlarla karşılaştırıldığı bir çalışmaya rastlanmamıştır.
 
 \section{Tezin Düzeni}\label{duzen}
 
-Bölüm \ref{CH2}'de homomorfik şifreleme, CKKS, $\Pi_{\mathrm{ROI}}$ protokolü ve sızıntı istismarı gibi temel kavramlar açıklanmaktadır. Bölüm \ref{CH3}'te tehdit modeli, veri kümeleri, saldırılar, savunmalar ve değerlendirme yöntemi sunulmaktadır. Bölüm \ref{CH4}'te deney bulguları, Bölüm \ref{CH5}'te bulguların yorumu ve sınırlılıklar, Bölüm \ref{CH6}'da sonuçlar ve gelecek çalışmalar yer almaktadır.
+Bölüm \ref{CH2}'de homomorfik şifreleme, CKKS, $\Pi_{\mathrm{ROI}}$ protokolü, sızıntı istismarı, şifreli çıkarıma uygun modeller, odaklı temsil ve gizlilik ile fayda arasındaki ilişki gibi temel kavramlar açıklanmaktadır. Bölüm \ref{CH3}'te tehdit modeli, veri kümeleri, saldırılar, savunmalar, önerilen FoveaHE yöntemi ve değerlendirme protokolü sunulmaktadır. Bölüm \ref{CH4}'te saldırı ve çözüm deneylerinin bulguları, Bölüm \ref{CH5}'te bulguların yorumu, tasarım kuralları ve sınırlılıklar, Bölüm \ref{CH6}'da sonuçlar ve gelecek çalışmalar yer almaktadır.

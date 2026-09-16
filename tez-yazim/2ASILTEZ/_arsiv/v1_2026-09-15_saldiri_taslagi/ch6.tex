@@ -1,0 +1,22 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{SONUÇ VE GELECEK ÇALIŞMALAR}\label{CH6}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Sonuç}\label{sec:sonuc}
+
+Bu tezde, tıbbi görüntünün yalnızca ilgi bölgesini homomorfik olarak şifreleyen seçici şifreleme yaklaşımının izin verilen sızıntısı, gerçek tıbbi görüntüler üzerinde ilk kez sistematik olarak değerlendirilmiştir. $\Pi_{\mathrm{ROI}}$ protokolü aynı kütüphane ve parametrelerle yeniden üretilmiş, doğruluğu gerçek ROI maskeleriyle doğrulanmış ve maliyeti dört görüntü boyutunda ölçülmüştür.
+
+İki sızıntı istismarı saldırısı, göğüs röntgeni ve beyin MR verisinde şifreli bölgenin klinik içeriğinin büyük ölçüde ele verildiğini göstermiştir. Yalnızca ROI meta verisi teşhisi AUC $0.83$--$0.90$ ile, ROI dışındaki açık bağlam ise AUC $0.97$--$0.99$ ile ele vermiştir. Sızıntı başka bir kaynaktan veriyle eğitilen saldırganda da sürmüş, basit önişleme adımlarıyla giderilememiştir. Adaptif saldırgana karşı değerlendirilen savunmalar, teşhisi gizlemek için görüntünün neredeyse tamamının şifrelenmesi gerektiğini ve bu durumda seçici şifrelemenin hız kazancının tam şifrelemeye göre yaklaşık 1 kata indiğini göstermiştir.
+
+Tezin temel sonucu şudur: \emph{ROI tabanlı seçici homomorfik şifreleme, tıbbi görüntülerde gizlilik şartı konduğunda verimlilik avantajını kaybetmektedir.} Bu sonuç, seçici şifreleme önerilerinin yalnızca verimlilikle değil, izin verdikleri sızıntının gerçek veride ölçülmesiyle birlikte değerlendirilmesi gerektiğini ortaya koymaktadır. Tez bu amaçla yeniden kullanılabilir bir değerlendirme boru hattı ve somut tasarım kuralları sunmaktadır.
+
+\section{Gelecek Çalışmalar}\label{sec:gelecek}
+
+\begin{itemize}
+\item \textbf{Bağımsız veri kümeleri.} Bulgular, hastane bazında ayrılmış ve yetişkin hastalardan oluşan bağımsız göğüs röntgeni kümelerinde tekrarlanmalıdır.
+\item \textbf{Evrişimli ağ maliyeti.} ``Encrypt What Matters'' çalışmasındaki gibi yerel mimarilerde şifreli çıkarım maliyeti ölçülmeli ve gizlilik şartlı hız kazancı doğrudan hesaplanmalıdır \cite{backour2026encrypt}.
+\item \textbf{Üç boyutlu MR verisi.} $\Pi_{\mathrm{ROI}}$ çalışmasının motivasyon kaynağı olan üç boyutlu beyin tümörü MR verisinde tümör çevresindeki kitle etkisinin sızıntısı incelenmelidir.
+\item \textbf{Daha ayrıntılı savunmalar.} Daha ince yama ızgaraları, öğrenilen şifreleme maskeleri ve sızıntı için bilgi kuramsal üst sınırlar araştırılmalıdır.
+\item \textbf{Hasta yeniden tanımlama.} ROI dışındaki bölgenin hastayı yeniden tanımlamaya yetip yetmediği ölçülmelidir \cite{packhauser2022reid}.
+\item \textbf{Federatif öğrenme.} Aynı sızıntı değerlendirme yaklaşımı, federatif öğrenmede gradyan düzeyinde seçici şifrelemeye taşınarak yüksek lisans çalışmasına zemin oluşturulabilir.
+\end{itemize}

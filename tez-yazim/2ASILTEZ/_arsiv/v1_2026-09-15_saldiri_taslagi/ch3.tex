@@ -1,0 +1,101 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{YÖNTEM}\label{CH3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Bu bölümde tehdit modeli, $\Pi_{\mathrm{ROI}}$ protokolünün yeniden üretimi, kullanılan veri kümeleri, iki saldırı, gerçekçilik testi, kök neden analizi ve savunmalar ile değerlendirme protokolü açıklanmaktadır. Tüm deneyler tek komutla yeniden çalıştırılabilen bir kod deposunda toplanmıştır (Bölüm \ref{sec:repro}).
+
+\section{Tehdit Modeli ve Araştırma Soruları}\label{sec:threat}
+
+Sistem, Bölüm \ref{sec:piroi}'da açıklanan $\Pi_{\mathrm{ROI}}$ mimarisidir: hastane (istemci) tıbbi görüntünün ROI piksellerini CKKS ile şifreler, geri kalanını açık gönderir; bulut hizmet sağlayıcı (sunucu) Eşitlik \ref{eq:piroi}'deki hesaplamayı yapar ve şifreli sonucu döndürür.
+
+\textbf{Saldırgan.} Saldırgan, protokolü doğru uygulayan ancak gördüğü her bilgiden çıkarım yapmaya çalışan yarı dürüst sunucudur. Saldırganın gördüğü bilgi, protokolün sızıntı fonksiyonuyla (Eşitlik \ref{eq:leakage}) sınırlıdır: model ağırlıkları, ROI dışındaki açık pikseller, ROI'nin konumu, boyutu ve şekli ile girdinin boyutu. Saldırgan ayrıca kamuya açık etiketli tıbbi görüntü veri kümelerine erişebilir; bu, bir bulut sağlayıcı için gerçekçi bir varsayımdır.
+
+\textbf{Saldırganın hedefi.} Şifreli ROI'nin içeriğine dair klinik bilgiyi, yani göğüs röntgeninde teşhisi ve beyin MR görüntüsünde tümör tipini tahmin etmektir.
+
+\textbf{Araştırma soruları.}
+\begin{enumerate}
+\item[\textbf{AS1.}] Yalnızca ROI meta verisi (konum, boyut, şekil) ve girdi boyutu teşhisi ne ölçüde ele verir?
+\item[\textbf{AS2.}] ROI dışındaki açık bağlam teşhisi ne ölçüde ele verir? Saldırgan başka bir kaynaktan gelen veriyle eğitildiğinde de bu geçerli midir?
+\item[\textbf{AS3.}] Sızıntı görüntünün hangi bölgelerinden kaynaklanır ve basit önişleme adımları sızıntıyı giderir mi?
+\item[\textbf{AS4.}] Teşhisi gizlemek için görüntünün ne kadarı şifrelenmelidir ve bu durumda seçici şifrelemenin hız kazancından ne kalır?
+\end{enumerate}
+
+\section{$\Pi_{\mathrm{ROI}}$ Protokolünün Yeniden Üretimi}\label{sec:reproduction}
+
+Protokolün hesaplama çekirdeği TenSEAL \cite{benaissa2021tenseal} ile, makaledeki parametrelerle yeniden kodlanmıştır: CKKS, $N = 16384$, modül zinciri $[60, 40, 40, 40, 60]$, $\Delta = 2^{40}$. Hesaplama iki lineer turdan oluşur: $M_1 \in \mathbb{R}^{20 \times n}$ ve $M_2 \in \mathbb{R}^{10 \times 20}$; ağırlıklar rastgele üretilmiştir. Şifreli ve açık katkılar lineerlik sayesinde tur boyunca ayrı tutulur ve istemci sonunda birleştirir. Tam homomorfik şifreleme durumu, ROI'nin tüm görüntüyü kapsadığı özel durum olarak ele alınmıştır.
+
+Bir şifreli metin en fazla $8192$ değer taşıdığından ROI pikselleri gerektiğinde birden fazla şifreli metne bölünmüştür. Ön denemelerde TenSEAL'in slot toplama işleminin 2'nin kuvveti olmayan vektör uzunluklarında belirgin biçimde yavaşladığı gözlenmiştir; bu durumda ROI şifrelemek tüm görüntüyü şifrelemekten yavaş çıkabilmektedir. Karşılaştırmanın adil olması için her dilim sıfırlarla en yakın 2'nin kuvvetine tamamlanmıştır. Sıfır değerli elemanlar iç çarpımın sonucunu değiştirmez.
+
+\textbf{Doğruluk.} Seçici şifreli çıktının şifresiz hesaplamayla aynı olduğu, beyin MR görüntüsünde tümör maskesi ve göğüs röntgeninde akciğer maskesi kullanılarak $64 \times 64$ ve $128 \times 128$ çözünürlüklerde doğrulanmıştır.
+
+\textbf{Maliyet.} $64$, $128$, $256$ ve $512$ piksel kenar uzunluklu görüntülerde $\rho \in \{0.01, 0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 1.00\}$ şifreli alan oranları için istemci şifreleme süresi, sunucu hesaplama süresi, çözme süresi, şifreli metin sayısı ve istemciden sunucuya giden veri boyutu ölçülmüştür. Ölçümler görüntü boyutuna göre 1 ile 3 kez tekrarlanmıştır. Hız kazancı, aynı görüntü boyutunda tam şifrelemenin toplam süresinin seçici şifrelemenin toplam süresine oranı olarak tanımlanmıştır.
+
+\section{Veri Kümeleri}\label{sec:data}
+
+\textbf{COVID-QU-Ex.} Qatar Üniversitesi araştırmacılarının derlediği veri kümesi 33.920 göğüs röntgeni içerir: 11.956 COVID-19, 11.263 COVID dışı enfeksiyon (viral veya bakteriyel pnömoni) ve 10.701 normal \cite{tahir2021covidquex}. Tüm görüntüler için akciğer maskesi, 5.826 görüntü için ayrıca enfeksiyon maskesi sağlanmıştır. Veri kümesinin resmi eğitim, doğrulama ve test bölmeleri kullanılmıştır. Görüntüler kaynak tarafından $256 \times 256$ çözünürlüğe getirilmiştir.
+
+\textbf{Beyin tümörü veri kümesi.} Kullanılan veri kümesi 233 hastadan alınmış 3.064 T1 ağırlıklı kontrastlı MR kesiti içerir: 708 meningiom, 1.426 gliom ve 930 hipofiz tümörü \cite{cheng2015brain}. Her kesit için tümör maskesi, tümör tipi ve hasta kimliği bulunmaktadır. Kesitlerin 3.049'u $512 \times 512$, 15'i $256 \times 256$ boyutundadır. Yazarların sağladığı 5 katlı çapraz doğrulama bölmesi kullanılmış ve hiçbir hastanın birden fazla katta yer almadığı doğrulanmıştır.
+
+\textbf{Kaggle göğüs röntgeni kümesi.} Kaggle'da yayımlanmış, COVID-19, normal ve pnömoni sınıflarından 6.432 görüntü içeren bir derleme kullanılmıştır. Normal ve pnömoni görüntüleri çocuk hastalara aittir ve görüntüler orijinal çözünürlüklerini korumaktadır.
+
+\textbf{Tekrar eden görüntüler.} Kaggle kümesi ile COVID-QU-Ex ortak kaynaklardan derlendiği için iki küme arasında tekrar eden görüntüler taranmıştır. Her görüntü için 64 bitlik fark hash'i (dHash) ve $32 \times 32$ küçük resim hesaplanmış; Hamming mesafesi 10 veya daha az olan aday çiftlerden, standartlaştırılmış küçük resim korelasyonu $0.97$ veya üzerinde olanlar tekrar kabul edilmiştir. Kaggle kümesindeki 6.432 görüntünün 4.665'inin COVID-QU-Ex içinde karşılığı bulunmuştur. Kümeler arası deneylerde bu görüntüler dışarıda bırakılmıştır.
+
+\textbf{Önişleme.} CNN tabanlı deneylerde görüntüler gri tonlamalı $224 \times 224$ çözünürlüğe bilineer, maskeler en yakın komşu yöntemiyle indirilmiştir. Beyin MR kesitlerinin yoğunlukları, her kesitte $0.5$ ve $99.5$ yüzdelikleri arasında $[0, 255]$ aralığına ölçeklenmiştir.
+
+\section{Saldırı A: Meta Veri Saldırısı}\label{sec:attackA}
+
+Bu saldırı AS1'i yanıtlar. Saldırgan yalnızca protokolün serbest bıraktığı meta veriyi görür. Her ROI maskesinden dört grup öznitelik çıkarılmıştır:
+
+\begin{itemize}
+\item \textbf{Girdi boyutu:} görüntü yüksekliği, genişliği ve en-boy oranı.
+\item \textbf{Konum:} ROI sınırlayıcı kutusunun köşe koordinatları ve ağırlık merkezi.
+\item \textbf{Büyüklük:} ROI alanı, kutu yüksekliği ve genişliği, ikinci moment eksen uzunlukları, en büyük iki bağlı bileşenin alanları.
+\item \textbf{Şekil:} kutu en-boy oranı, doluluk, normalize çevre, dairesellik, dışmerkezlik, yönelim ve bağlı bileşen sayısı.
+\end{itemize}
+
+Sınıflandırıcı olarak histogram tabanlı gradyan artırma kullanılmıştır. Beyin MR verisinde hasta bazlı 5 katlı çapraz doğrulama ile kat dışı tahminler üretilmiş, AUC hasta düzeyinde önyükleme ile güven aralığıyla raporlanmıştır. COVID-QU-Ex verisinde eğitim ve doğrulama bölmeleriyle eğitilip resmi test bölmesinde değerlendirilmiştir. Tüm ölçümler 5 farklı rastgele tohumla tekrarlanmıştır. Özniteliklerin katkısı permütasyon önemi ile ölçülmüştür. Ayrıca ROI'nin enfeksiyon maskesi olarak tanımlandığı uç durum ve Kaggle kümesinde yalnızca görüntü boyutunun sızıntısı ayrıca değerlendirilmiştir.
+
+\textbf{Kesit yönü kontrolü.} Beyin MR veri kümesinde aksiyel, koronal ve sagital kesitler karışıktır ve yön etiketi yoktur. Konum sızıntısının kesit yönünden kaynaklanıp kaynaklanmadığını sınamak için kesit yönü üç görüntü özelliğiyle tahmin edilmiştir: sağ-sol simetri korelasyonu, görüntünün alt kenarındaki doku doluluğu ve baş sınırlayıcı kutusunun en-boy oranı. Bu özellikler üç kümeye ayrılmış ve kümeler, sagital kesitin simetrisinin düşük, koronal kesitin alt kenar doluluğunun yüksek olmasına göre adlandırılmıştır. Tahminler her yönden rastgele 12 örnekle görsel olarak doğrulanmıştır. Ardından yalnızca yönün, yalnızca meta verinin ve ikisinin birlikte sızıntısı ile her yön içinde meta veri sızıntısı ölçülmüştür.
+
+\section{Saldırı B: Bağlam Saldırısı}\label{sec:attackB}
+
+Bu saldırı AS2'yi yanıtlar. Sunucunun gördüğü görüntü şöyle oluşturulmuştur: gizli bölgedeki pikseller sıfırlanır ve sunucu gizli bölgenin konumunu bildiği için ayrı bir gösterge kanalı eklenir. Ağın girdisi üç kanaldan oluşur: iki kez görünür görüntü ve gizli bölge göstergesi. Aşağıdaki görüşler karşılaştırılmıştır:
+
+\begin{itemize}
+\item \textbf{tam:} şifreleme yok (üst sınır),
+\item \textbf{yalnız ROI:} yalnızca ROI görünür (referans),
+\item \textbf{bağlam:} ROI gizli, yani $\Pi_{\mathrm{ROI}}$ görüşü,
+\item \textbf{bağlam + $k$ piksel:} ROI her yöne $k \in \{10, 20, 40\}$ piksel genişletilerek gizli,
+\item \textbf{kutu:} ROI'nin sınırlayıcı kutusu gizli.
+\end{itemize}
+
+Saldırgan olarak ImageNet ön eğitimli ResNet-18 \cite{he2016resnet} kullanılmıştır. Eğitimde AdamW eniyileyicisi ($3 \times 10^{-4}$ tepe öğrenme oranı, tek döngü öğrenme oranı çizelgesi), 64 yığın boyutu, 16 bit karışık hassasiyet ve görüntü ile maskeye aynı küçük kaydırma ve ölçekleme artırımı uygulanmıştır. Beyin MR verisinde her katta 12, COVID-QU-Ex verisinde 5 dönem eğitim yapılmıştır.
+
+\textbf{Değerlendirme hassasiyeti.} Geliştirme sırasında önemli bir yöntemsel hata tespit edilmiştir. Tüm girdilerin özdeş olduğu tamamen gizli görüşte AUC'nin tam $0.5$ olması gerekirken 16 bit hassasiyetle ve sınıflara göre sıralı test indeksleriyle yapılan değerlendirmede $0.421$ bulunmuştur. Bunun nedeni, yığın bileşimine bağlı çok küçük sayısal farkların sınıf sırasıyla hizalanmasıdır. Bu nedenle tüm tahminler 32 bit hassasiyetle ve karışık sırada hesaplanmış, düzeltilmiş boru hattında tamamen gizli görüşün AUC'si her iki veri kümesinde $0.500$ olarak doğrulanmıştır. Bu kontrol savunma deneylerine kalıcı bir akıl sağlığı testi olarak eklenmiştir.
+
+\section{Gerçekçilik Testi}\label{sec:transfer}
+
+AS2'nin ikinci kısmı için saldırgan bir veri kaynağında eğitilip hiç görmediği diğer kaynakta test edilmiştir. Kaggle kümesinde akciğer maskesi bulunmadığından, COVID-QU-Ex eğitim bölmesindeki akciğer maskeleriyle küçük bir U-Net \cite{ronneberger2015unet} eğitilmiş ve Kaggle görüntülerine maske üretilmiştir. Maske kalitesi COVID-QU-Ex doğrulama bölmesinde Dice benzerliği ile ölçülmüş ve rastgele örneklerle görsel olarak denetlenmiştir. Ortak sınıflar normal ve pnömonidir. İki yön denenmiştir: COVID-QU-Ex ile eğitip tekrar etmeyen Kaggle görüntülerinde test etmek ve tekrar etmeyen Kaggle eğitim görüntüleriyle eğitip COVID-QU-Ex test bölmesinde test etmek.
+
+\section{Kök Neden Analizi}\label{sec:rootcause}
+
+AS3 için iki analiz yapılmıştır. Birincisinde, bağlam görüşüyle eğitilmiş saldırganın gerçek sınıfa ait Grad-CAM \cite{selvaraju2017gradcam} haritaları son evrişim bloğunda hesaplanmış ve dikkat kütlesinin bölgelere dağılımı ölçülmüştür. Göğüs röntgeninde bölgeler akciğer (gizli), dış kenar çerçevesi, akciğer üstü, akciğer altı, akciğerler arası (kalp ve mediasten) ve yanlardır. Beyin MR görüntüsünde bölgeler tümör (gizli), tümör çevresi, beynin geri kalanı ve kafa dışı arka plandır. İkincisinde, COVID-QU-Ex verisinde dört önişleme varyantının sızıntıya etkisi ölçülmüştür: histogram eşitleme, görüntünün dış kenarının \%5 ve \%10'unun gizlenmesi ve eşitleme ile \%10 kenar gizlemenin birlikte uygulanması. Her varyant için saldırgan baştan eğitilmiştir.
+
+\section{Savunmalar ve Gizlilik Şartlı Maliyet}\label{sec:defense}
+
+AS4 için ROI'yi genişleten dört savunma politikası değerlendirilmiştir. Gizli bölge her zaman görüntünün kendi ROI'sini de içerir, çünkü ROI içeriği şifreli kalmalıdır.
+
+\begin{itemize}
+\item \textbf{Kanonik ROI:} Eğitim maskelerinin toplam kütlesinin \%99'unu kapsayan ve tüm görüntülerde aynı olan bölge. ROI'nin konum ve şekil bilgisini sızdırmaz.
+\item \textbf{Kanonik ROI genişletmesi:} Kanonik bölgenin her yöne $8$, $16$, $32$ ve $64$ piksel büyütülmesi.
+\item \textbf{Sızıntı-güdümlü genişletme:} Görüntü $8 \times 8$ yama ızgarasına bölünür. Her adımda o anki görüşle eğitilen saldırganın doğrulama kümesindeki AUC'si, her aday yamanın ek olarak gizlenmesiyle (occlusion) yeniden hesaplanır. AUC'yi en çok düşüren 4 yama gizli bölgeye eklenir ve saldırgan yeni görüşle baştan eğitilir. Böylece saldırgan savunmaya uyum sağlayabilir. İşlem saldırgan AUC'si $0.55$'in altına inene veya tüm yamalar gizlenene kadar sürer.
+\item \textbf{Rastgele genişletme:} Aynı adım büyüklüğüyle rastgele sırada yama ekleyen karşılaştırma politikası (iki farklı sıra).
+\end{itemize}
+
+Savunma deneylerinde hesaplama süresini sınırlamak için saldırgan COVID-QU-Ex verisinde eğitim bölmesinden rastgele seçilen 10.000 görüntüyle 3 dönem, beyin MR verisinde üç katla 12 dönem eğitilmiştir. Bu nedenle savunma saldırganları Saldırı B'deki tam eğitimli saldırgandan zayıftır ve raporlanan sızıntı gerçek sızıntının alt sınırı olarak yorumlanmalıdır.
+
+Her politika noktasının şifreli alan oranı $\rho$, protokol yeniden üretiminde ölçülen toplam süre ile doğrusal interpolasyon yapılarak tam şifrelemeye göre hız kazancına çevrilmiştir ($256 \times 256$ ve $512 \times 512$ görüntüler için). Böylece belirli bir gizlilik hedefinde (örneğin saldırgan AUC $\leq 0.8$) gereken en küçük şifreli alan ve bu alandaki gerçek hız kazancı elde edilmiştir.
+
+\section{Yeniden Üretilebilirlik}\label{sec:repro}
+
+Tüm deneyler \texttt{roi-leakage} kod deposunda, proje kökünden tek komutla çalıştırılabilen betikler olarak düzenlenmiş ve git sürüm kontrolüyle kaydedilmiştir. Deneyler Intel Core i7-10870H işlemci, 16 GB bellek ve 8 GB belleğe sahip NVIDIA GeForce RTX 2070 dizüstü ekran kartından oluşan bir bilgisayarda yapılmıştır. Yazılım ortamı Python 3.13, PyTorch 2.14 (CUDA 12.6), TenSEAL 0.3.16 ve scikit-learn 1.9.1'dir. Rastgele tohumlar sabitlenmiş, ana saldırı görüşleri 5 farklı tohumla tekrarlanmıştır.
