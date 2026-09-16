@@ -1181,10 +1181,19 @@ FUNCTION {mthesis}
   fin.entry
 }
 
+FUNCTION {output.nocomma.opt}
+{ duplicate$ empty$
+    'pop$
+    'output.nonnull.nocomma
+  if$
+}
+% misc: yazar ve yil article ile ayni noktalamayla ("Yazar (yil). Baslik, ...");
+% ilk surum "Yazar, (yil), Baslik" yaziyordu (16 Eyl 2026 inceleme, madde 5.9)
 FUNCTION {misc}
 { output.bibitem
-  format.authors output
-  format.date output
+  format.authors output.nocomma.opt
+  format.date output.nocomma.opt
+  date.block
   format.title output
   howpublished "howpublished" bibinfo.check output
   format.url output

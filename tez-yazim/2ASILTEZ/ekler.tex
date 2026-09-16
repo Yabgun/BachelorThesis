@@ -1,26 +1,22 @@
 \vglue20pt
-\chapter{EK A.1}
+\chapter{EK A.1: Çözülmüş CKKS Sonucundan Anahtar Kurtarma Kavram Kanıtı}
 
+Bölüm \ref{sec:kurallar}'da anılan anahtar kurtarma denemesinin ayrıntıları aşağıdadır. Deneme, çözülmüş yaklaşık CKKS sonuçlarının sunucuyla paylaşılmasının IND-CPA-D güvenlik açığı doğurduğunu \cite{limicciancio2021} somut bir örnekle göstermek içindir.
 
-\begin{table*}[!ht]
-{\setlength{\tabcolsep}{14pt}
-\caption{Ekler b\"ol\"um\"unde \c{c}izelge \"orne\u{g}i.}
-\begin{center}
-\vspace{-6mm}
-\begin{tabular}{cccc}
-\hline\hline
-Kolon A & Kolon B & Kolon C & Kolon D \\
-\hline
-Sat\i r A & Sat\i r A & Sat\i r A & Sat\i r A \\
-Sat\i r B & Sat\i r B & Sat\i r B & Sat\i r B \\
-Sat\i r C & Sat\i r C & Sat\i r C & Sat\i r C \\
-\hline
-\end{tabular}
-\vspace{-6mm}
-\end{center}
-\label{tableappendix2}}
-\end{table*}
+\textbf{Kurulum.} TenSEAL ile CKKS bağlamı $N = 8192$, modül zinciri $[60, 40, 40, 60]$ ve $\Delta = 2^{40}$ ile kurulmuştur. İstemci, seçici şifreli lojistik regresyon çıkarımındaki gibi bir öznitelik sütununu (4.096 hasta) tek bir şifreli metne paketler; sunucu bu sütunu açık bir ağırlıkla çarpıp bir yanlılık ekler (TenSEAL bu işlemde yeniden ölçekleme yapar) ve sonucu istemciye döndürür. İstemci sonucu çözer ve 4.096 gerçek değeri paylaşır.
 
-Veri setleri, algoritmalar (ihtiyaç halinde kaynak kodlar), tez ile ilgili detay içerikler bu kısımda olmalıdır.
+\textbf{Saldırı.} Sunucu, çözülmüş değerlerin ve elindeki şifreli metnin bilgisiyle şifreleme denklemini kurar. İki çözülmüş sonuç için yazılan denklemler, kanonik gömme kodlamasının çift doğrusal yapısı kullanılarak gizli anahtarın her katsayısı için doğrusal bir sisteme indirgenir. Gizli anahtar üçlü (ternary) olduğundan tek bir kalıntı sınıfı halkası (RNS) asalı yeterlidir. Uygulama yalnızca standart kütüphaneyle, \texttt{pilot/indcpad\_poc\_tenseal.py} betiğinde verilmiştir.
 
+\textbf{Sonuç.} Tam hassasiyetli değerler paylaşıldığında gizli anahtar 0.14 saniyede tam olarak kurtarılmıştır. Çözülmüş değerler paylaşmadan önce 4 ondalığa yuvarlandığında saldırı başarısız olmuştur. Bu, yuvarlamanın basit bir engel olduğunu gösterir; ancak gürültü taşırma temelli önlemlerin de yetersiz kalabildiği bilindiğinden \cite{guo2024keyrecovery} güvenliğin kanıtı sayılmamalı ve çözülmüş sonuçlar sunucuya hiç gönderilmemelidir.
 
+\chapter{EK A.2: İnme Veri Kümesinde Öznitelik Düzeyinde Seçici Şifreleme Ön Çalışması}
+
+Bölüm \ref{sec:tablo}'da özetlenen ön çalışmanın ayrıntıları aşağıdadır.
+
+\textbf{Veri.} Kaggle'da yayımlanmış inme tahmini veri kümesi kullanılmıştır: 5.110 hasta, biri hariç (cinsiyeti ``Other'') 5.109 kayıt; her kayıtta yaş, cinsiyet, hipertansiyon, kalp hastalığı, medeni durum, iş türü, yerleşim türü, ortalama glikoz düzeyi, vücut kitle indeksi, sigara kullanım durumu ve inme etiketi bulunur \cite{kaggle2021stroke}. Eksik vücut kitle indeksi değerleri medyanla doldurulmuştur. Senaryo, hassas özniteliklerin (hipertansiyon, kalp hastalığı, sigara kullanımı gibi) CKKS ile şifrelendiği, yarı tanımlayıcıların (yaş, cinsiyet, vücut kitle indeksi, medeni durum, iş türü, yerleşim türü) açık işlendiği öznitelik düzeyinde seçici şifrelemedir.
+
+\textbf{Maliyet.} Tam şifreli lojistik regresyon çıkarımı TenSEAL ile ($N = 8192$, modül zinciri $[60, 40, 40, 60]$, $\Delta = 2^{40}$) ölçülmüştür. Sütun paketlemede 1.022 hastanın 20 özniteliği toplu işlendiğinde şifreleme, sunucu ve çözme toplamı yaklaşık 96 milisaniye; satır paketlemede tek hastanın çıkarımı yaklaşık 15 milisaniyedir. Bu süreler görüntü çıkarımından binlerce kat küçüktür; bu nedenle tablo verisinde seçici şifrelemenin maliyet avantajı ihmal edilebilir düzeydedir.
+
+\textbf{Sızıntı.} Açık yarı tanımlayıcılardan gizli özniteliklerin tahmini, 5 katlı çapraz doğrulamayla, standartlaştırma ardından lojistik regresyon sınıflandırıcısıyla ölçülmüştür. Hipertansiyon AUC $0.79$, kalp hastalığı $0.85$, yüksek glikoz ($\geq 140$) $0.72$, sigara kullanımı $0.57$--$0.59$ ile tahmin edilebilmiştir. Bu tahminlerin büyük bölümü, veri dağılımı bilindiğinde imputasyondan öteye geçmez \cite{jayaraman2022imputation}. Ayrıca model skorunun sunucuya açılması, şifreli özniteliklerin doğrusal denklemlerle kurtarılmasına izin verir; bu, dikey federatif öğrenmede gösterilmiş bilinen bir saldırıdır \cite{luo2021feature}. Betikler \texttt{pilot/pilot\_cost.py} ve \texttt{pilot/pilot\_leakage.py} dosyalarındadır.
+
+Bu bulgular literatürde bilinen olgulardır ve homomorfik şifrelemenin tablo verisindeki maliyeti küçük olduğundan, tez özgün katkısını şifreleme maliyetinin gerçekten yüksek olduğu tıbbi görüntüler üzerine kurmuştur.

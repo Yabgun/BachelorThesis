@@ -12,7 +12,7 @@ Homomorfik şifreleme (HE), şifreli veriler üzerinde çözme işlemi yapılmad
 
 CKKS şeması \cite{cheon2017ckks} gerçek veya karmaşık sayı vektörlerini $R = \mathbb{Z}[X]/(X^N+1)$ polinom halkasının elemanlarına kodlar. $N$ polinom derecesi olmak üzere bir şifreli metin en fazla $N/2$ değer (slot) taşır; bu nedenle bir vektörün tüm elemanları tek bir şifreli metinde paketlenebilir ve eleman bazında paralel (SIMD) işlenebilir. Kodlama sırasında değerler $\Delta$ ölçek çarpanıyla büyütülüp tam sayıya yuvarlanır. Her çarpma işleminden sonra ölçek $\Delta^2$ düzeyine çıktığından, sonuç modül zincirindeki bir asal sayıya bölünerek yeniden ölçeklenir (rescaling) ve bir seviye tüketilir. Çözme işlemi mesajı küçük bir hata ile geri verir; bu nedenle CKKS sonuçları yaklaşık doğrudur.
 
-Bu tezde polinom derecesi ve ölçek çarpanı $\Pi_{\mathrm{ROI}}$ çalışmasıyla aynıdır: $N = 16384$ (dolayısıyla şifreli metin başına $8192$ slot) ve $\Delta = 2^{40}$. Modül zinciri ise bit uzunlukları $[60, 40, 40, 40, 60]$ olarak, makaledeki $[60, 40, 40, 40, 40, 60]$ zincirinden bir 40 bitlik asal kısa seçilmiştir \cite{bakas2026roi}. Zincirdeki üç adet 40 bitlik asal üç yeniden ölçeklemeye yeter: $\Pi_{\mathrm{ROI}}$'nin iki lineer turu ve Model D iki, kare aktivasyon kullanan Model D2 ve Model C (Bölüm \ref{sec:hemodels}) üç yeniden ölçekleme gerektirir. Kısa zincir her şifreli işlemi bir miktar hızlandırır; bu etki tam ve seçici şifrelemeyi birlikte etkilediği için hız kazancı oranına etkisinin küçük olması beklenir. Şifreli bir vektör ile açık bir ağırlık vektörünün iç çarpımı, eleman bazında düz metin çarpımı ve ardından slotların toplanmasıyla hesaplanır; toplama işlemi Galois anahtarlarıyla yapılan döndürmeler (rotations) gerektirir.
+Bu tezde $\Pi_{\mathrm{ROI}}$ çalışmasıyla aynı parametreler kullanılmıştır: $N = 16384$ (dolayısıyla şifreli metin başına $8192$ slot), modül zinciri bit uzunlukları $[60, 40, 40, 40, 60]$ ve $\Delta = 2^{40}$. Zincirdeki üç adet 40 bitlik asal, üç yeniden ölçeklemeye, örneğin iki düz metin çarpımı ile aralarındaki bir kare alma işlemine yeter. Şifreli bir vektör ile açık bir ağırlık vektörünün iç çarpımı, eleman bazında düz metin çarpımı ve ardından slotların toplanmasıyla hesaplanır; toplama işlemi Galois anahtarlarıyla yapılan döndürmeler (rotations) gerektirir.
 
 \subsection{TenSEAL kütüphanesi}\label{sec:tenseal}
 
@@ -33,7 +33,7 @@ c_{\mathrm{out}} = W_{\mathrm{ROI}} \cdot \mathrm{Enc}(\mathrm{ROI}) + W_{\mathr
 \label{eq:piroi}
 \ee
 
-\noindent değerini hesaplar ve şifreli sonucu istemciye döndürür. Makaledeki deneylerde bu hesaplama $20 \times n$ ve $10 \times 20$ boyutlu iki lineer tur olarak uygulanmış, her yapılandırma 10 kez tekrarlanmış ve $[0, 1]$ aralığında rastgele üretilmiş sentetik görüntülerle ROI oranı $\rho = 0.01$ iken $512 \times 512$ görüntüde 84 kata varan hızlanma bildirilmiştir.
+\noindent değerini hesaplar ve şifreli sonucu istemciye döndürür. Makaledeki deneylerde bu hesaplama $20 \times n$ ve $10 \times 20$ boyutlu iki lineer tur olarak uygulanmış, rastgele üretilmiş sentetik görüntülerle ROI oranı $\rho = 0.01$ iken $512 \times 512$ görüntüde 84 kata varan hızlanma bildirilmiştir.
 
 Protokolün güvenliği, benzetim tabanlı bir tanımla ve bir sızıntı fonksiyonuyla kanıtlanmıştır:
 
@@ -52,7 +52,7 @@ Pratik şifreli sistemlerin çoğu, verimlilik için bazı bilgilerin sunucuya a
 
 Bir sistemin açık bıraktığı özniteliklerden gizli özniteliklerin tahmin edilmesi farklı bağlamlarda incelenmiştir. Dikey federatif öğrenmede, model çıktısı ve saldırganın kendi öznitelikleri kullanılarak diğer tarafın özniteliklerinin çıkarılabildiği gösterilmiştir \cite{luo2021feature}. Öznitelik çıkarım saldırılarının önemli bir kısmının veri dağılımı biliniyorsa imputasyondan öteye geçmediği de tartışılmıştır \cite{jayaraman2022imputation}. Bu tezde saldırgan tam da bu biçimde çalışır: sunucunun gördüğü açık bölgeden ROI içeriğine dair klinik etiketi tahmin eder.
 
-Görüntüde bu tahmini mümkün kılan olgu, tıbbi görüntü sınıflandırmasındaki ``kısayol'' öğrenmedir: modeller tanıyla ilgisiz ipuçlarına dayanabilir ve akciğerler karartıldığında bile sınıflandırma başarılı olabilir (Bölüm \ref{lit:shortcut}). Saldırgan açısından ipucunun klinik bir bulgu mu, çekim koşullarına bağlı bir iz mi olduğu fark etmez; her ikisi de şifreli bölgenin içeriğiyle ilişkili olduğu ölçüde sızıntıdır.
+Tıbbi görüntü sınıflandırmasında modellerin tanıyla ilgisiz ipuçlarını, yani ``kısayolları'' öğrenebildiği bilinmektedir. COVID-19 tespit eden derin öğrenme modellerinin hastalık bulguları yerine veri kaynağına özgü karıştırıcı etkenlere dayandığı gösterilmiştir \cite{degrave2021shortcuts}. Göğüs röntgenlerinde akciğerleri içeren merkez bölge karartıldığında bile benzer sınıflandırma başarısı elde edilebildiği raporlanmıştır \cite{maguolo2021critic}. Göğüs röntgenlerinin hastayı yeniden tanımlamaya yetecek biyometrik bilgi taşıdığı da gösterilmiştir \cite{packhauser2022reid}. Bu çalışmalar olguyu genelleme ve mahremiyet açısından ele almış, ancak seçici homomorfik şifrelemenin güvenliği bağlamında değerlendirmemiştir.
 
 \section{Gizlilik ile Fayda Arasındaki Kuramsal İlişki}\label{sec:privacyutility}
 
@@ -67,7 +67,7 @@ CKKS ile şifreli veride toplama ve çarpma yapılabilir; ancak her çarpma bir 
 \begin{itemize}
 \item \textbf{Model D:} Aralarında aktivasyon olmayan iki tam bağlantılı katman ($20$ gizli birim). $\Pi_{\mathrm{ROI}}$ protokolündeki iki lineer turun eğitilmiş karşılığıdır. Aktivasyon olmadığı için 20 veya daha az sınıfta çok sınıflı doğrusal sınıflandırıcıya denktir.
 \item \textbf{Model D2:} Aynı yapının iki katmanı arasına kare aktivasyon eklenmiş hâli.
-\item \textbf{Model C:} Her girdi katmanı için adımı çekirdek boyutuna eşit tek bir evrişim, yığın normalizasyonu \cite{ioffe2015batchnorm}, kare aktivasyon ve tam bağlantılı çıkış katmanı. Çekirdekler örtüşmediğinden evrişim, pencerelerin satırlara dizildiği bir matris çarpımı olarak şifreli hesaplanabilir. Odaklı temsilin üç geometri değeri bu modelde kullanılmaz (pencerenin konumu genel bakış katmanında görülür); bu nedenle Model C'nin şifrelenen değer sayısı temsilinkinden üç eksiktir, örneğin F32\_G16'da $1.280$.
+\item \textbf{Model C:} Her girdi katmanı için adımı çekirdek boyutuna eşit tek bir evrişim, yığın normalizasyonu \cite{ioffe2015batchnorm}, kare aktivasyon ve tam bağlantılı çıkış katmanı. Çekirdekler örtüşmediğinden evrişim, pencerelerin satırlara dizildiği bir matris çarpımı olarak şifreli hesaplanabilir.
 \end{itemize}
 
 Eğitimde kullanılan standartlaştırma ve yığın normalizasyonu, eğitim bittikten sonra ilk doğrusal katmanın ağırlık ve sapmasına katlanır. Böylece şifreli hesaplamada yalnızca doğrusal işlemler ve en fazla bir kare alma kalır ve Bölüm \ref{sec:ckks}'deki parametreler yeterli olur.
@@ -76,9 +76,9 @@ Eğitimde kullanılan standartlaştırma ve yığın normalizasyonu, eğitim bit
 
 \section{Odaklı Temsil}\label{sec:foveated}
 
-İnsan gözü, bakılan noktayı retinadaki fovea bölgesiyle keskin, görüş alanının geri kalanını daha düşük çözünürlükle algılar. Bilgisayarlı görmedeki çok ölçekli ``bakış'' temsilleri ve dikkat güdümlü kırpma yaklaşımları bu düzeni taklit eder (Bölüm \ref{lit:representation}).
+İnsan gözü, bakılan noktayı retinadaki fovea bölgesiyle keskin, görüş alanının geri kalanını daha düşük çözünürlükle algılar. Bilgisayarlı görmede bu düzen, seçilen bir konumun çevresinde merkezden dışa doğru çözünürlüğü azalan çok ölçekli ``bakış'' temsilleriyle taklit edilmiştir \cite{mnih2014attention}. Göğüs röntgeni sınıflandırmasında da tüm görüntünün genel görünümü ile dikkat haritasından kesilen ayrıntılı bölgenin birlikte kullanılması başarıyı artırmıştır \cite{guan2018agcnn}.
 
-Bu tezde önerilen odaklı temsil üç parçadan oluşur: ROI'yi kapsayan kare pencerenin yüksek çözünürlüklü örneği (odak), tüm görüntünün düşük çözünürlüklü örneği (genel bakış) ve pencerenin konumu ile boyutunu veren üç sayı. Bu parçaların boyutları her görüntüde aynıdır. Temsilin tamamı şifrelendiğinde sunucu yalnızca herkese açık, sabit uzunlukları görür; bu, Bölüm \ref{lit:representation}'te anılan hacim gizleme ve sabit boyuta getirme fikirlerinin homomorfik şifreli çıkarıma uygulanmasıdır. Küçük resmi bilerek açık bırakan şifrelemeden farkı genel bakışın da şifrelenmesidir. Temsilin ayrıntılı tanımı Bölüm \ref{sec:foveahe}'da verilmiştir.
+Bu tezde önerilen odaklı temsil üç parçadan oluşur: ROI'yi kapsayan kare pencerenin yüksek çözünürlüklü örneği (odak), tüm görüntünün düşük çözünürlüklü örneği (genel bakış) ve pencerenin konumu ile boyutunu veren üç sayı. Bu parçaların boyutları her görüntüde aynıdır. Temsilin tamamı şifrelendiğinde sunucu yalnızca herkese açık, sabit uzunlukları görür. Bu özellik, şifreli veri yapılarında yanıt hacminin gizlenmesine \cite{kamara2019volume} ve güvenilir donanımda nesne boyutlarının sabit boyuta getirilerek gizlenmesine \cite{poddar2020visor} benzer. Küçük resmi bilerek açık bırakan şifreleme yaklaşımından \cite{tajik2019tpe} farkı ise genel bakışın da şifrelenmesidir. Temsilin ayrıntılı tanımı Bölüm \ref{sec:foveahe}'da verilmiştir.
 
 \section{Kullanılan Modeller ve Ölçütler}\label{sec:models}
 

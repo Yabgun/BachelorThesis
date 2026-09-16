@@ -1,0 +1,14 @@
+Selective homomorphic encryption aims to reduce the high cost of fully homomorphic encryption by encrypting only the sensitive part of the data. Region-of-interest (ROI) based approaches proposed in 2026 encrypt only the ROI of a medical image, process the rest in plaintext, and prove their security with respect to a leakage function that reveals the unencrypted region and the location, size and shape of the ROI to the server. This thesis investigates how much this permitted leakage reveals about the clinical content of the encrypted region in real medical images, what it costs to remove the leakage, and whether a leakage-free yet efficient alternative is possible.
+
+The $\Pi_{\mathrm{ROI}}$ protocol was reproduced with TenSEAL CKKS using the same parameters, and two leakage-abuse attacks were developed on chest X-ray (COVID-QU-Ex, 33,920 images) and brain MRI (3,064 slices, 233 patients) data.
+\begin{itemize}
+\item An attack that uses only the ROI metadata predicts the tumor type with a macro AUC of $0.83$ and pneumonia with an AUC of $0.90$.
+\item A convolutional neural network attacker that sees the image with the ROI hidden recovers the diagnosis with an AUC of $0.98$--$0.99$ and performs similarly when trained on data from a different source.
+\item Reducing the attack AUC below $0.8$ required encrypting 98\% of the chest X-ray and the entire brain MRI, which reduced the speedups of 4.2 and 24 times obtained with the default ROI to about 1 time.
+\end{itemize}
+
+To remove the leakage, Foveated Full Encryption (FoveaHE) is proposed: the client extracts an ROI-centered, fixed-size, multi-resolution representation and encrypts all of it, so that no plaintext pixels and no image-dependent metadata reach the server. In experiments with three HE-friendly model classes and 5 seeds, an attacker using everything the server observes stayed at chance level (AUC $0.45$--$0.53$), the speedup over full encryption was 29--37 times for brain MRI and 7--9 times for chest X-ray, and the diagnostic AUC exceeded that of the same model class trained on the full image ($0.948$ vs.\ $0.881$; $0.954$ vs.\ $0.946$). An approach that adds noise to the plaintext context kept leaking, whereas encrypting the embedding of a pretrained network was more accurate.
+
+The findings show that, on medical images, efficiency should be gained from the resolution of the encrypted data rather than from the region left unencrypted. Based on these results, the thesis proposes design rules that rely on measuring the leakage.
+
+\textbf{Keywords:} Homomorphic Encryption, CKKS, Selective Encryption, Leakage-Abuse Attacks, Foveated Representation, Medical Image Privacy

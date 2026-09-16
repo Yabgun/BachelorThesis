@@ -40,31 +40,10 @@
 \makeatletter
 \def\th@Programi{}
 \def\@EnstituUpper{}
-% PAU sablonunda dis kapak ayri Word belgesiyle (belgeler/pau-sablon/Diskapak.doc) hazirlaniyor. Bos dis kapak ilk
-% sayfada yalniz gorunmez bir oge birakip ic kapagin "sag sayfada basla" komutuyla PDF basinda iki bos sayfa
-% uretiyordu (16 Eyl 2026 inceleme, madde 5.2). Ic kapaktaki ilk komut bir kez etkisiz birakilir; ic kapak 1. sayfadir.
-% Bu ilk sayfanin hedef yuksekligi sinifin A4 duzeni (textheight 248 mm) uygulanmadan once 592 pt olarak sabitlendigi
-% icin kapagin son iki satiri 2. sayfaya tasiyordu; hedef yukseklik bu sayfa icin de guncellenir (kapak eski 3. sayfayla
-% 2 pt icinde ayni konumda, 72 dpi olcum).
-\def\th@DisKapak{\global\let\th@BSKasil\BolumSagdaKalsin
-  \gdef\BolumSagdaKalsin{\global\let\BolumSagdaKalsin\th@BSKasil\global\pagegoal=\textheight\global\vsize=\textheight}}
+\def\th@DisKapak{} % PAU sablonunda dis kapak ayri Word belgesiyle (belgeler/pau-sablon/Diskapak.doc) hazirlaniyor
 \makeatother
 
 \input defs.tex
-
-% ---------------------------------------------------------------- %
-% Babel'in Turkce adlari sinifin PAU adlarini eziyordu: basliklarda %
-% "Tablo" ve "Kaynakca" ciktisi, metinde ve Icindekiler'de ise      %
-% "Cizelge" ve "KAYNAKLAR" vardi (inceleme, madde 5.4 ve 5.5).      %
-% Sablon kilavuzuna gore cizelge ve sekil etiketleri koyu yazilir.  %
-% ---------------------------------------------------------------- %
-\addto\captionsturkish{%
-  \renewcommand{\tablename}{\textbf{Çizelge}}%
-  \renewcommand{\figurename}{\textbf{Şekil}}%
-  \renewcommand{\listtablename}{Çizelge Listesi}%
-  \renewcommand{\listfigurename}{Şekil Listesi}%
-  \renewcommand{\bibname}{Kaynaklar}%
-}
 
 % ---------------------------------------------------------------- %
 % Icindekiler: iki haneli bolum numaralari (3.10, 4.14) basliga     %
@@ -84,6 +63,8 @@
 \renewcommand{\th@ozgecmisStash}{}
 \renewcommand{\th@ozgecmispage}{}
 \makeatother
+\TabloListesiYok
+\SekilListesiYok
 \begin{document}
 \input ch1.tex
 \input ch2.tex
@@ -98,14 +79,5 @@
 % ---------------------------------------------------------------- %
 \bibliographystyle{tezbib}
 \bibliography{tez}
-
-% ---------------------------------------------------------------- %
-% Ekler: kapak sayfasi (EK listesi) + \eklerbolum{0} ile ek        %
-% numaralandirmasi (A.1, A.2). Icerik ekler.tex icinde.            %
-% ---------------------------------------------------------------- %
-\eklerkapak{}
-\input eklerkapak.tex
-\eklerbolum{0}
-\input ekler.tex
 
 \end{document}
