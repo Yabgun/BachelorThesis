@@ -147,7 +147,7 @@ ROI sınırlayıcı kutusu & 0.025 & 0.9735 & 0.513 & 0.9839 \\
 
 Her iki veri kümesinde de ROI'nin gizlenmesi saldırıyı neredeyse hiç zayıflatmamıştır. Beyin MR verisinde AUC $0.984$'ten $0.976$'ya, göğüs röntgeninde $0.997$'den $0.993$'e inmiştir; 5 tohumda standart sapma $0.002$'nin altındadır. Göğüs röntgeninde akciğerler 40 piksel genişletilerek görüntünün \%87'si gizlendiğinde bile AUC $0.956$ kalmış, normal ile pnömoni ayrımı $0.950$ olmuştur. Yalnızca ROI'nin görüldüğü referans görüşte AUC değerlerinin ($0.968$ ve $0.990$) bağlam görüşüyle aynı düzeyde olması, ROI dışındaki bağlamın teşhis için ROI'nin kendisi kadar bilgi taşıdığını göstermektedir.
 
-\textbf{Normalizasyon denetimi.} Tezin ilk taslağında beyin MR kesitleri tüm pikselleriyle (tümör dahil) normalize edilmişti. Bu düzen aynı görüşlerde neredeyse aynı sonucu vermiştir: 5 tohumda tam görüşte $0.9852 \pm 0.0006$, bağlam görüşünde $0.9765 \pm 0.0009$, bağlam + 40 piksel görüşünde $0.9671 \pm 0.0021$ ve tek tohumlu görüşlerde en fazla $0.001$ fark. Yalnız ROI referansı ise $0.978$'den $0.968$'e inmiştir; tümör kendi pikselleriyle ölçeklendiğinde çevresine göre parlaklığı kaybolduğu için bu düşüş beklenir. Normalizasyon kanalının kendisi de ölçülmüştür. Tümörün eklenmesi, kesitlerin yalnızca \%2.5'inde yüzdelik aralığını \%1'den, \%0.03'ünde \%5'ten fazla değiştirmiştir; tümör çoğu kesitte en parlak doku değildir. Bu oran tümör tipini tek başına AUC $0.642$ ile tahmin etse de tümör alanıyla güçlü biçimde ilişkilidir (Spearman $-0.72$). Tümör alanı tek başına $0.653$, ikisi birlikte $0.669$ vermektedir; yani kanal, zaten açık olan ROI boyutunun ötesinde çok az bilgi taşır ve bağlam saldırısının başarısını açıklamaz.
+\textbf{Normalizasyon denetimi.} Yukarıdaki değerler görünür piksel normalizasyonuyla elde edilmiştir. Alternatif kesit tabanlı normalizasyon (kesitin tüm pikselleriyle) aynı görüşlerde neredeyse aynı sonucu vermiştir: 5 tohumda tam görüşte $0.9852 \pm 0.0006$, bağlam görüşünde $0.9765 \pm 0.0009$, bağlam + 40 piksel görüşünde $0.9671 \pm 0.0021$ ve tek tohumlu görüşlerde en fazla $0.001$ fark. Yalnız ROI referansı ise iki düzen arasında $0.978$'den $0.968$'e inmektedir; tümör kendi pikselleriyle ölçeklendiğinde çevresine göre parlaklığı kaybolduğu için bu düşüş beklenir. Normalizasyon kanalının kendisi de ölçülmüştür. Tümörün eklenmesi, kesitlerin yalnızca \%2.5'inde yüzdelik aralığını \%1'den, \%0.03'ünde \%5'ten fazla değiştirmiştir; tümör çoğu kesitte en parlak doku değildir. Bu oran tümör tipini tek başına AUC $0.642$ ile tahmin etse de tümör alanıyla güçlü biçimde ilişkilidir (Spearman $-0.72$). Tümör alanı tek başına $0.653$, ikisi birlikte $0.669$ vermektedir; yani kanal, zaten açık olan ROI boyutunun ötesinde çok az bilgi taşır ve bağlam saldırısının başarısını açıklamaz.
 
 \section{Gerçekçilik Testi}\label{sec:res:transfer}
 
@@ -229,7 +229,7 @@ Tümü & 0.029 & 0.106 & 0.537 & 0.328 \\
 
 Göğüs röntgeninde saldırganın dikkati akciğerin dışında geniş bir bağlama yayılmıştır: kenar çerçeve (\%27), kalp ve mediasteni içeren akciğerler arası bölge (\%19) ve göğüs yanları (\%17). Normal sınıfında akciğerler arası bölgenin payı daha yüksektir (\%22). Gizli akciğer bölgesinin de \%28 pay alması iki nedene bağlanmaktadır. Birincisi, son evrişim bloğundaki $7 \times 7$ çözünürlüklü haritanın büyütülürken sınırlardan taşmasıdır. İkincisi, saldırganın gösterge kanalı üzerinden akciğerin şeklini kullanabilmesidir. Beyin MR görüntüsünde dikkatin yarısından fazlası beynin geri kalanında (\%54), yaklaşık üçte biri kafa dışı arka plandadır (\%33). Gliom ve meningiom sınıflarında arka planın payının yüksek olması (\%35--44), görüntüleme alanına veya cihaza özgü izlerin de sızıntıya katkı sağladığına işaret etmektedir. Bu yorum Bölüm \ref{sec:res:defense}'daki savunma bulgusuyla da tutarlıdır: kafa dışında açık kalan 8 piksel bile tümör tipini ele vermektedir.
 
-Hedef sınıf skoru son blok etkinlikleriyle artmadığında Grad-CAM haritası tümüyle sıfır çıkar. Beyin MR verisinde meningiom görüntülerinin 166'sından 13'ünde, göğüs röntgeninde 1500 görüntünün 1'inde harita boş çıkmış ve bu haritalar bölge paylarına katılmamıştır. Tezin ilk taslağında boş haritalar sıfır paylarla ortalamaya girdiği için meningiom satırının toplamı $0.916$ görünüyordu; düzeltilmiş çizelgelerde her satırın toplamı $1$'dir.
+Hedef sınıf skoru son blok etkinlikleriyle artmadığında Grad-CAM haritası tümüyle sıfır çıkar. Beyin MR verisinde meningiom görüntülerinin 166'sından 13'ünde, göğüs röntgeninde 1500 görüntünün 1'inde harita boş çıkmış ve bu haritalar bölge paylarına katılmamıştır. Bu nedenle her çizelgede satır payları toplamı $1$'dir.
 
 \begin{figure}[h!]
  \centering
@@ -306,7 +306,7 @@ Beyin MR & Varsayılan ROI (tümör) & 0.016 & 0.937 & 7.86 & 24.21 \\
 
 $\Pi_{\mathrm{ROI}}$'nin varsayılan kullanımında hız kazancı, görüntülerin özgün boyutunda göğüs röntgeninde ($256 \times 256$) 3.9, beyin MR görüntüsünde ($512 \times 512$) 24 kattır; ancak teşhis neredeyse tamamen açıktadır (AUC $0.990$ ve $0.937$). Tüm görüntülerde aynı olan kanonik ROI, meta veri sızıntısını kapatsa da saldırıyı yalnızca $0.974$ ve $0.921$ düzeyine indirmiştir.
 
-Saldırgan AUC'sini $0.8$'in altına indirmek için göğüs röntgeninde sızıntı-güdümlü politikanın 9. adımına, yani görüntünün \%98.1'inin şifrelenmesine (yalnızca 968 piksel açık) ihtiyaç duyulmuştur. Bu noktada hız kazancı $256 \times 256$ görüntüde 1.00, $512 \times 512$ görüntüde 1.02 kattır. Beyin MR verisinde sızıntı-güdümlü politika \%98.2 şifreli alanda (920 piksel açık) bile $0.824$'te kalmıştır. $0.8$ hedefi yalnızca kafa dışında 8 pikselin açık kaldığı kanonik ROI + 64 piksel görüşünde ($\rho = 0.9998$, AUC $0.765$) ve tam şifrelemede sağlanmıştır; iki noktada da hız kazancı 1.00 kattır. $0.7$ ve $0.6$ hedefleri pratikte yalnızca tam şifrelemeyle karşılanmıştır. Göğüs röntgeninde kanonik ROI + 32 piksel görüşü 190 açık piksel ile $0.681$'e inmiştir. Beyin MR verisinde kafa dışında açık kalan 8 pikselin tümör tipini AUC $0.765$ ile ele vermesi, sızıntının çekim koşullarına bağlı izler de taşıdığını göstermektedir. İlk taslaktaki kesit normalizasyonunda bu değer $0.619$ idi; yalnızca görünür piksellerle yapılan normalizasyon, muhtemelen arka plandaki gürültü düzeyi farklarını görünür kıldığı için bu noktada sızıntıyı artırmıştır.
+Saldırgan AUC'sini $0.8$'in altına indirmek için göğüs röntgeninde sızıntı-güdümlü politikanın 9. adımına, yani görüntünün \%98.1'inin şifrelenmesine (yalnızca 968 piksel açık) ihtiyaç duyulmuştur. Bu noktada hız kazancı $256 \times 256$ görüntüde 1.00, $512 \times 512$ görüntüde 1.02 kattır. Beyin MR verisinde sızıntı-güdümlü politika \%98.2 şifreli alanda (920 piksel açık) bile $0.824$'te kalmıştır. $0.8$ hedefi yalnızca kafa dışında 8 pikselin açık kaldığı kanonik ROI + 64 piksel görüşünde ($\rho = 0.9998$, AUC $0.765$) ve tam şifrelemede sağlanmıştır; iki noktada da hız kazancı 1.00 kattır. $0.7$ ve $0.6$ hedefleri pratikte yalnızca tam şifrelemeyle karşılanmıştır. Göğüs röntgeninde kanonik ROI + 32 piksel görüşü 190 açık piksel ile $0.681$'e inmiştir. Beyin MR verisinde kafa dışında açık kalan 8 pikselin tümör tipini AUC $0.765$ ile ele vermesi, sızıntının çekim koşullarına bağlı izler de taşıdığını göstermektedir. Bu sızıntı gerçektir: $\Pi_{\mathrm{ROI}}$'de sunucu ham pikselleri gördüğünden bu birkaç pikseli istediği gibi ölçekleyip aralarındaki farkı büyütebilir. Aynı nokta kesit tabanlı normalizasyonla $0.619$ vermektedir; görünür piksel normalizasyonu, arka plandaki gürültü düzeyi farklarını görünür kıldığı için bu noktada sızıntıyı bir miktar artırmaktadır.
 
 Sızıntı-güdümlü seçim, göğüs röntgeninde aynı şifreli alanda rastgele yama seçiminden daha düşük AUC sağlamıştır; örneğin yaklaşık \%93 şifreli alanda $0.864$'e karşı $0.895$ ve $0.920$. Beyin MR verisinde ise tutarlı bir üstünlük görülmemiştir: yaklaşık \%93 şifreli alanda güdümlü seçim $0.857$, rastgele sıralar $0.880$ ve $0.877$ vermiş; yaklaşık \%74'te ise güdümlü seçim ($0.904$) rastgele sıralardan ($0.888$ ve $0.886$) daha yüksek kalmıştır. Bu karşılaştırma tek tohumla, azaltılmış eğitim verisiyle ve $8 \times 8$ yama ızgarasıyla yapıldığından politikalar arasındaki birkaç puanlık farklar belirsizdir ve yalnızca eğilim olarak yorumlanmalıdır. Savunma saldırganları hesaplama maliyetini sınırlamak için daha az veriyle eğitildiğinden, gerçek sızıntının bu değerlerden de yüksek olması beklenir.
 
@@ -405,11 +405,11 @@ FoveaHE'ye ROI'nin konumu ve boyutu istemcideki maskeden verildiği için kazanc
 
 Çizelge \ref{tbl:fovcost} maliyet dökümünü vermektedir. FoveaHE temsili Model D ve D2'de tek bir şifreli metne, Model C'de katman başına bir şifreli metne sığdığı için sunucu süresi görüntü boyutundan bağımsızdır: Model D ve D2'de yaklaşık 1.2--1.5 saniye, Model C'de yaklaşık 0.5 saniye. Tam şifrelemeye göre hız kazancı Model D ve D2'de beyin MR görüntüsünde 29--37 kat, göğüs röntgeninde 7--9 kattır. Model C'de tam şifreleme zaten daha ucuz olduğundan kazanç beyin MR görüntüsünde 18--21 kat, göğüs röntgeninde 4.4--5.3 kattır. Hız ölçütü ($\geq 5$) göğüs röntgeninde Model C'nin F64\_G32 yapılandırması (4.4 kat) dışında tüm satırlarda karşılanmıştır. İstemciden sunucuya giden veri 27.4 MB ve 6.8 MB'tan 0.9--1.7 MB'a inmiş, istemci tarafında temsilin çıkarılması ana yapılandırmalarda görüntü başına 4--12 milisaniye sürmüştür.
 
-Bu hız kazancının kaynağı odaklama değil, temsilin boyutudur. Aynı ölçüm düzeninde şifreli çalıştırılan eş örnekli U64 de tek bir şifreli metne sığmış ve benzer hız kazancı vermiştir: Model D'de beyin MR görüntüsünde 33.3, göğüs röntgeninde 7.8 kat. Tek şifreli metne sığan her temsil bu hızı alır; FoveaHE'nin katkısı, aynı bütçede doğruluğu korumaktır (Bölüm \ref{sec:res:fovmodel}). Göğüs röntgeninde gizlilik şartlı $\Pi_{\mathrm{ROI}}$ (\%98 şifreli alan) tam şifrelemeyle aynı süreyi vermiştir. Tam şifreleme süreleri Çizelge \ref{tbl:maliyet}'deki yeniden üretim ölçümünden farklı bir ölçüm oturumuna aittir; hız kazançları her zaman aynı oturumda ölçülen tam şifreleme süresine göre hesaplanmıştır.
+Bu hız kazancının kaynağı odaklama değil, temsilin boyutudur. Çizelgedeki eş örnekli U64 satırları bunu göstermektedir: aynı $4.096$ değerlik temsil de tek bir şifreli metne sığmış ve Model D'de beyin MR görüntüsünde 33.3, göğüs röntgeninde 7.8 kat benzer hız kazancı vermiştir. Tek şifreli metne sığan her temsil bu hızı alır; FoveaHE'nin katkısı, aynı bütçede doğruluğu korumaktır (Bölüm \ref{sec:res:fovmodel}). Göğüs röntgeninde gizlilik şartlı $\Pi_{\mathrm{ROI}}$ (\%98 şifreli alan) tam şifrelemeyle aynı süreyi vermiştir. Tam şifreleme süreleri Çizelge \ref{tbl:maliyet}'deki yeniden üretim ölçümünden farklı bir ölçüm oturumuna aittir; hız kazançları her zaman aynı oturumda ölçülen tam şifreleme süresine göre hesaplanmıştır.
 
 \begin{table*}[h!]
 {\setlength{\tabcolsep}{4pt}
-\caption{Şifreli çıkarımın maliyet dökümü (3 tekrarın ortalaması, bilgisayarda başka iş yokken). Süreler saniye, yükleme boyutu MB cinsindendir; hız kazancı aynı model sınıfında tam şifrelemeye göredir.}
+\caption{Şifreli çıkarımın maliyet dökümü (3 tekrarın ortalaması, bilgisayarda başka iş yokken). Süreler saniye, yükleme boyutu MB cinsindendir; hız kazancı aynı model sınıfında tam şifrelemeye göredir. Eş örnekli U64 satırı, hızın odaklamadan değil temsilin tek şifreli metne sığmasından geldiğini gösteren referanstır.}
 \begin{center}
 \vspace{-6mm}
 {\footnotesize
@@ -421,6 +421,7 @@ Yöntem & Model & Değer & Şifreli metin & Sunucu & Toplam & Yükleme & Hız \\
 Tam şifreleme & D & 262.144 & 32 & 44.10 & 44.46 & 27.38 & 1.0 \\
 FoveaHE F32\_G16 & D & 1.283 & 1 & 1.20 & 1.21 & 0.86 & 36.6 \\
 FoveaHE F64\_G32 & D & 5.123 & 1 & 1.38 & 1.40 & 0.86 & 31.8 \\
+Eş örnekli U64 & D & 4.096 & 1 & 1.32 & 1.33 & 0.86 & 33.3 \\
 FoveaHE F32\_G16 & D2 & 1.283 & 1 & 1.27 & 1.28 & 0.86 & 34.8 \\
 FoveaHE F64\_G32 & D2 & 5.123 & 1 & 1.52 & 1.53 & 0.86 & 29.0 \\
 Tam şifreleme & C & 262.144 & 32 & 9.76 & 10.16 & 27.39 & 1.0 \\
@@ -432,6 +433,7 @@ Tam şifreleme & D & 65.536 & 8 & 10.27 & 10.36 & 6.85 & 1.0 \\
 $\Pi_{\mathrm{ROI}}$, \%98 şifreli & D & 64.009 & 8 & 10.22 & 10.30 & 6.85 & 1.0 \\
 FoveaHE F32\_G16 & D & 1.283 & 1 & 1.17 & 1.19 & 0.86 & 8.7 \\
 FoveaHE F64\_G32 & D & 5.123 & 1 & 1.42 & 1.44 & 0.86 & 7.2 \\
+Eş örnekli U64 & D & 4.096 & 1 & 1.31 & 1.33 & 0.86 & 7.8 \\
 FoveaHE F32\_G16 & D2 & 1.283 & 1 & 1.28 & 1.30 & 0.86 & 8.0 \\
 FoveaHE F64\_G32 & D2 & 5.123 & 1 & 1.47 & 1.49 & 0.86 & 7.0 \\
 Tam şifreleme & C & 65.536 & 8 & 2.41 & 2.51 & 6.85 & 1.0 \\
@@ -662,7 +664,7 @@ FoveaHE & F64\_G32 & C & 0.935 & $0.962 \pm 0.003$ & $0.017$ (5/5) \\
 \label{tbl:genelleme}}
 \end{table*}
 
-\begin{figure}[h!]
+\begin{figure}[t]
  \centering
  \includegraphics[width=12cm,keepaspectratio=true]{./fig/cozum_genelleme_tez.pdf}
  \caption{COVID-QU-Ex test bölmesindeki (iç, mavi) ve Kaggle kümesindeki (harici, turuncu) teşhis AUC değerleri (5 tohum ortalaması; etiketler harici değerdir).}

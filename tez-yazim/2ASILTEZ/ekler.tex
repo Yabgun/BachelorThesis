@@ -5,7 +5,15 @@ Bölüm \ref{sec:kurallar}'da anılan anahtar kurtarma denemesinin ayrıntılar�
 
 \textbf{Kurulum.} TenSEAL ile CKKS bağlamı $N = 8192$, modül zinciri $[60, 40, 40, 60]$ ve $\Delta = 2^{40}$ ile kurulmuştur. İstemci, seçici şifreli lojistik regresyon çıkarımındaki gibi bir öznitelik sütununu (4.096 hasta) tek bir şifreli metne paketler; sunucu bu sütunu açık bir ağırlıkla çarpıp bir yanlılık ekler (TenSEAL bu işlemde yeniden ölçekleme yapar) ve sonucu istemciye döndürür. İstemci sonucu çözer ve 4.096 gerçek değeri paylaşır.
 
-\textbf{Saldırı.} Sunucu, çözülmüş değerlerin ve elindeki şifreli metnin bilgisiyle şifreleme denklemini kurar. İki çözülmüş sonuç için yazılan denklemler, kanonik gömme kodlamasının çift doğrusal yapısı kullanılarak gizli anahtarın her katsayısı için doğrusal bir sisteme indirgenir. Gizli anahtar üçlü (ternary) olduğundan tek bir kalıntı sınıfı halkası (RNS) asalı yeterlidir. Uygulama yalnızca standart kütüphaneyle, \texttt{pilot/indcpad\_poc\_tenseal.py} betiğinde verilmiştir.
+\textbf{Saldırı.} Bir CKKS şifreli metni $\mathrm{ct} = (c_0, c_1)$ çiftidir ve çözme, gizli anahtar $s$ ile
+\be
+c_0 + c_1 \cdot s = m + e
+\ee
+\noindent yaklaşık mesajını verir; burada $e$ küçük bir hatadır. İstemci çözülmüş değeri $m' \approx m + e$ paylaşırsa, saldırgan $c_0$ ve $c_1$'i zaten bildiğinden her katsayı için
+\be
+s = (m' - c_0) \cdot c_1^{-1}
+\ee
+\noindent denklemini kurar. Bu işlem, kanonik gömme kodlamasının çift doğrusal yapısı kullanılarak gizli anahtarın her katsayısı için doğrusal bir sisteme indirgenir. Gizli anahtar üçlü (ternary) olduğundan tek bir kalıntı sınıfı halkası (RNS) asalı yeterlidir. Uygulama yalnızca standart kütüphaneyle, \texttt{pilot/indcpad\_poc\_tenseal.py} betiğinde verilmiştir.
 
 \textbf{Sonuç.} Tam hassasiyetli değerler paylaşıldığında gizli anahtar 0.14 saniyede tam olarak kurtarılmıştır. Çözülmüş değerler paylaşmadan önce 4 ondalığa yuvarlandığında saldırı başarısız olmuştur. Bu, yuvarlamanın basit bir engel olduğunu gösterir; ancak gürültü taşırma temelli önlemlerin de yetersiz kalabildiği bilindiğinden \cite{guo2024keyrecovery} güvenliğin kanıtı sayılmamalı ve çözülmüş sonuçlar sunucuya hiç gönderilmemelidir.
 

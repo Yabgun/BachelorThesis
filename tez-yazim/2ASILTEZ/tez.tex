@@ -69,9 +69,14 @@
 % ---------------------------------------------------------------- %
 % Icindekiler: iki haneli bolum numaralari (3.10, 4.14) basliga     %
 % yapismasin diye numara alani 1.5em'den 2.3em'e genisletildi.     %
+% Cizelge/Sekil Listesi'nde iki haneli numaralarda ("Cizelge 4.10") %
+% etiket, iki nokta ve metin ust uste biniyordu; numara alani       %
+% 5.5em'den 7em'e genisletildi (inceleme 2. tur, madde 3.5).        %
 % ---------------------------------------------------------------- %
 \makeatletter
 \renewcommand*\l@section{\@tocline{1}{1.1em}{2.3em}}
+\renewcommand*\l@table{\@tocline{1}{0em}{7em}}
+\renewcommand*\l@figure\l@table
 \makeatother
 
 \onsoz{\input onsoz.tex}
