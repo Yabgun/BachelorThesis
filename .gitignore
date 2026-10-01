@@ -6,12 +6,20 @@
 /COZUM_ARASTIRMASI.md
 /YENI_SOHBET_PROMPTU.md
 /TEZ_PLANI_v3.md
+/DANISMAN_PLANI.md
+/TEZ_DETAY_ANLATIM.md
+/TEZ_HIKAYESI.md
+/YOL_HARITASI.md
+# Teslim arsivleri (zip) repoya gitmez
+/*.zip
 
 # ============================================================
 # Kisisel belgeler ve eski arsiv
 # ============================================================
 /belgeler/
 /_arsiv/
+# Kaynakca PDF'leri (telif: yalnizca yerel kopya)
+/Makaleler/
 
 # ============================================================
 # LaTeX: yalnizca guncel tez (2ASILTEZ) gider.
